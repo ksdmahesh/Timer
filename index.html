@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Full Screen Timer</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #000000;
+      color: #ffffff;
+      font-family: system-ui, -apple-system, Roboto, sans-serif;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      user-select: none;
+      cursor: default;
+    }
+
+    /* Timer Display */
+    .timer-display {
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
+      text-align: center;
+      transition: font-size 0.2s ease, margin 0.2s ease;
+    }
+
+    @media (orientation: landscape) {
+      .timer-display {
+        font-size: 32vh;
+        margin-bottom: 15px;
+      }
+      .controls {
+        gap: 20px;
+      }
+      .controls button {
+        padding: 10px 24px;
+        font-size: 1.1rem;
+      }
+    }
+
+    @media (orientation: portrait) {
+      .timer-display {
+        font-size: 16vw;
+        margin-bottom: 35px;
+      }
+      .controls {
+        gap: 15px;
+      }
+      .controls button {
+        padding: 14px 26px;
+        font-size: 1.2rem;
+      }
+    }
+
+    .controls {
+      display: flex;
+    }
+
+    button {
+      background: #000000;
+      color: #ffffff;
+      border: 2px solid #ffffff;
+      font-weight: 600;
+      border-radius: 30px;
+      cursor: pointer;
+      outline: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: background-color 0.15s, opacity 0.4s ease, border-color 0.2s;
+    }
+
+    button svg {
+      width: 1.1em;
+      height: 1.1em;
+      fill: currentColor;
+      flex-shrink: 0;
+    }
+
+    button:active:not(:disabled) {
+      background-color: #ffffff;
+      color: #000000;
+    }
+
+    button:disabled {
+      opacity: 0.25;
+      cursor: not-allowed;
+      border-color: #555555;
+      color: #888888;
+    }
+
+    /* Top Corner Header Buttons */
+    .header-btn {
+      position: absolute;
+      top: 15px;
+      padding: 8px 16px;
+      font-size: 0.85rem;
+      border-width: 1px;
+      transition: opacity 0.4s ease;
+    }
+
+    .log-top-btn {
+      left: 15px;
+    }
+
+    .fs-btn {
+      right: 15px;
+    }
+
+    /* Auto-Hide Controls */
+    body.user-idle {
+      cursor: none;
+    }
+
+    body.user-idle .controls,
+    body.user-idle .header-btn {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* Log Modal Overlay */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.9);
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+    }
+
+    .modal-content {
+      background: #111;
+      border: 1px solid #444;
+      border-radius: 12px;
+      padding: 16px;
+      width: 90%;
+      max-width: 450px;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .modal-header {
+      font-size: 1.1rem;
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header-icon-group {
+      display: flex;
+      gap: 6px;
+    }
+
+    .modal-header-btn {
+      padding: 4px 8px;
+      font-size: 0.85rem;
+      border-width: 1px;
+      border-radius: 6px;
+      min-width: 32px;
+      height: 32px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 220px;
+      background: #000;
+      color: #0f0;
+      border: 1px solid #333;
+      padding: 10px;
+      font-family: monospace;
+      font-size: 0.85rem;
+      resize: none;
+      outline: none;
+      border-radius: 6px;
+    }
+
+    /* Bottom Modal Actions */
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .modal-actions button {
+      padding: 8px 16px;
+      font-size: 0.85rem;
+      border-width: 1px;
+      border-radius: 20px;
+      flex: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Buttons -->
+  <button class="header-btn log-top-btn" id="logBtn">
+    <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+    <span>Log</span>
+  </button>
+  
+  <button class="header-btn fs-btn" id="fsBtn">
+    <svg id="fsIcon" viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+    <span id="fsText">Full Screen</span>
+  </button>
+
+  <div class="timer-display" id="display">00:00:00</div>
+
+  <!-- Dynamic Control Buttons -->
+  <div class="controls">
+    <button id="primaryBtn">
+      <svg id="primaryIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      <span id="primaryText">Play</span>
+    </button>
+    <button id="secondaryBtn" style="display: none;">
+      <svg id="secondaryIcon" viewBox="0 0 24 24"><path d="M6 6h12v12H6z"/></svg>
+      <span id="secondaryText">Stop</span>
+    </button>
+  </div>
+
+  <!-- IndexedDB Log Modal -->
+  <div class="modal" id="logModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="header-icon-group">
+          <!-- Top Left Download Icon Button -->
+          <button id="downloadBtn" class="modal-header-btn" title="Download Log JSON">
+            <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+          </button>
+          <!-- Top Left Import Icon Button -->
+          <button id="importBtn" class="modal-header-btn" title="Import Log JSON">
+            <svg viewBox="0 0 24 24"><path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/></svg>
+          </button>
+          <input type="file" id="importFileInput" accept=".json" style="display: none;">
+        </div>
+        
+        <span>IndexedDB Logs</span>
+        
+        <!-- Top Right Close Button -->
+        <button id="closeModalBtn" class="modal-header-btn" title="Close">✕</button>
+      </div>
+
+      <textarea id="logText" readonly></textarea>
+
+      <div class="modal-actions">
+        <button id="copyBtn">
+          <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+          <span>Copy</span>
+        </button>
+        <button id="clearBtn" style="border-color: #888; color: #888;">
+          <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+          <span>Clear</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let timerInterval = null;
+    let secondsElapsed = 0;
+    let isRunning = false;
+    let isPaused = false;
+    let wakeLock = null;
+    let idleTimeout = null;
+    let db = null;
+    let currentSessionId = null;
+
+    // UI Elements
+    const displayEl = document.getElementById('display');
+    const primaryBtn = document.getElementById('primaryBtn');
+    const primaryIcon = document.getElementById('primaryIcon');
+    const primaryText = document.getElementById('primaryText');
+
+    const secondaryBtn = document.getElementById('secondaryBtn');
+    const secondaryIcon = document.getElementById('secondaryIcon');
+    const secondaryText = document.getElementById('secondaryText');
+
+    const logBtn = document.getElementById('logBtn');
+    const fsBtn = document.getElementById('fsBtn');
+    const fsIcon = document.getElementById('fsIcon');
+    const fsText = document.getElementById('fsText');
+
+    const logModal = document.getElementById('logModal');
+    const logText = document.getElementById('logText');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const copyBtn = document.getElementById('copyBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const importBtn = document.getElementById('importBtn');
+    const importFileInput = document.getElementById('importFileInput');
+    const clearBtn = document.getElementById('clearBtn');
+
+    // SVG Icon Paths
+    const icons = {
+      play: '<path d="M8 5v14l11-7z"/>',
+      pause: '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>',
+      stop: '<path d="M6 6h12v12H6z"/>',
+      reset: '<path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>',
+      expand: '<path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>',
+      compress: '<path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/>'
+    };
+
+    // -------------------------------------------------------------
+    // INDEXEDDB INITIALIZATION & AUTO-IMPORT ON LOAD
+    // -------------------------------------------------------------
+    const dbName = "TimerDatabase";
+    const storeName = "timer_sessions";
+
+    const request = indexedDB.open(dbName, 1);
+
+    request.onupgradeneeded = function(e) {
+      db = e.target.result;
+      if (!db.objectStoreNames.contains(storeName)) {
+        const objectStore = db.createObjectStore(storeName, { keyPath: "id", autoIncrement: true });
+        objectStore.createIndex("timestamp", "timestamp", { unique: false });
+      }
+    };
+
+    request.onsuccess = function(e) {
+      db = e.target.result;
+      autoImportOnPageLoad();
+    };
+
+    request.onerror = function(e) {
+      console.error("IndexedDB Error:", e.target.errorCode);
+    };
+
+    // Auto-import data on page load if IndexedDB is empty
+    function autoImportOnPageLoad() {
+      if (!db) return;
+      const tx = db.transaction([storeName], "readonly");
+      const store = tx.objectStore(storeName);
+      const countReq = store.count();
+
+      countReq.onsuccess = function() {
+        if (countReq.result === 0) {
+          fetch('backup.json')
+            .then(res => res.json())
+            .then(records => {
+              if (Array.isArray(records)) {
+                bulkImportRecords(records);
+              }
+            })
+            .catch(() => {
+              console.log("No automatic backup.json file found to import on page load.");
+            });
+        }
+      };
+    }
+
+    function bulkImportRecords(records, callback) {
+      if (!db || !Array.isArray(records)) return;
+      const tx = db.transaction([storeName], "readwrite");
+      const store = tx.objectStore(storeName);
+
+      records.forEach(item => {
+        delete item.id;
+        store.add(item);
+      });
+
+      tx.oncomplete = function() {
+        if (callback) callback();
+      };
+    }
+
+    function saveOrUpdateSessionToDB(formattedDuration, seconds) {
+      if (!db || seconds === 0) return;
+
+      const transaction = db.transaction([storeName], "readwrite");
+      const objectStore = transaction.objectStore(storeName);
+      const timestamp = new Date().toLocaleString();
+
+      if (currentSessionId === null) {
+        const record = {
+          timestamp: timestamp,
+          formattedDuration: formattedDuration,
+          seconds: seconds
+        };
+        const addRequest = objectStore.add(record);
+        addRequest.onsuccess = function(e) {
+          currentSessionId = e.target.result;
+        };
+      } else {
+        const record = {
+          id: currentSessionId,
+          timestamp: timestamp,
+          formattedDuration: formattedDuration,
+          seconds: seconds
+        };
+        objectStore.put(record);
+      }
+    }
+
+    function fetchDBLogs(callback) {
+      if (!db) {
+        callback("IndexedDB not initialized.");
+        return;
+      }
+
+      const transaction = db.transaction([storeName], "readonly");
+      const objectStore = transaction.objectStore(storeName);
+      const request = objectStore.getAll();
+
+      request.onsuccess = function() {
+        const results = request.result;
+        if (results.length === 0) {
+          callback("INDEXEDDB TIMER LOGS\n====================\nNo records found.");
+          return;
+        }
+
+        let output = "INDEXEDDB TIMER LOGS\n====================\n";
+        results.forEach(item => {
+          output += `[ID #${item.id}] ${item.timestamp} | Duration: ${item.formattedDuration} (${item.seconds}s)\n`;
+        });
+        callback(output);
+      };
+    }
+
+    function clearDBLogs(callback) {
+      if (!db) return;
+
+      const transaction = db.transaction([storeName], "readwrite");
+      const objectStore = transaction.objectStore(storeName);
+      const request = objectStore.clear();
+
+      request.onsuccess = function() {
+        currentSessionId = null;
+        if (callback) callback();
+      };
+    }
+
+    // -------------------------------------------------------------
+    // ON-CLOSE & VISIBILITY-CHANGE HANDLING
+    // -------------------------------------------------------------
+    // Ensure data is saved to IndexedDB if tab is closed or hidden
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden' && secondsElapsed > 0) {
+        saveOrUpdateSessionToDB(formatTime(secondsElapsed), secondsElapsed);
+      }
+    });
+
+    // Warn user before leaving/closing tab if timer is actively running
+    window.addEventListener('beforeunload', (e) => {
+      if (secondsElapsed > 0) {
+        saveOrUpdateSessionToDB(formatTime(secondsElapsed), secondsElapsed);
+      }
+      if (isRunning) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    });
+
+    // TIMER LOGIC & CONTROLS
+    function formatTime(totalSeconds) {
+      const hrs = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
+      const mins = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
+      const secs = String(totalSeconds % 60).padStart(2, '0');
+      return `${hrs}:${mins}:${secs}`;
+    }
+
+    function updateDisplay() {
+      displayEl.textContent = formatTime(secondsElapsed);
+    }
+
+    function resetIdleTimer() {
+      document.body.classList.remove('user-idle');
+      clearTimeout(idleTimeout);
+
+      if (isRunning && !isPaused && logModal.style.display !== 'flex') {
+        idleTimeout = setTimeout(() => {
+          if (isRunning && !isPaused) {
+            document.body.classList.add('user-idle');
+          }
+        }, 5000);
+      }
+    }
+
+    ['mousemove', 'mousedown', 'touchstart', 'keydown', 'click'].forEach(evt => {
+      window.addEventListener(evt, resetIdleTimer, { passive: true });
+    });
+
+    primaryBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      if (!isRunning && !isPaused) {
+        startTimer();
+      } else if (isRunning && !isPaused) {
+        pauseTimer();
+      } else if (isPaused) {
+        resumeTimer();
+      }
+    });
+
+    secondaryBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      if (isPaused) {
+        resetTimer();
+      } else {
+        stopTimer();
+      }
+    });
+
+    function startTimer() {
+      isRunning = true;
+      isPaused = false;
+      
+      primaryIcon.innerHTML = icons.pause;
+      primaryText.textContent = 'Pause';
+
+      secondaryIcon.innerHTML = icons.stop;
+      secondaryText.textContent = 'Stop';
+      secondaryBtn.style.display = 'inline-flex';
+
+      logBtn.disabled = true;
+
+      timerInterval = setInterval(() => {
+        secondsElapsed++;
+        updateDisplay();
+      }, 1000);
+
+      requestWakeLock();
+      resetIdleTimer();
+    }
+
+    function pauseTimer() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+      
+      isPaused = true;
+      
+      document.body.classList.remove('user-idle');
+      clearTimeout(idleTimeout);
+
+      primaryIcon.innerHTML = icons.play;
+      primaryText.textContent = 'Resume';
+
+      secondaryIcon.innerHTML = icons.reset;
+      secondaryText.textContent = 'Reset';
+
+      logBtn.disabled = false;
+
+      saveOrUpdateSessionToDB(formatTime(secondsElapsed), secondsElapsed);
+      releaseWakeLock();
+    }
+
+    function resumeTimer() {
+      isPaused = false;
+      
+      primaryIcon.innerHTML = icons.pause;
+      primaryText.textContent = 'Pause';
+
+      secondaryIcon.innerHTML = icons.stop;
+      secondaryText.textContent = 'Stop';
+
+      logBtn.disabled = true;
+
+      timerInterval = setInterval(() => {
+        secondsElapsed++;
+        updateDisplay();
+      }, 1000);
+
+      requestWakeLock();
+      resetIdleTimer();
+    }
+
+    function stopTimer() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+      
+      saveOrUpdateSessionToDB(formatTime(secondsElapsed), secondsElapsed);
+
+      isRunning = false;
+      isPaused = false;
+      secondsElapsed = 0;
+      currentSessionId = null;
+
+      document.body.classList.remove('user-idle');
+      clearTimeout(idleTimeout);
+
+      primaryIcon.innerHTML = icons.play;
+      primaryText.textContent = 'Play';
+
+      secondaryBtn.style.display = 'none';
+      logBtn.disabled = false;
+
+      updateDisplay();
+      releaseWakeLock();
+    }
+
+    function resetTimer() {
+      stopTimer();
+    }
+
+    // MODAL HANDLERS
+    logBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (logBtn.disabled) return;
+
+      fetchDBLogs(data => {
+        logText.value = data;
+        logModal.style.display = 'flex';
+      });
+    });
+
+    closeModalBtn.addEventListener('click', () => {
+      logModal.style.display = 'none';
+      resetIdleTimer();
+    });
+
+    copyBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(logText.value).then(() => {
+        alert('IndexedDB logs copied to clipboard!');
+      }).catch(() => {
+        logText.select();
+        document.execCommand('copy');
+        alert('IndexedDB logs copied to clipboard!');
+      });
+    });
+
+    // Download JSON Backup
+    downloadBtn.addEventListener('click', () => {
+      if (!db) return;
+      const tx = db.transaction([storeName], "readonly");
+      const store = tx.objectStore(storeName);
+      const req = store.getAll();
+
+      req.onsuccess = function() {
+        const jsonString = JSON.stringify(req.result, null, 2);
+        const blob = new Blob([jsonString], { type: 'application/json' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'indexeddb_timer_backup.json';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(link.href);
+      };
+    });
+
+    // Manual File Import Button Handlers
+    importBtn.addEventListener('click', () => {
+      importFileInput.click();
+    });
+
+    importFileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        try {
+          const records = JSON.parse(event.target.result);
+          if (Array.isArray(records)) {
+            bulkImportRecords(records, () => {
+              alert('Successfully imported records into IndexedDB!');
+              fetchDBLogs(data => { logText.value = data; });
+            });
+          } else {
+            alert('Invalid backup file format.');
+          }
+        } catch (err) {
+          alert('Error parsing JSON file.');
+        }
+      };
+      reader.readAsText(file);
+      importFileInput.value = '';
+    });
+
+    clearBtn.addEventListener('click', () => {
+      if (confirm('Delete all database entries in IndexedDB?')) {
+        clearDBLogs(() => {
+          fetchDBLogs(data => { logText.value = data; });
+        });
+      }
+    });
+
+    // WAKE LOCK & FULLSCREEN API
+    async function requestWakeLock() {
+      if ('wakeLock' in navigator) {
+        try {
+          wakeLock = await navigator.wakeLock.request('screen');
+        } catch (err) {
+          console.log('Wake Lock Error:', err);
+        }
+      }
+    }
+
+    async function releaseWakeLock() {
+      if (wakeLock !== null) {
+        try {
+          await wakeLock.release();
+        } catch (err) {
+          console.log('Wake Lock Release Error:', err);
+        }
+        wakeLock = null;
+      }
+    }
+
+    document.addEventListener('visibilitychange', async () => {
+      if (wakeLock !== null && document.visibilityState === 'visible' && isRunning && !isPaused) {
+        await requestWakeLock();
+      }
+    });
+
+    fsBtn.addEventListener('click', async function(e) {
+      e.stopPropagation();
+      if (!document.fullscreenElement) {
+        try {
+          await document.documentElement.requestFullscreen();
+          fsIcon.innerHTML = icons.compress;
+          fsText.textContent = 'Exit Full Screen';
+          if (screen.orientation && screen.orientation.lock) {
+            await screen.orientation.lock('landscape').catch(err => console.log(err));
+          }
+        } catch (err) {
+          console.log('Fullscreen error:', err);
+        }
+      } else {
+        if (document.exitFullscreen) {
+          await document.exitFullscreen();
+          fsIcon.innerHTML = icons.expand;
+          fsText.textContent = 'Full Screen';
+          if (screen.orientation && screen.orientation.unlock) {
+            screen.orientation.unlock();
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
