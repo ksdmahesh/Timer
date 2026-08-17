@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -40,9 +41,11 @@
         font-size: 32vh;
         margin-bottom: 15px;
       }
+
       .controls {
         gap: 20px;
       }
+
       .controls button {
         padding: 10px 24px;
         font-size: 1.1rem;
@@ -54,9 +57,11 @@
         font-size: 16vw;
         margin-bottom: 35px;
       }
+
       .controls {
         gap: 15px;
       }
+
       .controls button {
         padding: 14px 26px;
         font-size: 1.2rem;
@@ -101,7 +106,7 @@
       color: #888888;
     }
 
-    /* Top Corner Header Buttons */
+    /* Top Header Buttons */
     .header-btn {
       position: absolute;
       top: 15px;
@@ -138,28 +143,32 @@
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: rgba(0, 0, 0, 0.9);
+      background: rgba(0, 0, 0, 0.85);
       justify-content: center;
       align-items: center;
       z-index: 100;
+      padding: 12px;
     }
 
+    /* Modal Layout Container */
     .modal-content {
-      background: #111;
-      border: 1px solid #444;
+      background: #0f172a;
+      border: 1px solid #1e293b;
       border-radius: 12px;
       padding: 16px;
-      width: 90%;
-      max-width: 450px;
-      max-height: 85vh;
+      width: 100%;
+      max-width: 580px;
+      height: 480px;
       display: flex;
       flex-direction: column;
       gap: 12px;
+      color: #e2e8f0;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
     }
 
     .modal-header {
-      font-size: 1.1rem;
-      font-weight: bold;
+      font-size: 1rem;
+      font-weight: 600;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -175,50 +184,294 @@
       font-size: 0.85rem;
       border-width: 1px;
       border-radius: 6px;
-      min-width: 32px;
-      height: 32px;
+      min-width: 30px;
+      height: 30px;
+      background: transparent;
+      border-color: #334155;
     }
 
-    textarea {
-      width: 100%;
-      height: 220px;
-      background: #000;
-      color: #0f0;
-      border: 1px solid #333;
-      padding: 10px;
-      font-family: monospace;
+    /* Tab Navigation */
+    .tab-nav {
+      display: flex;
+      gap: 8px;
+      border-bottom: 1px solid #1e293b;
+      padding-bottom: 6px;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      font-size: 0.8rem;
+      padding: 6px 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .tab-btn.active {
+      color: #38bdf8;
+      border-bottom: 2px solid #38bdf8;
+      border-radius: 0;
+      font-weight: 600;
+    }
+
+    /* Tab Content Frame */
+    .tab-content {
+      display: none;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 12px;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .tab-content.active {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    /* View Controls */
+    .view-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .view-title {
+      font-weight: 600;
       font-size: 0.85rem;
-      resize: none;
-      outline: none;
-      border-radius: 6px;
+      text-align: center;
     }
 
-    /* Bottom Modal Actions */
+    .nav-btn {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 4px;
+      color: #fff;
+      padding: 2px 8px;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+
+    /* Calendar Grid */
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+      text-align: center;
+      flex: 1;
+    }
+
+    .cal-day-label {
+      font-size: 0.7rem;
+      color: #94a3b8;
+      padding-bottom: 2px;
+      font-weight: bold;
+    }
+
+    .cal-cell {
+      height: 32px;
+      border-radius: 4px;
+      background-color: #0f172a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      color: #64748b;
+    }
+
+    .cal-cell.empty {
+      background: transparent;
+    }
+
+    .cal-cell.level-1 {
+      background-color: #064e3b;
+      color: #a7f3d0;
+    }
+
+    .cal-cell.level-2 {
+      background-color: #047857;
+      color: #ffffff;
+    }
+
+    .cal-cell.level-3 {
+      background-color: #10b981;
+      color: #ffffff;
+      font-weight: bold;
+    }
+
+    .cal-cell.level-4 {
+      background-color: #34d399;
+      color: #000000;
+      font-weight: bold;
+    }
+
+    .cal-legend {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 4px;
+      margin-top: 6px;
+      font-size: 0.7rem;
+      color: #94a3b8;
+    }
+
+    .legend-box {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+    }
+
+    /* Weekly Chart */
+    .chart-container {
+      display: flex;
+      justify-content: space-around;
+      align-items: flex-end;
+      flex: 1;
+      padding-top: 10px;
+      border-bottom: 1px solid #334155;
+      margin-bottom: 4px;
+    }
+
+    .chart-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100%;
+      justify-content: flex-end;
+      width: 12%;
+    }
+
+    .chart-bar-wrap {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    .chart-val {
+      font-size: 0.65rem;
+      color: #38bdf8;
+      margin-bottom: 2px;
+    }
+
+    .chart-bar {
+      width: 100%;
+      background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%);
+      border-radius: 3px 3px 0 0;
+      min-height: 2px;
+      transition: height 0.3s ease;
+    }
+
+    .chart-label {
+      font-size: 0.7rem;
+      color: #94a3b8;
+      margin-top: 6px;
+      margin-bottom: 4px;
+    }
+
+    /* Total Progress Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .stat-card {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      padding: 10px 8px;
+      text-align: center;
+    }
+
+    .stat-val {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #38bdf8;
+      margin-top: 2px;
+    }
+
+    .stat-lbl {
+      font-size: 0.7rem;
+      color: #94a3b8;
+    }
+
+    /* Raw Logs Tabular Styling */
+    .raw-logs-wrap {
+      flex: 1;
+      overflow-y: auto;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      background: #0f172a;
+    }
+
+    .raw-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.75rem;
+      text-align: left;
+    }
+
+    .raw-table th,
+    .raw-table td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #1e293b;
+    }
+
+    .raw-table th {
+      background: #090d16;
+      color: #38bdf8;
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+
+    .raw-table tbody tr:hover {
+      background: #1e293b;
+    }
+
     .modal-actions {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       justify-content: flex-end;
+      margin-top: 8px;
     }
 
     .modal-actions button {
-      padding: 8px 16px;
-      font-size: 0.85rem;
+      padding: 6px 14px;
+      font-size: 0.8rem;
       border-width: 1px;
-      border-radius: 20px;
+      border-radius: 16px;
       flex: 1;
     }
   </style>
 </head>
+
 <body>
 
-  <!-- Top Buttons -->
+  <!-- Top Action Buttons -->
   <button class="header-btn log-top-btn" id="logBtn">
-    <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+    <svg viewBox="0 0 24 24">
+      <path
+        d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
+    </svg>
     <span>Log</span>
   </button>
-  
+
   <button class="header-btn fs-btn" id="fsBtn">
-    <svg id="fsIcon" viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+    <svg id="fsIcon" viewBox="0 0 24 24">
+      <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z" />
+    </svg>
     <span id="fsText">Full Screen</span>
   </button>
 
@@ -227,49 +480,119 @@
   <!-- Dynamic Control Buttons -->
   <div class="controls">
     <button id="primaryBtn">
-      <svg id="primaryIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      <svg id="primaryIcon" viewBox="0 0 24 24">
+        <path d="M8 5v14l11-7z" />
+      </svg>
       <span id="primaryText">Play</span>
     </button>
     <button id="secondaryBtn" style="display: none;">
-      <svg id="secondaryIcon" viewBox="0 0 24 24"><path d="M6 6h12v12H6z"/></svg>
+      <svg id="secondaryIcon" viewBox="0 0 24 24">
+        <path d="M6 6h12v12H6z" />
+      </svg>
       <span id="secondaryText">Stop</span>
     </button>
   </div>
 
-  <!-- IndexedDB Log Modal -->
+  <!-- Dashboard Modal -->
   <div class="modal" id="logModal">
     <div class="modal-content">
       <div class="modal-header">
         <div class="header-icon-group">
-          <!-- Top Left Download Icon Button -->
           <button id="downloadBtn" class="modal-header-btn" title="Download Log JSON">
-            <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+            <svg viewBox="0 0 24 24">
+              <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
+            </svg>
           </button>
-          <!-- Top Left Import Icon Button -->
           <button id="importBtn" class="modal-header-btn" title="Import Log JSON">
-            <svg viewBox="0 0 24 24"><path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/></svg>
+            <svg viewBox="0 0 24 24">
+              <path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z" />
+            </svg>
           </button>
           <input type="file" id="importFileInput" accept=".json" style="display: none;">
         </div>
-        
-        <span>IndexedDB Logs</span>
-        
-        <!-- Top Right Close Button -->
+
+        <span>Analytics Dashboard</span>
         <button id="closeModalBtn" class="modal-header-btn" title="Close">✕</button>
       </div>
 
-      <textarea id="logText" readonly></textarea>
-
-      <div class="modal-actions">
-        <button id="copyBtn">
-          <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-          <span>Copy</span>
-        </button>
-        <button id="clearBtn" style="border-color: #888; color: #888;">
-          <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
-          <span>Clear</span>
-        </button>
+      <!-- Tab Bar -->
+      <div class="tab-nav">
+        <button class="tab-btn active" data-tab="calTab">📅 Calendar View</button>
+        <button class="tab-btn" data-tab="chartTab">📊 Weekly Chart</button>
+        <button class="tab-btn" data-tab="progressTab">⭕ Total Progress</button>
+        <button class="tab-btn" data-tab="rawTab">📝 Raw Logs</button>
       </div>
+
+      <!-- Tab 1: Calendar View -->
+      <div class="tab-content active" id="calTab">
+        <div class="view-header">
+          <button class="nav-btn" id="prevMonthBtn">‹</button>
+          <div class="view-title" id="calMonthTitle">Calendar Heatmap</div>
+          <button class="nav-btn" id="nextMonthBtn">›</button>
+        </div>
+        <div class="cal-grid" id="calGrid"></div>
+        <div class="cal-legend">
+          <span>Less</span>
+          <div class="legend-box" style="background: #0f172a"></div>
+          <div class="legend-box" style="background: #064e3b"></div>
+          <div class="legend-box" style="background: #047857"></div>
+          <div class="legend-box" style="background: #10b981"></div>
+          <div class="legend-box" style="background: #34d399"></div>
+          <span>More</span>
+        </div>
+      </div>
+
+      <!-- Tab 2: Weekly Chart -->
+      <div class="tab-content" id="chartTab">
+        <div class="view-header">
+          <button class="nav-btn" id="prevWeekBtn">‹</button>
+          <div class="view-title" id="chartWeekTitle">Time Spent</div>
+          <button class="nav-btn" id="nextWeekBtn">›</button>
+        </div>
+        <div class="chart-container" id="weeklyChart"></div>
+      </div>
+
+      <!-- Tab 3: Total Progress -->
+      <div class="tab-content" id="progressTab">
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <div style="font-size:0.85rem; font-weight:600;">Detailed Analytics Overview</div>
+          <div class="stats-grid" id="statsSummary"></div>
+        </div>
+      </div>
+
+      <!-- Tab 4: Raw Logs (Tabular View) -->
+      <div class="tab-content" id="rawTab">
+        <div class="raw-logs-wrap">
+          <table class="raw-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Duration</th>
+              </tr>
+            </thead>
+            <tbody id="rawTableBody">
+            </tbody>
+          </table>
+        </div>
+        <div class="modal-actions">
+          <button id="copyBtn">
+            <svg viewBox="0 0 24 24">
+              <path
+                d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
+            </svg>
+            <span>Copy TSV</span>
+          </button>
+          <button id="clearBtn" style="border-color: #666; color: #aaa;">
+            <svg viewBox="0 0 24 24">
+              <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
+            </svg>
+            <span>Clear</span>
+          </button>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -282,8 +605,11 @@
     let idleTimeout = null;
     let db = null;
     let currentSessionId = null;
+    let sessionStartTimestamp = null;
 
-    // UI Elements
+    let viewDate = new Date();
+    let chartWeekOffset = 0;
+
     const displayEl = document.getElementById('display');
     const primaryBtn = document.getElementById('primaryBtn');
     const primaryIcon = document.getElementById('primaryIcon');
@@ -299,7 +625,6 @@
     const fsText = document.getElementById('fsText');
 
     const logModal = document.getElementById('logModal');
-    const logText = document.getElementById('logText');
     const closeModalBtn = document.getElementById('closeModalBtn');
     const copyBtn = document.getElementById('copyBtn');
     const downloadBtn = document.getElementById('downloadBtn');
@@ -307,7 +632,6 @@
     const importFileInput = document.getElementById('importFileInput');
     const clearBtn = document.getElementById('clearBtn');
 
-    // SVG Icon Paths
     const icons = {
       play: '<path d="M8 5v14l11-7z"/>',
       pause: '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>',
@@ -317,15 +641,13 @@
       compress: '<path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/>'
     };
 
-    // -------------------------------------------------------------
-    // INDEXEDDB INITIALIZATION & AUTO-IMPORT ON LOAD
-    // -------------------------------------------------------------
+    // DB Setup
     const dbName = "TimerDatabase";
     const storeName = "timer_sessions";
 
     const request = indexedDB.open(dbName, 1);
 
-    request.onupgradeneeded = function(e) {
+    request.onupgradeneeded = function (e) {
       db = e.target.result;
       if (!db.objectStoreNames.contains(storeName)) {
         const objectStore = db.createObjectStore(storeName, { keyPath: "id", autoIncrement: true });
@@ -333,141 +655,376 @@
       }
     };
 
-    request.onsuccess = function(e) {
+    request.onsuccess = function (e) {
       db = e.target.result;
-      autoImportOnPageLoad();
     };
-
-    request.onerror = function(e) {
-      console.error("IndexedDB Error:", e.target.errorCode);
-    };
-
-    // Auto-import data on page load if IndexedDB is empty
-    function autoImportOnPageLoad() {
-      if (!db) return;
-      const tx = db.transaction([storeName], "readonly");
-      const store = tx.objectStore(storeName);
-      const countReq = store.count();
-
-      countReq.onsuccess = function() {
-        if (countReq.result === 0) {
-          fetch('backup.json')
-            .then(res => res.json())
-            .then(records => {
-              if (Array.isArray(records)) {
-                bulkImportRecords(records);
-              }
-            })
-            .catch(() => {
-              console.log("No automatic backup.json file found to import on page load.");
-            });
-        }
-      };
-    }
-
-    function bulkImportRecords(records, callback) {
-      if (!db || !Array.isArray(records)) return;
-      const tx = db.transaction([storeName], "readwrite");
-      const store = tx.objectStore(storeName);
-
-      records.forEach(item => {
-        delete item.id;
-        store.add(item);
-      });
-
-      tx.oncomplete = function() {
-        if (callback) callback();
-      };
-    }
 
     function saveOrUpdateSessionToDB(formattedDuration, seconds) {
       if (!db || seconds === 0) return;
 
       const transaction = db.transaction([storeName], "readwrite");
       const objectStore = transaction.objectStore(storeName);
-      const timestamp = new Date().toLocaleString();
+      const isoEndTimestamp = new Date().toISOString();
+      const isoStartTimestamp = sessionStartTimestamp || isoEndTimestamp;
 
       if (currentSessionId === null) {
         const record = {
-          timestamp: timestamp,
-          formattedDuration: formattedDuration,
-          seconds: seconds
+          timestamp: isoEndTimestamp,
+          startTime: isoStartTimestamp,
+          endTime: isoEndTimestamp,
+          formattedDuration,
+          seconds
         };
         const addRequest = objectStore.add(record);
-        addRequest.onsuccess = function(e) {
-          currentSessionId = e.target.result;
-        };
+        addRequest.onsuccess = function (e) { currentSessionId = e.target.result; };
       } else {
         const record = {
           id: currentSessionId,
-          timestamp: timestamp,
-          formattedDuration: formattedDuration,
-          seconds: seconds
+          timestamp: isoEndTimestamp,
+          startTime: isoStartTimestamp,
+          endTime: isoEndTimestamp,
+          formattedDuration,
+          seconds
         };
         objectStore.put(record);
       }
     }
 
-    function fetchDBLogs(callback) {
-      if (!db) {
-        callback("IndexedDB not initialized.");
+    function getAllRecords(callback) {
+      if (!db) return callback([]);
+      const tx = db.transaction([storeName], "readonly");
+      const store = tx.objectStore(storeName);
+      const req = store.getAll();
+      req.onsuccess = () => callback(req.result || []);
+    }
+
+    function renderDashboard() {
+      getAllRecords(records => {
+        renderCalendar(records);
+        renderWeeklyChart(records);
+        renderTotalProgress(records);
+        renderRawLogs(records);
+      });
+    }
+
+    function renderCalendar(records) {
+      const calGrid = document.getElementById('calGrid');
+      const calTitle = document.getElementById('calMonthTitle');
+      calGrid.innerHTML = '';
+
+      const year = viewDate.getFullYear();
+      const month = viewDate.getMonth();
+
+      const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+      calTitle.textContent = `${monthNames[month]} ${year}`;
+
+      const dailyTotals = {};
+      records.forEach(r => {
+        const d = new Date(r.timestamp);
+        if (!isNaN(d.getTime())) {
+          const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+          dailyTotals[key] = (dailyTotals[key] || 0) + (r.seconds || 0);
+        }
+      });
+
+      ['S', 'M', 'T', 'W', 'T', 'F', 'S'].forEach(day => {
+        const lbl = document.createElement('div');
+        lbl.className = 'cal-day-label';
+        lbl.textContent = day;
+        calGrid.appendChild(lbl);
+      });
+
+      const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+      for (let i = 0; i < firstDay; i++) {
+        const emptyCell = document.createElement('div');
+        emptyCell.className = 'cal-cell empty';
+        calGrid.appendChild(emptyCell);
+      }
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const key = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const totalSecs = dailyTotals[key] || 0;
+
+        const cell = document.createElement('div');
+        cell.className = 'cal-cell';
+        cell.textContent = day;
+
+        if (totalSecs > 0) {
+          const mins = totalSecs / 60;
+          if (mins < 5) cell.classList.add('level-1');
+          else if (mins < 30) cell.classList.add('level-2');
+          else if (mins < 120) cell.classList.add('level-3');
+          else cell.classList.add('level-4');
+
+          cell.title = `${key}: ${formatTime(totalSecs)}`;
+        }
+
+        calGrid.appendChild(cell);
+      }
+    }
+
+    function renderWeeklyChart(records) {
+      const chartEl = document.getElementById('weeklyChart');
+      const titleEl = document.getElementById('chartWeekTitle');
+      chartEl.innerHTML = '';
+
+      const curr = new Date();
+      curr.setDate(curr.getDate() + (chartWeekOffset * 7));
+      const startOfWeek = new Date(curr.setDate(curr.getDate() - curr.getDay()));
+      startOfWeek.setHours(0, 0, 0, 0);
+
+      const endOfWeek = new Date(startOfWeek);
+      endOfWeek.setDate(endOfWeek.getDate() + 6);
+      endOfWeek.setHours(23, 59, 59, 999);
+
+      const dayTotals = [0, 0, 0, 0, 0, 0, 0];
+      records.forEach(r => {
+        const d = new Date(r.timestamp);
+        if (!isNaN(d.getTime()) && d >= startOfWeek && d <= endOfWeek) {
+          dayTotals[d.getDay()] += (r.seconds || 0);
+        }
+      });
+
+      const maxSecs = Math.max(...dayTotals, 0);
+
+      let unitMode = 'seconds';
+      if (maxSecs >= 3600) unitMode = 'hours';
+      else if (maxSecs >= 60) unitMode = 'minutes';
+
+      const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const dateRangeStr = `${monthNames[startOfWeek.getMonth()]} ${startOfWeek.getDate()} - ${monthNames[endOfWeek.getMonth()]} ${endOfWeek.getDate()}`;
+      titleEl.textContent = `Time Spent in ${unitMode.charAt(0).toUpperCase() + unitMode.slice(1)} (${dateRangeStr})`;
+
+      const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      const scaleBaseline = maxSecs > 0 ? maxSecs : 1;
+
+      dayNames.forEach((name, idx) => {
+        const secs = dayTotals[idx];
+        let displayVal = '';
+
+        if (secs > 0) {
+          if (unitMode === 'hours') displayVal = (secs / 3600).toFixed(1) + 'h';
+          else if (unitMode === 'minutes') displayVal = (secs / 60).toFixed(1) + 'm';
+          else displayVal = secs + 's';
+        }
+
+        const pct = secs > 0 ? Math.max((secs / scaleBaseline) * 100, 6) : 0;
+
+        const col = document.createElement('div');
+        col.className = 'chart-col';
+        col.innerHTML = `
+          <div class="chart-bar-wrap">
+            <span class="chart-val">${displayVal}</span>
+            <div class="chart-bar" style="height: ${pct}%"></div>
+          </div>
+          <span class="chart-label">${name}</span>
+        `;
+        chartEl.appendChild(col);
+      });
+    }
+
+    function renderTotalProgress(records) {
+      const summaryEl = document.getElementById('statsSummary');
+      const now = new Date();
+      const currentYear = now.getFullYear();
+      const currentMonth = now.getMonth();
+
+      const dailyTotals = {};
+      let totalSecs = 0;
+      let thisMonthSecs = 0;
+      let thisYearSecs = 0;
+
+      records.forEach(r => {
+        const secs = r.seconds || 0;
+        totalSecs += secs;
+
+        const d = new Date(r.timestamp);
+        if (!isNaN(d.getTime())) {
+          const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+          dailyTotals[key] = (dailyTotals[key] || 0) + secs;
+
+          if (d.getFullYear() === currentYear) {
+            thisYearSecs += secs;
+            if (d.getMonth() === currentMonth) {
+              thisMonthSecs += secs;
+            }
+          }
+        }
+      });
+
+      const sessionCount = records.length;
+      const avgSecs = sessionCount > 0 ? Math.round(totalSecs / sessionCount) : 0;
+
+      // Single Day Maximum
+      const maxDaySecs = Math.max(...Object.values(dailyTotals), 0);
+
+      // Streaks & Active/Missed Days
+      const dates = Object.keys(dailyTotals).sort();
+      let currentStreak = 0;
+      let highestStreak = 0;
+      let missedDays = 0;
+
+      if (dates.length > 0) {
+        // High streak calculation
+        let tempStreak = 0;
+        let prevDate = null;
+
+        dates.forEach(dStr => {
+          const d = new Date(dStr);
+          if (prevDate) {
+            const diffDays = Math.round((d - prevDate) / (1000 * 60 * 60 * 24));
+            if (diffDays === 1) {
+              tempStreak++;
+            } else {
+              tempStreak = 1;
+            }
+          } else {
+            tempStreak = 1;
+          }
+          if (tempStreak > highestStreak) highestStreak = tempStreak;
+          prevDate = d;
+        });
+
+        // Current streak calculation
+        let checkDate = new Date();
+        checkDate.setHours(0, 0, 0, 0);
+
+        let checkKey = `${checkDate.getFullYear()}-${String(checkDate.getMonth() + 1).padStart(2, '0')}-${String(checkDate.getDate()).padStart(2, '0')}`;
+        if (!dailyTotals[checkKey]) {
+          checkDate.setDate(checkDate.getDate() - 1);
+          checkKey = `${checkDate.getFullYear()}-${String(checkDate.getMonth() + 1).padStart(2, '0')}-${String(checkDate.getDate()).padStart(2, '0')}`;
+        }
+
+        while (dailyTotals[checkKey]) {
+          currentStreak++;
+          checkDate.setDate(checkDate.getDate() - 1);
+          checkKey = `${checkDate.getFullYear()}-${String(checkDate.getMonth() + 1).padStart(2, '0')}-${String(checkDate.getDate()).padStart(2, '0')}`;
+        }
+
+        // Missed Days Calculation
+        const firstDate = new Date(dates[0]);
+        const todayDate = new Date();
+        firstDate.setHours(0, 0, 0, 0);
+        todayDate.setHours(0, 0, 0, 0);
+
+        const totalTimespanDays = Math.floor((todayDate - firstDate) / (1000 * 60 * 60 * 24)) + 1;
+        const activeDaysCount = dates.length;
+        missedDays = Math.max(0, totalTimespanDays - activeDaysCount);
+      }
+
+      summaryEl.innerHTML = `
+        <!-- Row 1: Current, Highest Streak, Missed Days -->
+        <div class="stat-card">
+          <div class="stat-lbl">Current Streak</div>
+          <div class="stat-val">${currentStreak} 🔥</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-lbl">Highest Streak</div>
+          <div class="stat-val">${highestStreak} ⚡</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-lbl">Missed Days</div>
+          <div class="stat-val">${missedDays}</div>
+        </div>
+
+        <!-- Row 2: Single Day, This Month, This Year -->
+        <div class="stat-card">
+          <div class="stat-lbl">Max Single Day</div>
+          <div class="stat-val">${formatTime(maxDaySecs)}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-lbl">This Month</div>
+          <div class="stat-val">${(thisMonthSecs / 3600).toFixed(1)}h</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-lbl">This Year</div>
+          <div class="stat-val">${(thisYearSecs / 3600).toFixed(1)}h</div>
+        </div>
+
+        <!-- Row 3: Total Hours, Avg Session, Total Sessions -->
+        <div class="stat-card">
+          <div class="stat-lbl">Total Hours</div>
+          <div class="stat-val">${(totalSecs / 3600).toFixed(1)}h</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-lbl">Avg Session</div>
+          <div class="stat-val">${formatTime(avgSecs)}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-lbl">Total Sessions</div>
+          <div class="stat-val">${sessionCount}</div>
+        </div>
+      `;
+    }
+
+    function renderRawLogs(records) {
+      const tbody = document.getElementById('rawTableBody');
+      tbody.innerHTML = '';
+
+      if (records.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#64748b; padding: 20px;">No records found.</td></tr>`;
         return;
       }
 
-      const transaction = db.transaction([storeName], "readonly");
-      const objectStore = transaction.objectStore(storeName);
-      const request = objectStore.getAll();
+      // Display most recent records on top
+      const sortedRecords = [...records].reverse();
 
-      request.onsuccess = function() {
-        const results = request.result;
-        if (results.length === 0) {
-          callback("INDEXEDDB TIMER LOGS\n====================\nNo records found.");
-          return;
-        }
+      sortedRecords.forEach(item => {
+        const endDate = new Date(item.endTime || item.timestamp);
+        const startDate = item.startTime ? new Date(item.startTime) : new Date(endDate.getTime() - ((item.seconds || 0) * 1000));
 
-        let output = "INDEXEDDB TIMER LOGS\n====================\n";
-        results.forEach(item => {
-          output += `[ID #${item.id}] ${item.timestamp} | Duration: ${item.formattedDuration} (${item.seconds}s)\n`;
-        });
-        callback(output);
-      };
+        const dateStr = !isNaN(endDate.getTime()) ? endDate.toLocaleDateString() : 'N/A';
+        const startTimeStr = !isNaN(startDate.getTime()) ? startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : 'N/A';
+        const endTimeStr = !isNaN(endDate.getTime()) ? endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : 'N/A';
+        const durationStr = item.formattedDuration || formatTime(item.seconds || 0);
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${dateStr}</td>
+          <td>${startTimeStr}</td>
+          <td>${endTimeStr}</td>
+          <td style="color:#38bdf8; font-weight:600;">${durationStr}</td>
+        `;
+        tbody.appendChild(tr);
+      });
     }
 
-    function clearDBLogs(callback) {
-      if (!db) return;
-
-      const transaction = db.transaction([storeName], "readwrite");
-      const objectStore = transaction.objectStore(storeName);
-      const request = objectStore.clear();
-
-      request.onsuccess = function() {
-        currentSessionId = null;
-        if (callback) callback();
-      };
-    }
-
-    // -------------------------------------------------------------
-    // ON-CLOSE & VISIBILITY-CHANGE HANDLING
-    // -------------------------------------------------------------
-    // Ensure data is saved to IndexedDB if tab is closed or hidden
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'hidden' && secondsElapsed > 0) {
-        saveOrUpdateSessionToDB(formatTime(secondsElapsed), secondsElapsed);
-      }
+    // Calendar Navigation
+    document.getElementById('prevMonthBtn').addEventListener('click', () => {
+      viewDate.setMonth(viewDate.getMonth() - 1);
+      getAllRecords(renderCalendar);
     });
 
-    // Warn user before leaving/closing tab if timer is actively running
-    window.addEventListener('beforeunload', (e) => {
-      if (secondsElapsed > 0) {
-        saveOrUpdateSessionToDB(formatTime(secondsElapsed), secondsElapsed);
-      }
-      if (isRunning) {
-        e.preventDefault();
-        e.returnValue = '';
-      }
+    document.getElementById('nextMonthBtn').addEventListener('click', () => {
+      viewDate.setMonth(viewDate.getMonth() + 1);
+      getAllRecords(renderCalendar);
     });
 
-    // TIMER LOGIC & CONTROLS
+    // Chart Week Navigation
+    document.getElementById('prevWeekBtn').addEventListener('click', () => {
+      chartWeekOffset--;
+      getAllRecords(renderWeeklyChart);
+    });
+
+    document.getElementById('nextWeekBtn').addEventListener('click', () => {
+      chartWeekOffset++;
+      getAllRecords(renderWeeklyChart);
+    });
+
+    // Tab Navigation
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.tab).classList.add('active');
+      });
+    });
+
+    // Timer Implementation
     function formatTime(totalSeconds) {
       const hrs = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
       const mins = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
@@ -496,37 +1053,27 @@
       window.addEventListener(evt, resetIdleTimer, { passive: true });
     });
 
-    primaryBtn.addEventListener('click', function(e) {
+    primaryBtn.addEventListener('click', function (e) {
       e.stopPropagation();
-      if (!isRunning && !isPaused) {
-        startTimer();
-      } else if (isRunning && !isPaused) {
-        pauseTimer();
-      } else if (isPaused) {
-        resumeTimer();
-      }
+      if (!isRunning && !isPaused) startTimer();
+      else if (isRunning && !isPaused) pauseTimer();
+      else if (isPaused) resumeTimer();
     });
 
-    secondaryBtn.addEventListener('click', function(e) {
+    secondaryBtn.addEventListener('click', function (e) {
       e.stopPropagation();
-      if (isPaused) {
-        resetTimer();
-      } else {
-        stopTimer();
-      }
+      stopTimer();
     });
 
     function startTimer() {
       isRunning = true;
       isPaused = false;
-      
+      sessionStartTimestamp = new Date().toISOString();
       primaryIcon.innerHTML = icons.pause;
       primaryText.textContent = 'Pause';
-
       secondaryIcon.innerHTML = icons.stop;
       secondaryText.textContent = 'Stop';
       secondaryBtn.style.display = 'inline-flex';
-
       logBtn.disabled = true;
 
       timerInterval = setInterval(() => {
@@ -539,22 +1086,15 @@
     }
 
     function pauseTimer() {
-      if (timerInterval) {
-        clearInterval(timerInterval);
-        timerInterval = null;
-      }
-      
+      if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
       isPaused = true;
-      
       document.body.classList.remove('user-idle');
       clearTimeout(idleTimeout);
 
       primaryIcon.innerHTML = icons.play;
       primaryText.textContent = 'Resume';
-
       secondaryIcon.innerHTML = icons.reset;
       secondaryText.textContent = 'Reset';
-
       logBtn.disabled = false;
 
       saveOrUpdateSessionToDB(formatTime(secondsElapsed), secondsElapsed);
@@ -563,13 +1103,10 @@
 
     function resumeTimer() {
       isPaused = false;
-      
       primaryIcon.innerHTML = icons.pause;
       primaryText.textContent = 'Pause';
-
       secondaryIcon.innerHTML = icons.stop;
       secondaryText.textContent = 'Stop';
-
       logBtn.disabled = true;
 
       timerInterval = setInterval(() => {
@@ -582,24 +1119,20 @@
     }
 
     function stopTimer() {
-      if (timerInterval) {
-        clearInterval(timerInterval);
-        timerInterval = null;
-      }
-      
+      if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
       saveOrUpdateSessionToDB(formatTime(secondsElapsed), secondsElapsed);
 
       isRunning = false;
       isPaused = false;
       secondsElapsed = 0;
       currentSessionId = null;
+      sessionStartTimestamp = null;
 
       document.body.classList.remove('user-idle');
       clearTimeout(idleTimeout);
 
       primaryIcon.innerHTML = icons.play;
       primaryText.textContent = 'Play';
-
       secondaryBtn.style.display = 'none';
       logBtn.disabled = false;
 
@@ -607,19 +1140,12 @@
       releaseWakeLock();
     }
 
-    function resetTimer() {
-      stopTimer();
-    }
-
-    // MODAL HANDLERS
+    // Modal Actions
     logBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       if (logBtn.disabled) return;
-
-      fetchDBLogs(data => {
-        logText.value = data;
-        logModal.style.display = 'flex';
-      });
+      renderDashboard();
+      logModal.style.display = 'flex';
     });
 
     closeModalBtn.addEventListener('click', () => {
@@ -628,25 +1154,29 @@
     });
 
     copyBtn.addEventListener('click', () => {
-      navigator.clipboard.writeText(logText.value).then(() => {
-        alert('IndexedDB logs copied to clipboard!');
-      }).catch(() => {
-        logText.select();
-        document.execCommand('copy');
-        alert('IndexedDB logs copied to clipboard!');
+      getAllRecords(records => {
+        if (records.length === 0) return alert('No records to copy.');
+        let tsv = "Date\tStart Time\tEnd Time\tDuration\n";
+        [...records].reverse().forEach(item => {
+          const endDate = new Date(item.endTime || item.timestamp);
+          const startDate = item.startTime ? new Date(item.startTime) : new Date(endDate.getTime() - ((item.seconds || 0) * 1000));
+
+          const dateStr = !isNaN(endDate.getTime()) ? endDate.toLocaleDateString() : 'N/A';
+          const startTimeStr = !isNaN(startDate.getTime()) ? startDate.toLocaleTimeString() : 'N/A';
+          const endTimeStr = !isNaN(endDate.getTime()) ? endDate.toLocaleTimeString() : 'N/A';
+          const durationStr = item.formattedDuration || formatTime(item.seconds || 0);
+
+          tsv += `${dateStr}\t${startTimeStr}\t${endTimeStr}\t${durationStr}\n`;
+        });
+        navigator.clipboard.writeText(tsv).then(() => {
+          alert('Table logs copied as TSV to clipboard!');
+        });
       });
     });
 
-    // Download JSON Backup
     downloadBtn.addEventListener('click', () => {
-      if (!db) return;
-      const tx = db.transaction([storeName], "readonly");
-      const store = tx.objectStore(storeName);
-      const req = store.getAll();
-
-      req.onsuccess = function() {
-        const jsonString = JSON.stringify(req.result, null, 2);
-        const blob = new Blob([jsonString], { type: 'application/json' });
+      getAllRecords(records => {
+        const blob = new Blob([JSON.stringify(records, null, 2)], { type: 'application/json' });
         const link = document.createElement('a');
         link.href = URL.createObjectURL(blob);
         link.download = 'indexeddb_timer_backup.json';
@@ -654,98 +1184,68 @@
         link.click();
         document.body.removeChild(link);
         URL.revokeObjectURL(link.href);
-      };
+      });
     });
 
-    // Manual File Import Button Handlers
-    importBtn.addEventListener('click', () => {
-      importFileInput.click();
-    });
+    importBtn.addEventListener('click', () => importFileInput.click());
 
     importFileInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (!file) return;
 
       const reader = new FileReader();
-      reader.onload = function(event) {
+      reader.onload = function (event) {
         try {
           const records = JSON.parse(event.target.result);
           if (Array.isArray(records)) {
-            bulkImportRecords(records, () => {
-              alert('Successfully imported records into IndexedDB!');
-              fetchDBLogs(data => { logText.value = data; });
-            });
-          } else {
-            alert('Invalid backup file format.');
+            const tx = db.transaction([storeName], "readwrite");
+            const store = tx.objectStore(storeName);
+            records.forEach(r => { delete r.id; store.add(r); });
+            tx.oncomplete = () => {
+              alert('Successfully imported records!');
+              renderDashboard();
+            };
           }
-        } catch (err) {
-          alert('Error parsing JSON file.');
-        }
+        } catch (err) { alert('Error parsing JSON file.'); }
       };
       reader.readAsText(file);
       importFileInput.value = '';
     });
 
     clearBtn.addEventListener('click', () => {
-      if (confirm('Delete all database entries in IndexedDB?')) {
-        clearDBLogs(() => {
-          fetchDBLogs(data => { logText.value = data; });
-        });
+      if (confirm('Delete all entries in IndexedDB?')) {
+        if (!db) return;
+        const tx = db.transaction([storeName], "readwrite");
+        tx.objectStore(storeName).clear().onsuccess = () => renderDashboard();
       }
     });
 
-    // WAKE LOCK & FULLSCREEN API
     async function requestWakeLock() {
       if ('wakeLock' in navigator) {
-        try {
-          wakeLock = await navigator.wakeLock.request('screen');
-        } catch (err) {
-          console.log('Wake Lock Error:', err);
-        }
+        try { wakeLock = await navigator.wakeLock.request('screen'); } catch (err) { }
       }
     }
 
     async function releaseWakeLock() {
-      if (wakeLock !== null) {
-        try {
-          await wakeLock.release();
-        } catch (err) {
-          console.log('Wake Lock Release Error:', err);
-        }
+      if (wakeLock) {
+        try { await wakeLock.release(); } catch (err) { }
         wakeLock = null;
       }
     }
 
-    document.addEventListener('visibilitychange', async () => {
-      if (wakeLock !== null && document.visibilityState === 'visible' && isRunning && !isPaused) {
-        await requestWakeLock();
-      }
-    });
-
-    fsBtn.addEventListener('click', async function(e) {
+    fsBtn.addEventListener('click', async function (e) {
       e.stopPropagation();
       if (!document.fullscreenElement) {
-        try {
-          await document.documentElement.requestFullscreen();
-          fsIcon.innerHTML = icons.compress;
-          fsText.textContent = 'Exit Full Screen';
-          if (screen.orientation && screen.orientation.lock) {
-            await screen.orientation.lock('landscape').catch(err => console.log(err));
-          }
-        } catch (err) {
-          console.log('Fullscreen error:', err);
-        }
+        await document.documentElement.requestFullscreen().catch(() => { });
+        fsIcon.innerHTML = icons.compress;
+        fsText.textContent = 'Exit Full Screen';
       } else {
-        if (document.exitFullscreen) {
-          await document.exitFullscreen();
-          fsIcon.innerHTML = icons.expand;
-          fsText.textContent = 'Full Screen';
-          if (screen.orientation && screen.orientation.unlock) {
-            screen.orientation.unlock();
-          }
-        }
+        await document.exitFullscreen().catch(() => { });
+        fsIcon.innerHTML = icons.expand;
+        fsText.textContent = 'Full Screen';
       }
     });
   </script>
 </body>
+
 </html>
