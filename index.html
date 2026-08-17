@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Timer - Responsive & Fullscreen Landscape</title>
   <style>
     * {
@@ -11,7 +13,8 @@
       padding: 0;
     }
 
-    html, body {
+    html,
+    body {
       height: 100%;
       width: 100%;
       background-color: #000000;
@@ -71,7 +74,8 @@
     }
 
     .header-btn {
-      width: auto; /* Fit to content size */
+      width: auto;
+      /* Fit to content size */
       padding: 10px 20px;
       font-size: 0.95rem;
       border: 1px solid #ffffff;
@@ -109,10 +113,10 @@
     }
 
     /* Controls */
-    .controls { 
-      display: flex; 
+    .controls {
+      display: flex;
       flex-direction: column;
-      gap: 16px; 
+      gap: 16px;
       width: 100%;
       max-width: 280px;
       margin-bottom: 2vh;
@@ -149,7 +153,10 @@
     }
 
     /* Auto-Hide UI on Idle */
-    body.user-idle { cursor: none; }
+    body.user-idle {
+      cursor: none;
+    }
+
     body.user-idle .controls,
     body.user-idle .top-bar {
       opacity: 0;
@@ -259,7 +266,8 @@
       text-align: left;
     }
 
-    .raw-table th, .raw-table td {
+    .raw-table th,
+    .raw-table td {
       padding: 8px;
       border-bottom: 1px solid #1e293b;
     }
@@ -278,12 +286,16 @@
     }
   </style>
 </head>
+
 <body>
 
   <div class="app-container">
     <div class="top-bar">
       <button class="header-btn" id="logBtn">
-        <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+        <svg viewBox="0 0 24 24">
+          <path
+            d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
+        </svg>
         <span>Log</span>
       </button>
     </div>
@@ -292,11 +304,15 @@
 
     <div class="controls">
       <button id="primaryBtn">
-        <svg id="primaryIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        <svg id="primaryIcon" viewBox="0 0 24 24">
+          <path d="M8 5v14l11-7z" />
+        </svg>
         <span id="primaryText">Start</span>
       </button>
       <button id="secondaryBtn" style="display: none;">
-        <svg id="secondaryIcon" viewBox="0 0 24 24"><path d="M6 6h12v12H6z"/></svg>
+        <svg id="secondaryIcon" viewBox="0 0 24 24">
+          <path d="M6 6h12v12H6z" />
+        </svg>
         <span id="secondaryText">Stop</span>
       </button>
     </div>
@@ -365,14 +381,14 @@
     function requestFullScreen() {
       const el = document.documentElement;
       if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-        if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
+        if (el.requestFullscreen) el.requestFullscreen().catch(() => { });
         else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
       }
     }
 
     function exitFullScreen() {
       if (document.fullscreenElement || document.webkitFullscreenElement) {
-        if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
+        if (document.exitFullscreen) document.exitFullscreen().catch(() => { });
         else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
       }
     }
@@ -381,7 +397,7 @@
       if (screen.orientation && screen.orientation.lock) {
         try {
           await screen.orientation.lock('landscape');
-        } catch (e) {}
+        } catch (e) { }
       }
     }
 
@@ -389,7 +405,7 @@
       if (screen.orientation && screen.orientation.unlock) {
         try {
           screen.orientation.unlock();
-        } catch (e) {}
+        } catch (e) { }
       }
     }
 
@@ -522,7 +538,7 @@
     function stopTimer() {
       clearInterval(timerInterval);
       saveSession(formatTime(secondsElapsed), secondsElapsed);
-      
+
       document.body.classList.remove('running-mode');
       exitFullScreen();
       unlockOrientation();
@@ -548,16 +564,17 @@
 
     async function requestWakeLock() {
       if ('wakeLock' in navigator) {
-        try { wakeLock = await navigator.wakeLock.request('screen'); } catch (err) {}
+        try { wakeLock = await navigator.wakeLock.request('screen'); } catch (err) { }
       }
     }
 
     async function releaseWakeLock() {
       if (wakeLock) {
-        try { await wakeLock.release(); } catch (err) {}
+        try { await wakeLock.release(); } catch (err) { }
         wakeLock = null;
       }
     }
   </script>
 </body>
+
 </html>
