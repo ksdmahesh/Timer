@@ -1072,6 +1072,7 @@
       secondaryText.textContent = 'Stop';
       secondaryBtn.style.display = 'inline-flex';
       logBtn.disabled = true;
+      logBtn.style.display = 'none';
 
       timerInterval = setInterval(() => {
         secondsElapsed++;
@@ -1092,7 +1093,9 @@
       primaryText.textContent = 'Resume';
       secondaryIcon.innerHTML = icons.reset;
       secondaryText.textContent = 'Reset';
-      logBtn.disabled = false;
+
+      logBtn.disabled = true;
+      logBtn.style.display = 'none';
 
       saveOrUpdateSessionToDB(formatTime(secondsElapsed), secondsElapsed);
       releaseWakeLock();
@@ -1104,7 +1107,9 @@
       primaryText.textContent = 'Pause';
       secondaryIcon.innerHTML = icons.stop;
       secondaryText.textContent = 'Stop';
+
       logBtn.disabled = true;
+      logBtn.style.display = 'none';
 
       timerInterval = setInterval(() => {
         secondsElapsed++;
@@ -1131,7 +1136,9 @@
       primaryIcon.innerHTML = icons.start;
       primaryText.textContent = 'Start';
       secondaryBtn.style.display = 'none';
+
       logBtn.disabled = false;
+      logBtn.style.display = 'inline-flex';
 
       updateDisplay();
       releaseWakeLock(true);
