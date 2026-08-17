@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Full Screen Timer</title>
   <style>
     * {
@@ -11,19 +11,22 @@
       padding: 0;
     }
 
-    body {
+    html, body {
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
       background-color: #000000;
       color: #ffffff;
       font-family: system-ui, -apple-system, Roboto, sans-serif;
-      height: 100vh;
-      width: 100vw;
+      user-select: none;
+      cursor: default;
+    }
+
+    body {
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      overflow: hidden;
-      user-select: none;
-      cursor: default;
     }
 
     /* Timer Display */
@@ -102,13 +105,20 @@
       padding: 8px 16px;
       font-size: 0.85rem;
       border-width: 1px;
-      transition: opacity 0.4s ease;
+      transition: opacity 0.4s ease, visibility 0.4s ease;
     }
 
     .log-top-btn { left: 15px; }
-    .fs-btn { right: 15px; }
+    .settings-top-btn { right: 15px; }
 
-    /* Auto-Hide Controls */
+    /* Hide buttons state on timer start */
+    .header-btn.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    /* Auto-Hide Controls on Idle */
     body.user-idle { cursor: none; }
     body.user-idle .controls,
     body.user-idle .header-btn {
@@ -116,7 +126,7 @@
       pointer-events: none;
     }
 
-    /* Log Modal Overlay */
+    /* Modals Overlay */
     .modal {
       display: none;
       position: fixed;
@@ -415,6 +425,28 @@
       border-radius: 16px;
       flex: 1;
     }
+
+    /* Settings Group */
+    .settings-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 10px 0;
+    }
+
+    .settings-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #0f172a;
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid #334155;
+    }
+
+    .settings-label {
+      font-size: 0.85rem;
+    }
   </style>
 </head>
 <body>
@@ -425,9 +457,9 @@
     <span>Log</span>
   </button>
   
-  <button class="header-btn fs-btn" id="fsBtn">
-    <svg id="fsIcon" viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
-    <span id="fsText">Full Screen</span>
+  <button class="header-btn settings-top-btn" id="settingsBtn">
+    <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+    <span>Settings</span>
   </button>
 
   <div class="timer-display" id="display">00:00:00</div>
@@ -538,6 +570,22 @@
     </div>
   </div>
 
+  <!-- Settings Modal -->
+  <div class="modal" id="settingsModal">
+    <div class="modal-content" style="height: auto; max-width: 400px;">
+      <div class="modal-header">
+        <span>Settings</span>
+        <button id="closeSettingsBtn" class="modal-header-btn" title="Close">✕</button>
+      </div>
+      <div class="settings-group">
+        <div class="settings-row">
+          <span class="settings-label">Force Landscape Mode</span>
+          <button id="lockOrientationBtn" style="padding: 4px 12px; font-size: 0.8rem;">Apply Lock</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     let timerInterval = null;
     let secondsElapsed = 0;
@@ -562,12 +610,13 @@
     const secondaryText = document.getElementById('secondaryText');
 
     const logBtn = document.getElementById('logBtn');
-    const fsBtn = document.getElementById('fsBtn');
-    const fsIcon = document.getElementById('fsIcon');
-    const fsText = document.getElementById('fsText');
+    const settingsBtn = document.getElementById('settingsBtn');
 
     const logModal = document.getElementById('logModal');
     const closeModalBtn = document.getElementById('closeModalBtn');
+    const settingsModal = document.getElementById('settingsModal');
+    const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+
     const copyBtn = document.getElementById('copyBtn');
     const downloadBtn = document.getElementById('downloadBtn');
     const importBtn = document.getElementById('importBtn');
@@ -578,12 +627,23 @@
       play: '<path d="M8 5v14l11-7z"/>',
       pause: '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>',
       stop: '<path d="M6 6h12v12H6z"/>',
-      reset: '<path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>',
-      expand: '<path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>',
-      compress: '<path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/>'
+      reset: '<path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>'
     };
 
-    // DB Setup
+    // Auto landscape lock mechanism
+    async function applyOrientationLock() {
+      if (screen.orientation && screen.orientation.lock) {
+        try {
+          await screen.orientation.lock('landscape');
+        } catch (e) {}
+      }
+    }
+
+    window.addEventListener('load', applyOrientationLock);
+    window.addEventListener('resize', applyOrientationLock);
+    document.addEventListener('touchstart', applyOrientationLock, { once: true });
+
+    // IndexedDB Setup
     const dbName = "TimerDatabase";
     const storeName = "timer_sessions";
 
@@ -618,7 +678,9 @@
           seconds 
         };
         const addRequest = objectStore.add(record);
-        addRequest.onsuccess = function(e) { currentSessionId = e.target.result; };
+        addRequest.onsuccess = function(e) { 
+          currentSessionId = e.target.result; 
+        };
       } else {
         const record = { 
           id: currentSessionId, 
@@ -971,7 +1033,7 @@
       document.body.classList.remove('user-idle');
       clearTimeout(idleTimeout);
 
-      if (isRunning && !isPaused && logModal.style.display !== 'flex') {
+      if (isRunning && !isPaused && logModal.style.display !== 'flex' && settingsModal.style.display !== 'flex') {
         idleTimeout = setTimeout(() => {
           if (isRunning && !isPaused) {
             document.body.classList.add('user-idle');
@@ -1000,12 +1062,17 @@
       isRunning = true;
       isPaused = false;
       sessionStartTimestamp = new Date().toISOString();
+      currentSessionId = null; 
+
       primaryIcon.innerHTML = icons.pause;
       primaryText.textContent = 'Pause';
       secondaryIcon.innerHTML = icons.stop;
       secondaryText.textContent = 'Stop';
       secondaryBtn.style.display = 'inline-flex';
-      logBtn.disabled = true;
+
+      // Hide top action buttons on start
+      logBtn.classList.add('hidden');
+      settingsBtn.classList.add('hidden');
 
       timerInterval = setInterval(() => {
         secondsElapsed++;
@@ -1014,6 +1081,7 @@
 
       requestWakeLock();
       resetIdleTimer();
+      applyOrientationLock();
     }
 
     function pauseTimer() {
@@ -1026,7 +1094,10 @@
       primaryText.textContent = 'Resume';
       secondaryIcon.innerHTML = icons.reset;
       secondaryText.textContent = 'Reset';
-      logBtn.disabled = false;
+
+      // Show top buttons on pause
+      logBtn.classList.remove('hidden');
+      settingsBtn.classList.remove('hidden');
 
       saveOrUpdateSessionToDB(formatTime(secondsElapsed), secondsElapsed);
       releaseWakeLock();
@@ -1038,7 +1109,10 @@
       primaryText.textContent = 'Pause';
       secondaryIcon.innerHTML = icons.stop;
       secondaryText.textContent = 'Stop';
-      logBtn.disabled = true;
+
+      // Hide top buttons on resume
+      logBtn.classList.add('hidden');
+      settingsBtn.classList.add('hidden');
 
       timerInterval = setInterval(() => {
         secondsElapsed++;
@@ -1047,6 +1121,7 @@
 
       requestWakeLock();
       resetIdleTimer();
+      applyOrientationLock();
     }
 
     function stopTimer() {
@@ -1065,7 +1140,10 @@
       primaryIcon.innerHTML = icons.play;
       primaryText.textContent = 'Play';
       secondaryBtn.style.display = 'none';
-      logBtn.disabled = false;
+
+      // Show top buttons on stop
+      logBtn.classList.remove('hidden');
+      settingsBtn.classList.remove('hidden');
 
       updateDisplay();
       releaseWakeLock();
@@ -1074,7 +1152,7 @@
     // Modal Events
     logBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      if (logBtn.disabled) return;
+      if (logBtn.classList.contains('hidden')) return;
       renderDashboard();
       logModal.style.display = 'flex';
     });
@@ -1083,6 +1161,19 @@
       logModal.style.display = 'none';
       resetIdleTimer();
     });
+
+    settingsBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (settingsBtn.classList.contains('hidden')) return;
+      settingsModal.style.display = 'flex';
+    });
+
+    closeSettingsBtn.addEventListener('click', () => {
+      settingsModal.style.display = 'none';
+      resetIdleTimer();
+    });
+
+    document.getElementById('lockOrientationBtn').addEventListener('click', applyOrientationLock);
 
     copyBtn.addEventListener('click', () => {
       getAllRecords(records => {
@@ -1163,39 +1254,6 @@
         wakeLock = null;
       }
     }
-
-    // Fullscreen and Screen Orientation Handling
-    fsBtn.addEventListener('click', async function(e) {
-      e.stopPropagation();
-      if (!document.fullscreenElement) {
-        try {
-          await document.documentElement.requestFullscreen();
-          if (screen.orientation && screen.orientation.lock) {
-            await screen.orientation.lock('landscape').catch(() => {});
-          }
-        } catch (err) {}
-      } else {
-        try {
-          await document.exitFullscreen();
-          if (screen.orientation && screen.orientation.unlock) {
-            screen.orientation.unlock();
-          }
-        } catch (err) {}
-      }
-    });
-
-    document.addEventListener('fullscreenchange', () => {
-      if (document.fullscreenElement) {
-        fsIcon.innerHTML = icons.compress;
-        fsText.textContent = 'Exit Full Screen';
-      } else {
-        fsIcon.innerHTML = icons.expand;
-        fsText.textContent = 'Full Screen';
-        if (screen.orientation && screen.orientation.unlock) {
-          screen.orientation.unlock();
-        }
-      }
-    });
   </script>
 </body>
 </html>
