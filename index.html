@@ -1134,7 +1134,7 @@
       logBtn.disabled = false;
 
       updateDisplay();
-      releaseWakeLock();
+      releaseWakeLock(true);
     }
 
     // Modal Actions
@@ -1218,12 +1218,16 @@
     });
 
     async function requestWakeLock() {
+      await document.documentElement.requestFullscreen().catch(() => { });
       if ('wakeLock' in navigator) {
         try { wakeLock = await navigator.wakeLock.request('screen'); } catch (err) { }
       }
     }
 
-    async function releaseWakeLock() {
+    async function releaseWakeLock(exitFullscreen = false) {
+      if (exitFullscreen) {
+        await document.exitFullscreen().catch(() => { });
+      }
       if (wakeLock) {
         try { await wakeLock.release(); } catch (err) { }
         wakeLock = null;
