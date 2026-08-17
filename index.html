@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -41,11 +40,7 @@
         font-size: 32vh;
         margin-bottom: 15px;
       }
-
-      .controls {
-        gap: 20px;
-      }
-
+      .controls { gap: 20px; }
       .controls button {
         padding: 10px 24px;
         font-size: 1.1rem;
@@ -57,20 +52,14 @@
         font-size: 16vw;
         margin-bottom: 35px;
       }
-
-      .controls {
-        gap: 15px;
-      }
-
+      .controls { gap: 15px; }
       .controls button {
         padding: 14px 26px;
         font-size: 1.2rem;
       }
     }
 
-    .controls {
-      display: flex;
-    }
+    .controls { display: flex; }
 
     button {
       background: #000000;
@@ -116,19 +105,11 @@
       transition: opacity 0.4s ease;
     }
 
-    .log-top-btn {
-      left: 15px;
-    }
-
-    .fs-btn {
-      right: 15px;
-    }
+    .log-top-btn { left: 15px; }
+    .fs-btn { right: 15px; }
 
     /* Auto-Hide Controls */
-    body.user-idle {
-      cursor: none;
-    }
-
+    body.user-idle { cursor: none; }
     body.user-idle .controls,
     body.user-idle .header-btn {
       opacity: 0;
@@ -285,31 +266,12 @@
       color: #64748b;
     }
 
-    .cal-cell.empty {
-      background: transparent;
-    }
+    .cal-cell.empty { background: transparent; }
 
-    .cal-cell.level-1 {
-      background-color: #064e3b;
-      color: #a7f3d0;
-    }
-
-    .cal-cell.level-2 {
-      background-color: #047857;
-      color: #ffffff;
-    }
-
-    .cal-cell.level-3 {
-      background-color: #10b981;
-      color: #ffffff;
-      font-weight: bold;
-    }
-
-    .cal-cell.level-4 {
-      background-color: #34d399;
-      color: #000000;
-      font-weight: bold;
-    }
+    .cal-cell.level-1 { background-color: #064e3b; color: #a7f3d0; }
+    .cal-cell.level-2 { background-color: #047857; color: #ffffff; }
+    .cal-cell.level-3 { background-color: #10b981; color: #ffffff; font-weight: bold; }
+    .cal-cell.level-4 { background-color: #34d399; color: #000000; font-weight: bold; }
 
     .cal-legend {
       display: flex;
@@ -421,8 +383,7 @@
       text-align: left;
     }
 
-    .raw-table th,
-    .raw-table td {
+    .raw-table th, .raw-table td {
       padding: 8px 10px;
       border-bottom: 1px solid #1e293b;
     }
@@ -456,22 +417,16 @@
     }
   </style>
 </head>
-
 <body>
 
   <!-- Top Action Buttons -->
   <button class="header-btn log-top-btn" id="logBtn">
-    <svg viewBox="0 0 24 24">
-      <path
-        d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
-    </svg>
+    <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
     <span>Log</span>
   </button>
-
+  
   <button class="header-btn fs-btn" id="fsBtn">
-    <svg id="fsIcon" viewBox="0 0 24 24">
-      <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z" />
-    </svg>
+    <svg id="fsIcon" viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
     <span id="fsText">Full Screen</span>
   </button>
 
@@ -480,15 +435,11 @@
   <!-- Dynamic Control Buttons -->
   <div class="controls">
     <button id="primaryBtn">
-      <svg id="primaryIcon" viewBox="0 0 24 24">
-        <path d="M8 5v14l11-7z" />
-      </svg>
+      <svg id="primaryIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
       <span id="primaryText">Play</span>
     </button>
     <button id="secondaryBtn" style="display: none;">
-      <svg id="secondaryIcon" viewBox="0 0 24 24">
-        <path d="M6 6h12v12H6z" />
-      </svg>
+      <svg id="secondaryIcon" viewBox="0 0 24 24"><path d="M6 6h12v12H6z"/></svg>
       <span id="secondaryText">Stop</span>
     </button>
   </div>
@@ -499,18 +450,14 @@
       <div class="modal-header">
         <div class="header-icon-group">
           <button id="downloadBtn" class="modal-header-btn" title="Download Log JSON">
-            <svg viewBox="0 0 24 24">
-              <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
-            </svg>
+            <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
           </button>
           <button id="importBtn" class="modal-header-btn" title="Import Log JSON">
-            <svg viewBox="0 0 24 24">
-              <path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z" />
-            </svg>
+            <svg viewBox="0 0 24 24"><path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/></svg>
           </button>
           <input type="file" id="importFileInput" accept=".json" style="display: none;">
         </div>
-
+        
         <span>Analytics Dashboard</span>
         <button id="closeModalBtn" class="modal-header-btn" title="Close">✕</button>
       </div>
@@ -578,16 +525,11 @@
         </div>
         <div class="modal-actions">
           <button id="copyBtn">
-            <svg viewBox="0 0 24 24">
-              <path
-                d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
-            </svg>
+            <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
             <span>Copy TSV</span>
           </button>
           <button id="clearBtn" style="border-color: #666; color: #aaa;">
-            <svg viewBox="0 0 24 24">
-              <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
-            </svg>
+            <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
             <span>Clear</span>
           </button>
         </div>
@@ -607,8 +549,8 @@
     let currentSessionId = null;
     let sessionStartTimestamp = null;
 
-    let viewDate = new Date();
-    let chartWeekOffset = 0;
+    let viewDate = new Date();       
+    let chartWeekOffset = 0;         
 
     const displayEl = document.getElementById('display');
     const primaryBtn = document.getElementById('primaryBtn');
@@ -647,7 +589,7 @@
 
     const request = indexedDB.open(dbName, 1);
 
-    request.onupgradeneeded = function (e) {
+    request.onupgradeneeded = function(e) {
       db = e.target.result;
       if (!db.objectStoreNames.contains(storeName)) {
         const objectStore = db.createObjectStore(storeName, { keyPath: "id", autoIncrement: true });
@@ -655,7 +597,7 @@
       }
     };
 
-    request.onsuccess = function (e) {
+    request.onsuccess = function(e) {
       db = e.target.result;
     };
 
@@ -668,23 +610,23 @@
       const isoStartTimestamp = sessionStartTimestamp || isoEndTimestamp;
 
       if (currentSessionId === null) {
-        const record = {
-          timestamp: isoEndTimestamp,
-          startTime: isoStartTimestamp,
-          endTime: isoEndTimestamp,
-          formattedDuration,
-          seconds
+        const record = { 
+          timestamp: isoEndTimestamp, 
+          startTime: isoStartTimestamp, 
+          endTime: isoEndTimestamp, 
+          formattedDuration, 
+          seconds 
         };
         const addRequest = objectStore.add(record);
-        addRequest.onsuccess = function (e) { currentSessionId = e.target.result; };
+        addRequest.onsuccess = function(e) { currentSessionId = e.target.result; };
       } else {
-        const record = {
-          id: currentSessionId,
-          timestamp: isoEndTimestamp,
-          startTime: isoStartTimestamp,
-          endTime: isoEndTimestamp,
-          formattedDuration,
-          seconds
+        const record = { 
+          id: currentSessionId, 
+          timestamp: isoEndTimestamp, 
+          startTime: isoStartTimestamp, 
+          endTime: isoEndTimestamp, 
+          formattedDuration, 
+          seconds 
         };
         objectStore.put(record);
       }
@@ -722,12 +664,12 @@
       records.forEach(r => {
         const d = new Date(r.timestamp);
         if (!isNaN(d.getTime())) {
-          const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+          const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
           dailyTotals[key] = (dailyTotals[key] || 0) + (r.seconds || 0);
         }
       });
 
-      ['S', 'M', 'T', 'W', 'T', 'F', 'S'].forEach(day => {
+      ['S','M','T','W','T','F','S'].forEach(day => {
         const lbl = document.createElement('div');
         lbl.className = 'cal-day-label';
         lbl.textContent = day;
@@ -744,7 +686,7 @@
       }
 
       for (let day = 1; day <= daysInMonth; day++) {
-        const key = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const key = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
         const totalSecs = dailyTotals[key] || 0;
 
         const cell = document.createElement('div');
@@ -773,11 +715,11 @@
       const curr = new Date();
       curr.setDate(curr.getDate() + (chartWeekOffset * 7));
       const startOfWeek = new Date(curr.setDate(curr.getDate() - curr.getDay()));
-      startOfWeek.setHours(0, 0, 0, 0);
+      startOfWeek.setHours(0,0,0,0);
 
       const endOfWeek = new Date(startOfWeek);
       endOfWeek.setDate(endOfWeek.getDate() + 6);
-      endOfWeek.setHours(23, 59, 59, 999);
+      endOfWeek.setHours(23,59,59,999);
 
       const dayTotals = [0, 0, 0, 0, 0, 0, 0];
       records.forEach(r => {
@@ -842,7 +784,7 @@
 
         const d = new Date(r.timestamp);
         if (!isNaN(d.getTime())) {
-          const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+          const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
           dailyTotals[key] = (dailyTotals[key] || 0) + secs;
 
           if (d.getFullYear() === currentYear) {
@@ -857,17 +799,14 @@
       const sessionCount = records.length;
       const avgSecs = sessionCount > 0 ? Math.round(totalSecs / sessionCount) : 0;
 
-      // Single Day Maximum
       const maxDaySecs = Math.max(...Object.values(dailyTotals), 0);
 
-      // Streaks & Active/Missed Days
       const dates = Object.keys(dailyTotals).sort();
       let currentStreak = 0;
       let highestStreak = 0;
       let missedDays = 0;
 
       if (dates.length > 0) {
-        // High streak calculation
         let tempStreak = 0;
         let prevDate = null;
 
@@ -887,27 +826,25 @@
           prevDate = d;
         });
 
-        // Current streak calculation
         let checkDate = new Date();
-        checkDate.setHours(0, 0, 0, 0);
+        checkDate.setHours(0,0,0,0);
 
-        let checkKey = `${checkDate.getFullYear()}-${String(checkDate.getMonth() + 1).padStart(2, '0')}-${String(checkDate.getDate()).padStart(2, '0')}`;
+        let checkKey = `${checkDate.getFullYear()}-${String(checkDate.getMonth()+1).padStart(2,'0')}-${String(checkDate.getDate()).padStart(2,'0')}`;
         if (!dailyTotals[checkKey]) {
           checkDate.setDate(checkDate.getDate() - 1);
-          checkKey = `${checkDate.getFullYear()}-${String(checkDate.getMonth() + 1).padStart(2, '0')}-${String(checkDate.getDate()).padStart(2, '0')}`;
+          checkKey = `${checkDate.getFullYear()}-${String(checkDate.getMonth()+1).padStart(2,'0')}-${String(checkDate.getDate()).padStart(2,'0')}`;
         }
 
         while (dailyTotals[checkKey]) {
           currentStreak++;
           checkDate.setDate(checkDate.getDate() - 1);
-          checkKey = `${checkDate.getFullYear()}-${String(checkDate.getMonth() + 1).padStart(2, '0')}-${String(checkDate.getDate()).padStart(2, '0')}`;
+          checkKey = `${checkDate.getFullYear()}-${String(checkDate.getMonth()+1).padStart(2,'0')}-${String(checkDate.getDate()).padStart(2,'0')}`;
         }
 
-        // Missed Days Calculation
         const firstDate = new Date(dates[0]);
         const todayDate = new Date();
-        firstDate.setHours(0, 0, 0, 0);
-        todayDate.setHours(0, 0, 0, 0);
+        firstDate.setHours(0,0,0,0);
+        todayDate.setHours(0,0,0,0);
 
         const totalTimespanDays = Math.floor((todayDate - firstDate) / (1000 * 60 * 60 * 24)) + 1;
         const activeDaysCount = dates.length;
@@ -915,7 +852,6 @@
       }
 
       summaryEl.innerHTML = `
-        <!-- Row 1: Current, Highest Streak, Missed Days -->
         <div class="stat-card">
           <div class="stat-lbl">Current Streak</div>
           <div class="stat-val">${currentStreak} 🔥</div>
@@ -929,24 +865,22 @@
           <div class="stat-val">${missedDays}</div>
         </div>
 
-        <!-- Row 2: Single Day, This Month, This Year -->
         <div class="stat-card">
           <div class="stat-lbl">Max Single Day</div>
           <div class="stat-val">${formatTime(maxDaySecs)}</div>
         </div>
         <div class="stat-card">
           <div class="stat-lbl">This Month</div>
-          <div class="stat-val">${(thisMonthSecs / 3600).toFixed(1)}h</div>
+          <div class="stat-val">${(thisMonthSecs/3600).toFixed(1)}h</div>
         </div>
         <div class="stat-card">
           <div class="stat-lbl">This Year</div>
-          <div class="stat-val">${(thisYearSecs / 3600).toFixed(1)}h</div>
+          <div class="stat-val">${(thisYearSecs/3600).toFixed(1)}h</div>
         </div>
 
-        <!-- Row 3: Total Hours, Avg Session, Total Sessions -->
         <div class="stat-card">
           <div class="stat-lbl">Total Hours</div>
-          <div class="stat-val">${(totalSecs / 3600).toFixed(1)}h</div>
+          <div class="stat-val">${(totalSecs/3600).toFixed(1)}h</div>
         </div>
         <div class="stat-card">
           <div class="stat-lbl">Avg Session</div>
@@ -968,7 +902,6 @@
         return;
       }
 
-      // Display most recent records on top
       const sortedRecords = [...records].reverse();
 
       sortedRecords.forEach(item => {
@@ -991,7 +924,7 @@
       });
     }
 
-    // Calendar Navigation
+    // Navigation Controls
     document.getElementById('prevMonthBtn').addEventListener('click', () => {
       viewDate.setMonth(viewDate.getMonth() - 1);
       getAllRecords(renderCalendar);
@@ -1002,7 +935,6 @@
       getAllRecords(renderCalendar);
     });
 
-    // Chart Week Navigation
     document.getElementById('prevWeekBtn').addEventListener('click', () => {
       chartWeekOffset--;
       getAllRecords(renderWeeklyChart);
@@ -1013,7 +945,6 @@
       getAllRecords(renderWeeklyChart);
     });
 
-    // Tab Navigation
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -1024,7 +955,7 @@
       });
     });
 
-    // Timer Implementation
+    // Timer Logic
     function formatTime(totalSeconds) {
       const hrs = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
       const mins = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
@@ -1053,14 +984,14 @@
       window.addEventListener(evt, resetIdleTimer, { passive: true });
     });
 
-    primaryBtn.addEventListener('click', function (e) {
+    primaryBtn.addEventListener('click', function(e) {
       e.stopPropagation();
       if (!isRunning && !isPaused) startTimer();
       else if (isRunning && !isPaused) pauseTimer();
       else if (isPaused) resumeTimer();
     });
 
-    secondaryBtn.addEventListener('click', function (e) {
+    secondaryBtn.addEventListener('click', function(e) {
       e.stopPropagation();
       stopTimer();
     });
@@ -1140,7 +1071,7 @@
       releaseWakeLock();
     }
 
-    // Modal Actions
+    // Modal Events
     logBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       if (logBtn.disabled) return;
@@ -1160,7 +1091,7 @@
         [...records].reverse().forEach(item => {
           const endDate = new Date(item.endTime || item.timestamp);
           const startDate = item.startTime ? new Date(item.startTime) : new Date(endDate.getTime() - ((item.seconds || 0) * 1000));
-
+          
           const dateStr = !isNaN(endDate.getTime()) ? endDate.toLocaleDateString() : 'N/A';
           const startTimeStr = !isNaN(startDate.getTime()) ? startDate.toLocaleTimeString() : 'N/A';
           const endTimeStr = !isNaN(endDate.getTime()) ? endDate.toLocaleTimeString() : 'N/A';
@@ -1194,7 +1125,7 @@
       if (!file) return;
 
       const reader = new FileReader();
-      reader.onload = function (event) {
+      reader.onload = function(event) {
         try {
           const records = JSON.parse(event.target.result);
           if (Array.isArray(records)) {
@@ -1222,30 +1153,49 @@
 
     async function requestWakeLock() {
       if ('wakeLock' in navigator) {
-        try { wakeLock = await navigator.wakeLock.request('screen'); } catch (err) { }
+        try { wakeLock = await navigator.wakeLock.request('screen'); } catch (err) {}
       }
     }
 
     async function releaseWakeLock() {
       if (wakeLock) {
-        try { await wakeLock.release(); } catch (err) { }
+        try { await wakeLock.release(); } catch (err) {}
         wakeLock = null;
       }
     }
 
-    fsBtn.addEventListener('click', async function (e) {
+    // Fullscreen and Screen Orientation Handling
+    fsBtn.addEventListener('click', async function(e) {
       e.stopPropagation();
       if (!document.fullscreenElement) {
-        await document.documentElement.requestFullscreen().catch(() => { });
+        try {
+          await document.documentElement.requestFullscreen();
+          if (screen.orientation && screen.orientation.lock) {
+            await screen.orientation.lock('landscape').catch(() => {});
+          }
+        } catch (err) {}
+      } else {
+        try {
+          await document.exitFullscreen();
+          if (screen.orientation && screen.orientation.unlock) {
+            screen.orientation.unlock();
+          }
+        } catch (err) {}
+      }
+    });
+
+    document.addEventListener('fullscreenchange', () => {
+      if (document.fullscreenElement) {
         fsIcon.innerHTML = icons.compress;
         fsText.textContent = 'Exit Full Screen';
       } else {
-        await document.exitFullscreen().catch(() => { });
         fsIcon.innerHTML = icons.expand;
         fsText.textContent = 'Full Screen';
+        if (screen.orientation && screen.orientation.unlock) {
+          screen.orientation.unlock();
+        }
       }
     });
   </script>
 </body>
-
 </html>
