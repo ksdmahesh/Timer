@@ -421,6 +421,10 @@
       text-align: left;
     }
 
+    .raw-table:has(tbody #no-records) {
+      height: 100%;
+    }
+
     .raw-table th,
     .raw-table td {
       padding: 8px 10px;
@@ -957,7 +961,7 @@
       tbody.innerHTML = '';
 
       if (records.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#64748b; padding: 20px;">No records found.</td></tr>`;
+        tbody.innerHTML = `<tr id="no-records"><td colspan="4" style="text-align:center; color:#64748b; padding: 20px;">No records found.</td></tr>`;
         return;
       }
 
