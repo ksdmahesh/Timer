@@ -24,6 +24,19 @@
       cursor: default;
     }
 
+    /* Force landscape via CSS rotation if held in portrait */
+    @media screen and (orientation: portrait) {
+      body {
+        transform: rotate(-90deg);
+        transform-origin: center center;
+        width: 100vh;
+        height: 100vw;
+        position: absolute;
+        top: calc(50% - 50vw);
+        left: calc(50% - 50vh);
+      }
+    }
+
     body {
       display: flex;
       flex-direction: column;
@@ -38,42 +51,13 @@
       line-height: 1;
       text-align: center;
       transition: font-size 0.2s ease, margin 0.2s ease;
-    }
-
-    @media (orientation: landscape) {
-      .timer-display {
-        font-size: 32vh;
-        margin-bottom: 15px;
-      }
-
-      .controls {
-        gap: 20px;
-      }
-
-      .controls button {
-        padding: 10px 24px;
-        font-size: 1.1rem;
-      }
-    }
-
-    @media (orientation: portrait) {
-      .timer-display {
-        font-size: 16vw;
-        margin-bottom: 35px;
-      }
-
-      .controls {
-        gap: 15px;
-      }
-
-      .controls button {
-        padding: 14px 26px;
-        font-size: 1.2rem;
-      }
+      font-size: 32vh;
+      margin-bottom: 15px;
     }
 
     .controls {
       display: flex;
+      gap: 20px;
     }
 
     button {
@@ -88,6 +72,8 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
+      padding: 10px 24px;
+      font-size: 1.1rem;
       transition: background-color 0.15s, opacity 0.4s ease, border-color 0.2s;
     }
 
@@ -110,25 +96,18 @@
       color: #888888;
     }
 
-    /* Top Header Buttons */
+    /* Top Action Button (Moved Log to the Right Side) */
     .header-btn {
       position: absolute;
       top: 15px;
+      right: 15px;
       padding: 8px 16px;
       font-size: 0.85rem;
       border-width: 1px;
       transition: opacity 0.4s ease, visibility 0.4s ease;
     }
 
-    .log-top-btn {
-      left: 15px;
-    }
-
-    .settings-top-btn {
-      right: 15px;
-    }
-
-    /* Hide buttons state on timer start */
+    /* Hide button on timer start */
     .header-btn.hidden {
       opacity: 0;
       visibility: hidden;
@@ -416,7 +395,7 @@
       color: #94a3b8;
     }
 
-    /* Raw Logs Tabular Styling */
+    /* Raw Logs Styling */
     .raw-logs-wrap {
       flex: 1;
       overflow-y: auto;
@@ -465,35 +444,13 @@
       border-radius: 16px;
       flex: 1;
     }
-
-    /* Settings Group */
-    .settings-group {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      padding: 10px 0;
-    }
-
-    .settings-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #0f172a;
-      padding: 12px;
-      border-radius: 6px;
-      border: 1px solid #334155;
-    }
-
-    .settings-label {
-      font-size: 0.85rem;
-    }
   </style>
 </head>
 
 <body>
 
-  <!-- Top Action Buttons -->
-  <button class="header-btn log-top-btn" id="logBtn">
+  <!-- Top Right Log Button -->
+  <button class="header-btn" id="logBtn">
     <svg viewBox="0 0 24 24">
       <path
         d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
@@ -501,23 +458,15 @@
     <span>Log</span>
   </button>
 
-  <button class="header-btn settings-top-btn" id="settingsBtn">
-    <svg viewBox="0 0 24 24">
-      <path
-        d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z" />
-    </svg>
-    <span>Settings</span>
-  </button>
-
   <div class="timer-display" id="display">00:00:00</div>
 
-  <!-- Dynamic Control Buttons -->
+  <!-- Timer Control Buttons -->
   <div class="controls">
     <button id="primaryBtn">
       <svg id="primaryIcon" viewBox="0 0 24 24">
         <path d="M8 5v14l11-7z" />
       </svg>
-      <span id="primaryText">Play</span>
+      <span id="primaryText">Start</span>
     </button>
     <button id="secondaryBtn" style="display: none;">
       <svg id="secondaryIcon" viewBox="0 0 24 24">
@@ -594,7 +543,7 @@
         </div>
       </div>
 
-      <!-- Tab 4: Raw Logs (Tabular View) -->
+      <!-- Tab 4: Raw Logs -->
       <div class="tab-content" id="rawTab">
         <div class="raw-logs-wrap">
           <table class="raw-table">
@@ -630,22 +579,6 @@
     </div>
   </div>
 
-  <!-- Settings Modal -->
-  <div class="modal" id="settingsModal">
-    <div class="modal-content" style="height: auto; max-width: 400px;">
-      <div class="modal-header">
-        <span>Settings</span>
-        <button id="closeSettingsBtn" class="modal-header-btn" title="Close">✕</button>
-      </div>
-      <div class="settings-group">
-        <div class="settings-row">
-          <span class="settings-label">Force Landscape Mode</span>
-          <button id="lockOrientationBtn" style="padding: 4px 12px; font-size: 0.8rem;">Apply Lock</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <script>
     let timerInterval = null;
     let secondsElapsed = 0;
@@ -670,12 +603,8 @@
     const secondaryText = document.getElementById('secondaryText');
 
     const logBtn = document.getElementById('logBtn');
-    const settingsBtn = document.getElementById('settingsBtn');
-
     const logModal = document.getElementById('logModal');
     const closeModalBtn = document.getElementById('closeModalBtn');
-    const settingsModal = document.getElementById('settingsModal');
-    const closeSettingsBtn = document.getElementById('closeSettingsBtn');
 
     const copyBtn = document.getElementById('copyBtn');
     const downloadBtn = document.getElementById('downloadBtn');
@@ -690,7 +619,7 @@
       reset: '<path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>'
     };
 
-    // Auto landscape lock mechanism
+    // Force landscape mode continuous lock
     async function applyOrientationLock() {
       if (screen.orientation && screen.orientation.lock) {
         try {
@@ -701,7 +630,8 @@
 
     window.addEventListener('load', applyOrientationLock);
     window.addEventListener('resize', applyOrientationLock);
-    document.addEventListener('touchstart', applyOrientationLock, { once: true });
+    document.addEventListener('touchstart', applyOrientationLock);
+    document.addEventListener('click', applyOrientationLock);
 
     // IndexedDB Setup
     const dbName = "TimerDatabase";
@@ -920,7 +850,6 @@
 
       const sessionCount = records.length;
       const avgSecs = sessionCount > 0 ? Math.round(totalSecs / sessionCount) : 0;
-
       const maxDaySecs = Math.max(...Object.values(dailyTotals), 0);
 
       const dates = Object.keys(dailyTotals).sort();
@@ -936,11 +865,8 @@
           const d = new Date(dStr);
           if (prevDate) {
             const diffDays = Math.round((d - prevDate) / (1000 * 60 * 60 * 24));
-            if (diffDays === 1) {
-              tempStreak++;
-            } else {
-              tempStreak = 1;
-            }
+            if (diffDays === 1) tempStreak++;
+            else tempStreak = 1;
           } else {
             tempStreak = 1;
           }
@@ -1093,7 +1019,7 @@
       document.body.classList.remove('user-idle');
       clearTimeout(idleTimeout);
 
-      if (isRunning && !isPaused && logModal.style.display !== 'flex' && settingsModal.style.display !== 'flex') {
+      if (isRunning && !isPaused && logModal.style.display !== 'flex') {
         idleTimeout = setTimeout(() => {
           if (isRunning && !isPaused) {
             document.body.classList.add('user-idle');
@@ -1130,9 +1056,7 @@
       secondaryText.textContent = 'Stop';
       secondaryBtn.style.display = 'inline-flex';
 
-      // Hide top action buttons on start
       logBtn.classList.add('hidden');
-      settingsBtn.classList.add('hidden');
 
       timerInterval = setInterval(() => {
         secondsElapsed++;
@@ -1155,9 +1079,7 @@
       secondaryIcon.innerHTML = icons.reset;
       secondaryText.textContent = 'Reset';
 
-      // Show top buttons on pause
       logBtn.classList.remove('hidden');
-      settingsBtn.classList.remove('hidden');
 
       saveOrUpdateSessionToDB(formatTime(secondsElapsed), secondsElapsed);
       releaseWakeLock();
@@ -1170,9 +1092,7 @@
       secondaryIcon.innerHTML = icons.stop;
       secondaryText.textContent = 'Stop';
 
-      // Hide top buttons on resume
       logBtn.classList.add('hidden');
-      settingsBtn.classList.add('hidden');
 
       timerInterval = setInterval(() => {
         secondsElapsed++;
@@ -1198,18 +1118,16 @@
       clearTimeout(idleTimeout);
 
       primaryIcon.innerHTML = icons.play;
-      primaryText.textContent = 'Play';
+      primaryText.textContent = 'Start';
       secondaryBtn.style.display = 'none';
 
-      // Show top buttons on stop
       logBtn.classList.remove('hidden');
-      settingsBtn.classList.remove('hidden');
 
       updateDisplay();
       releaseWakeLock();
     }
 
-    // Modal Events
+    // Modal Actions
     logBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       if (logBtn.classList.contains('hidden')) return;
@@ -1221,19 +1139,6 @@
       logModal.style.display = 'none';
       resetIdleTimer();
     });
-
-    settingsBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      if (settingsBtn.classList.contains('hidden')) return;
-      settingsModal.style.display = 'flex';
-    });
-
-    closeSettingsBtn.addEventListener('click', () => {
-      settingsModal.style.display = 'none';
-      resetIdleTimer();
-    });
-
-    document.getElementById('lockOrientationBtn').addEventListener('click', applyOrientationLock);
 
     copyBtn.addEventListener('click', () => {
       getAllRecords(records => {
