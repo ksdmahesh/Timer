@@ -1219,6 +1219,9 @@
 
     async function requestWakeLock() {
       await document.documentElement.requestFullscreen().catch(() => { });
+      if (screen.orientation && screen.orientation.lock) {
+        await screen.orientation.lock('landscape').catch(err => console.log(err));
+      }
       if ('wakeLock' in navigator) {
         try { wakeLock = await navigator.wakeLock.request('screen'); } catch (err) { }
       }
@@ -1227,6 +1230,9 @@
     async function releaseWakeLock(exitFullscreen = false) {
       if (exitFullscreen) {
         await document.exitFullscreen().catch(() => { });
+        if (screen.orientation && screen.orientation.unlock) {
+          screen.orientation.unlock();
+        }
       }
       if (wakeLock) {
         try { await wakeLock.release(); } catch (err) { }
