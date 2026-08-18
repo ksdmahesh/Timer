@@ -980,6 +980,170 @@
     }
 
     /* ========================================================
+       SIGN IN / WELCOME GATEWAY SCREEN
+       ======================================================== */
+    .signin-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: radial-gradient(circle at 50% 30%, rgba(56, 189, 248, 0.12), transparent 60%), var(--bg-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      transition: opacity 0.35s ease, visibility 0.35s ease;
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+    }
+
+    .signin-overlay.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .signin-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-light);
+      border-radius: 24px;
+      padding: 36px 32px;
+      width: 100%;
+      max-width: 440px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.85);
+      animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .signin-logo-wrap {
+      width: 64px;
+      height: 64px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(168, 85, 247, 0.2));
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent-cyan);
+      margin-bottom: 16px;
+      box-shadow: 0 0 24px rgba(56, 189, 248, 0.3);
+    }
+
+    .signin-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 6px;
+      letter-spacing: -0.02em;
+    }
+
+    .signin-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      line-height: 1.45;
+    }
+
+    .oauth-buttons-list {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .btn-oauth {
+      width: 100%;
+      height: 46px;
+      border-radius: 12px;
+      border: 1px solid var(--border-light);
+      background: var(--bg-card);
+      color: var(--text-main);
+      font-size: 0.9rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-oauth:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+      border-color: var(--text-muted);
+      background: var(--bg-card-hover);
+    }
+
+    .btn-oauth-google:hover {
+      border-color: #4285f4;
+      box-shadow: 0 4px 16px rgba(66, 133, 244, 0.25);
+    }
+
+    .btn-oauth-microsoft:hover {
+      border-color: #00a4ef;
+      box-shadow: 0 4px 16px rgba(0, 164, 239, 0.25);
+    }
+
+    .btn-oauth-apple:hover {
+      border-color: #ffffff;
+      box-shadow: 0 4px 16px rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-oauth svg {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+
+    .signin-divider {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      margin: 20px 0 16px 0;
+      color: var(--text-dim);
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .signin-divider::before, .signin-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border-light);
+    }
+
+    .signin-divider span {
+      padding: 0 10px;
+    }
+
+    .btn-oauth-guest {
+      background: transparent;
+      border: none;
+      color: var(--accent-cyan);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 6px 12px;
+      border-radius: 8px;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-oauth-guest:hover {
+      text-decoration: underline;
+      color: var(--text-main);
+    }
+
+    /* ========================================================
        TAB 3: REMINDERS & ALARMS STYLES
        ======================================================== */
     .reminders-container {
@@ -2052,6 +2216,63 @@
 
 <body>
 
+  <!-- ==========================================
+       INITIAL SIGN IN / WELCOME GATEWAY
+       ========================================== -->
+  <div class="signin-overlay" id="signInScreen">
+    <div class="signin-card">
+      <div class="signin-logo-wrap">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 14.5h-2v-2h2zm0-4h-2V7h2z" />
+        </svg>
+      </div>
+
+      <div class="signin-title">Welcome to OmniTimer</div>
+      <div class="signin-subtitle">Track your focus sessions, countdown timers, and smart reminders with sync.</div>
+
+      <div class="oauth-buttons-list">
+        <!-- Google -->
+        <button class="btn-oauth btn-oauth-google" id="loginGoogleBtn">
+          <svg viewBox="0 0 24 24">
+            <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.4 1 3.5 3.6 1.6 7.4l3.7 2.9C6.2 7.3 8.9 5 12 5z"/>
+            <path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.6h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.9z"/>
+            <path fill="#FBBC05" d="M5.3 14.7c-.2-.7-.4-1.5-.4-2.3 0-.8.2-1.6.4-2.3L1.6 7.2C.6 9.2 0 11.5 0 14s.6 4.8 1.6 6.8l3.7-2.9c0-.4 0-.8 0-1.2z"/>
+            <path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3.1 0-5.8-2.3-6.7-5.3L1.6 16C3.5 19.8 7.4 23 12 23z"/>
+          </svg>
+          <span>Continue with Google</span>
+        </button>
+
+        <!-- Microsoft -->
+        <button class="btn-oauth btn-oauth-microsoft" id="loginMicrosoftBtn">
+          <svg viewBox="0 0 24 24">
+            <path fill="#f25022" d="M1 1h10v10H1z"/>
+            <path fill="#00a4ef" d="M1 13h10v10H1z"/>
+            <path fill="#7fba00" d="M13 1h10v10H13z"/>
+            <path fill="#ffb900" d="M13 13h10v10H13z"/>
+          </svg>
+          <span>Continue with Microsoft</span>
+        </button>
+
+        <!-- Apple -->
+        <button class="btn-oauth btn-oauth-apple" id="loginAppleBtn">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.87c.62-.75 1.04-1.8 0.93-2.85-.9.04-1.99.6-2.63 1.35-.56.65-1.05 1.71-.92 2.73 1.01.08 2.04-.51 2.62-1.23z"/>
+          </svg>
+          <span>Continue with Apple</span>
+        </button>
+      </div>
+
+      <div class="signin-divider">
+        <span>or</span>
+      </div>
+
+      <button class="btn-oauth-guest" id="loginGuestBtn">
+        <span>Continue as Guest (Offline Mode)</span>
+        <span>→</span>
+      </button>
+    </div>
+  </div>
+
   <!-- Top App Header (Brand + User Profile + Settings Button) -->
   <header class="app-header" id="appHeader">
     <div class="brand">
@@ -2899,43 +3120,99 @@
       }, 700);
     });
 
+    /* ========================================================
+       AUTH & INITIAL SIGN IN SCREEN HANDLER
+       ======================================================== */
+    const signInScreen = document.getElementById('signInScreen');
+    const loginGoogleBtn = document.getElementById('loginGoogleBtn');
+    const loginMicrosoftBtn = document.getElementById('loginMicrosoftBtn');
+    const loginAppleBtn = document.getElementById('loginAppleBtn');
+    const loginGuestBtn = document.getElementById('loginGuestBtn');
+
+    function updateAuthProfileUI(user) {
+      document.getElementById('headerUserName').textContent = user.name;
+      document.getElementById('headerAvatar').textContent = user.avatar;
+      document.getElementById('modalUserName').textContent = user.name;
+      document.getElementById('modalAvatar').textContent = user.avatar;
+      document.getElementById('modalUserEmail').textContent = user.email;
+    }
+
+    function completeSignIn(provider, name, email, avatar) {
+      const user = { provider, name, email, avatar, signedInAt: Date.now() };
+      localStorage.setItem('omnitimer_auth_user', JSON.stringify(user));
+      updateAuthProfileUI(user);
+
+      signInScreen.classList.add('hidden');
+      playTone('chime');
+    }
+
+    loginGoogleBtn.addEventListener('click', () => {
+      loginGoogleBtn.innerHTML = '<span>Connecting to Google...</span>';
+      setTimeout(() => {
+        completeSignIn('google', 'Mahesh KSD', 'mahesh.ksd@gmail.com', 'MK');
+        loginGoogleBtn.innerHTML = `
+          <svg viewBox="0 0 24 24">
+            <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.4 1 3.5 3.6 1.6 7.4l3.7 2.9C6.2 7.3 8.9 5 12 5z"/>
+            <path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.6h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.9z"/>
+            <path fill="#FBBC05" d="M5.3 14.7c-.2-.7-.4-1.5-.4-2.3 0-.8.2-1.6.4-2.3L1.6 7.2C.6 9.2 0 11.5 0 14s.6 4.8 1.6 6.8l3.7-2.9c0-.4 0-.8 0-1.2z"/>
+            <path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3.1 0-5.8-2.3-6.7-5.3L1.6 16C3.5 19.8 7.4 23 12 23z"/>
+          </svg>
+          <span>Continue with Google</span>
+        `;
+      }, 400);
+    });
+
+    loginMicrosoftBtn.addEventListener('click', () => {
+      loginMicrosoftBtn.innerHTML = '<span>Connecting to Microsoft...</span>';
+      setTimeout(() => {
+        completeSignIn('microsoft', 'Mahesh KSD', 'mahesh.ksd@outlook.com', 'MK');
+        loginMicrosoftBtn.innerHTML = `
+          <svg viewBox="0 0 24 24">
+            <path fill="#f25022" d="M1 1h10v10H1z"/>
+            <path fill="#00a4ef" d="M1 13h10v10H1z"/>
+            <path fill="#7fba00" d="M13 1h10v10H13z"/>
+            <path fill="#ffb900" d="M13 13h10v10H13z"/>
+          </svg>
+          <span>Continue with Microsoft</span>
+        `;
+      }, 400);
+    });
+
+    loginAppleBtn.addEventListener('click', () => {
+      loginAppleBtn.innerHTML = '<span>Connecting to Apple...</span>';
+      setTimeout(() => {
+        completeSignIn('apple', 'Mahesh KSD', 'mahesh.ksd@icloud.com', 'MK');
+        loginAppleBtn.innerHTML = `
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.87c.62-.75 1.04-1.8 0.93-2.85-.9.04-1.99.6-2.63 1.35-.56.65-1.05 1.71-.92 2.73 1.01.08 2.04-.51 2.62-1.23z"/>
+          </svg>
+          <span>Continue with Apple</span>
+        `;
+      }, 400);
+    });
+
+    loginGuestBtn.addEventListener('click', () => {
+      completeSignIn('guest', 'Guest User', 'guest@local', 'GU');
+    });
+
+    // Check if user is already signed in
+    const storedAuth = localStorage.getItem('omnitimer_auth_user');
+    if (storedAuth) {
+      try {
+        const userObj = JSON.parse(storedAuth);
+        if (userObj && userObj.name) {
+          updateAuthProfileUI(userObj);
+          signInScreen.classList.add('hidden');
+        }
+      } catch (err) { }
+    }
+
     /* Sign Out Handler */
     signOutBtn.addEventListener('click', () => {
-      const isSignedOut = signOutBtn.dataset.signedOut === "true";
-      if (!isSignedOut) {
-        if (confirm("Sign out of Mahesh KSD? You can continue using OmniTimer in Local Guest Mode.")) {
-          document.getElementById('headerUserName').textContent = "Guest User";
-          document.getElementById('headerAvatar').textContent = "GU";
-          document.getElementById('modalUserName').textContent = "Guest User";
-          document.getElementById('modalAvatar').textContent = "GU";
-          document.getElementById('modalUserEmail').textContent = "guest@local";
-          signOutBtn.innerHTML = `
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 14.5h-2v-2h2zm0-4h-2V7h2z"/>
-            </svg>
-            <span>Sign In</span>
-          `;
-          signOutBtn.dataset.signedOut = "true";
-          signOutBtn.style.color = "var(--accent-cyan)";
-          signOutBtn.style.borderColor = "rgba(56, 189, 248, 0.4)";
-        }
-      } else {
-        const name = prompt("Enter your Name to Sign In:", "Mahesh KSD") || "Mahesh KSD";
-        const initials = name.split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2) || "MK";
-        document.getElementById('headerUserName').textContent = name;
-        document.getElementById('headerAvatar').textContent = initials;
-        document.getElementById('modalUserName').textContent = name;
-        document.getElementById('modalAvatar').textContent = initials;
-        document.getElementById('modalUserEmail').textContent = `${name.toLowerCase().replace(/\s+/g, '')}@omnitimer.app`;
-        signOutBtn.innerHTML = `
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
-          </svg>
-          <span>Sign Out</span>
-        `;
-        signOutBtn.dataset.signedOut = "false";
-        signOutBtn.style.color = "var(--accent-rose)";
-        signOutBtn.style.borderColor = "rgba(244, 63, 94, 0.3)";
+      if (confirm("Are you sure you want to sign out? You will return to the Sign In screen.")) {
+        localStorage.removeItem('omnitimer_auth_user');
+        closeSettingsModal();
+        signInScreen.classList.remove('hidden');
       }
     });
 
