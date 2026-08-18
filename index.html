@@ -6,11 +6,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>OmniTimer - Timer Up, Timer Down & Reminders</title>
   <style>
-    :root {
+    :root, [data-theme="dark"] {
+      /* Dark Theme (Night - Default) */
       --bg-main: #050811;
       --bg-surface: #0f172a;
       --bg-card: #1e293b;
       --bg-card-hover: #334155;
+      --bg-settings-card: #0f172a;
+      --bg-settings-group: #111c38;
       --border-subtle: #1e293b;
       --border-light: #334155;
       --accent-cyan: #38bdf8;
@@ -21,6 +24,34 @@
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
       --text-dim: #64748b;
+      --ring-track: rgba(255, 255, 255, 0.05);
+      --chip-bg: rgba(255, 255, 255, 0.06);
+      --chip-border: rgba(255, 255, 255, 0.08);
+      --modal-card-bg: #0f172a;
+    }
+
+    [data-theme="light"] {
+      /* Light Theme (Day) */
+      --bg-main: #f1f5f9;
+      --bg-surface: #ffffff;
+      --bg-card: #ffffff;
+      --bg-card-hover: #e2e8f0;
+      --bg-settings-card: #ffffff;
+      --bg-settings-group: #f8fafc;
+      --border-subtle: #e2e8f0;
+      --border-light: #cbd5e1;
+      --accent-cyan: #0284c7;
+      --accent-emerald: #059669;
+      --accent-amber: #d97706;
+      --accent-rose: #e11d48;
+      --accent-purple: #9333ea;
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --text-dim: #64748b;
+      --ring-track: rgba(0, 0, 0, 0.06);
+      --chip-bg: rgba(0, 0, 0, 0.04);
+      --chip-border: rgba(0, 0, 0, 0.08);
+      --modal-card-bg: #ffffff;
     }
 
     * {
@@ -40,6 +71,7 @@
       overflow: hidden;
       user-select: none;
       cursor: default;
+      transition: background-color 0.25s ease, color 0.25s ease;
     }
 
     /* Top Navigation Bar */
@@ -48,25 +80,25 @@
       top: 0;
       left: 0;
       right: 0;
-      height: 60px;
+      height: 56px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 16px;
+      padding: 0 18px;
       z-index: 50;
-      background: rgba(5, 8, 17, 0.8);
+      background: var(--bg-surface);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-      transition: opacity 0.4s ease, transform 0.4s ease;
+      border-bottom: 1px solid var(--border-light);
+      transition: opacity 0.35s ease, transform 0.35s ease, background-color 0.25s ease;
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 8px;
-      font-weight: 700;
-      font-size: 1rem;
+      gap: 9px;
+      font-weight: 800;
+      font-size: 1.05rem;
       color: var(--text-main);
       letter-spacing: -0.02em;
     }
@@ -75,53 +107,205 @@
       color: var(--accent-cyan);
     }
 
-    /* Main Tab Navigation Pill */
-    .nav-tabs {
+    /* Header Actions: User Profile + Settings Icon */
+    .header-actions {
       display: flex;
       align-items: center;
-      background: rgba(15, 23, 42, 0.85);
-      border: 1px solid var(--border-light);
-      border-radius: 40px;
-      padding: 3px;
-      gap: 3px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      gap: 10px;
     }
 
-    .nav-tab-btn {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      font-size: 0.85rem;
-      font-weight: 600;
-      padding: 7px 15px;
-      border-radius: 30px;
-      cursor: pointer;
-      display: inline-flex;
+    .user-profile-btn {
+      display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      padding: 4px 12px 4px 4px;
+      border-radius: 24px;
+      cursor: pointer;
+      color: var(--text-main);
+      font-size: 0.82rem;
+      font-weight: 600;
       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .nav-tab-btn:hover {
+    .user-profile-btn:hover {
+      border-color: var(--accent-purple);
+      background: var(--bg-card-hover);
+      transform: translateY(-1px);
+    }
+
+    .user-avatar-circle {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #a855f7, #38bdf8);
+      color: #ffffff;
+      font-size: 0.72rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(168, 85, 247, 0.4);
+    }
+
+    @media (max-width: 520px) {
+      .user-profile-btn span {
+        display: none;
+      }
+      .user-profile-btn {
+        padding: 4px;
+        border-radius: 50%;
+      }
+    }
+
+    .icon-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      color: var(--text-muted);
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .icon-btn:hover {
       color: var(--text-main);
-      background: rgba(255, 255, 255, 0.04);
+      border-color: var(--accent-cyan);
+      background: var(--bg-card-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 0 14px rgba(56, 189, 248, 0.35);
     }
 
-    .nav-tab-btn.active {
-      background: var(--accent-cyan);
-      color: #000000;
-      font-weight: 700;
-      box-shadow: 0 0 16px rgba(56, 189, 248, 0.4);
+    .icon-btn svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
     }
 
-    .nav-tab-btn.active.tab-amber {
-      background: var(--accent-amber);
-      box-shadow: 0 0 16px rgba(245, 158, 11, 0.4);
+    /* ========================================================
+       RESPONSIVE BOTTOM NAVIGATION BAR (Desktop Pill / Mobile Bar)
+       ======================================================== */
+    .app-bottom-nav {
+      position: fixed;
+      z-index: 50;
+      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease;
     }
 
-    .nav-tab-btn.active.tab-purple {
-      background: var(--accent-purple);
-      box-shadow: 0 0 16px rgba(168, 85, 247, 0.4);
+    /* Desktop View: Centered Floating Tab Pill */
+    @media (min-width: 601px) {
+      .app-bottom-nav {
+        bottom: 18px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        align-items: center;
+        background: rgba(15, 23, 42, 0.92);
+        border: 1px solid var(--border-light);
+        border-radius: 40px;
+        padding: 4px 6px;
+        gap: 6px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+      }
+
+      .nav-tab-btn {
+        background: transparent;
+        border: none;
+        color: var(--text-muted);
+        font-size: 0.88rem;
+        font-weight: 600;
+        padding: 8px 18px;
+        border-radius: 30px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .nav-tab-btn:hover {
+        color: var(--text-main);
+        background: rgba(255, 255, 255, 0.05);
+      }
+
+      .nav-tab-btn.active {
+        background: var(--accent-cyan);
+        color: #000000;
+        font-weight: 700;
+        box-shadow: 0 0 16px rgba(56, 189, 248, 0.4);
+      }
+
+      .nav-tab-btn.active.tab-amber {
+        background: var(--accent-amber);
+        box-shadow: 0 0 16px rgba(245, 158, 11, 0.4);
+      }
+
+      .nav-tab-btn.active.tab-purple {
+        background: var(--accent-purple);
+        box-shadow: 0 0 16px rgba(168, 85, 247, 0.4);
+      }
+    }
+
+    /* Mobile View: Full-Width Docked Bottom Bar */
+    @media (max-width: 600px) {
+      .app-bottom-nav {
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        background: rgba(8, 12, 22, 0.96);
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 6px 8px;
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 4px;
+      }
+
+      .nav-tab-btn {
+        background: transparent;
+        border: none;
+        color: var(--text-muted);
+        font-size: 0.72rem;
+        font-weight: 600;
+        padding: 6px 4px;
+        border-radius: 10px;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .nav-tab-btn svg {
+        width: 18px;
+        height: 18px;
+      }
+
+      .nav-tab-btn.active {
+        background: rgba(56, 189, 248, 0.15);
+        color: var(--accent-cyan);
+        font-weight: 700;
+      }
+
+      .nav-tab-btn.active.tab-amber {
+        background: rgba(245, 158, 11, 0.15);
+        color: var(--accent-amber);
+      }
+
+      .nav-tab-btn.active.tab-purple {
+        background: rgba(168, 85, 247, 0.15);
+        color: var(--accent-purple);
+      }
     }
 
     .tab-badge {
@@ -132,54 +316,12 @@
       color: #fff;
       font-size: 0.65rem;
       font-weight: 800;
-      width: 18px;
-      height: 18px;
+      width: 17px;
+      height: 17px;
       border-radius: 50%;
-      margin-left: 2px;
-    }
-
-    .nav-tab-btn.active .tab-badge {
-      background: #000;
-      color: #fff;
-    }
-
-    /* Header Actions */
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .icon-btn {
-      background: rgba(15, 23, 42, 0.8);
-      border: 1px solid var(--border-light);
-      color: var(--text-muted);
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .icon-btn:hover {
-      color: var(--text-main);
-      border-color: var(--accent-cyan);
-      background: rgba(30, 41, 59, 0.9);
-      transform: translateY(-1px);
-    }
-
-    .icon-btn.active {
-      color: var(--accent-cyan);
-      border-color: var(--accent-cyan);
-    }
-
-    .icon-btn svg {
-      width: 18px;
-      height: 18px;
-      fill: currentColor;
+      position: absolute;
+      top: -4px;
+      right: -8px;
     }
 
     /* Main Container Views */
@@ -192,7 +334,8 @@
       align-items: center;
       position: relative;
       overflow: hidden;
-      padding-top: 60px;
+      padding-top: 56px;
+      padding-bottom: 76px;
     }
 
     .view-section {
@@ -446,7 +589,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
+      gap: 4px;
       animation: fadeIn 0.2s ease-out;
     }
 
@@ -454,22 +597,22 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 4px;
-      width: 66px;
+      gap: 3px;
+      width: 52px;
     }
 
     .in-ring-btn {
       background: rgba(15, 23, 42, 0.85);
       border: 1px solid var(--border-light);
       color: var(--text-muted);
-      width: 48px;
-      height: 28px;
-      border-radius: 6px;
+      width: 42px;
+      height: 24px;
+      border-radius: 5px;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      font-size: 0.8rem;
+      font-size: 0.72rem;
       font-weight: bold;
       transition: all 0.15s ease;
     }
@@ -485,12 +628,12 @@
       background: rgba(15, 23, 42, 0.9);
       border: 2px solid var(--border-light);
       color: #ffffff;
-      font-size: 1.9rem;
+      font-size: 1.55rem;
       font-weight: 800;
       font-variant-numeric: tabular-nums;
-      width: 66px;
-      height: 54px;
-      border-radius: 10px;
+      width: 52px;
+      height: 44px;
+      border-radius: 8px;
       text-align: center;
       outline: none;
       transition: all 0.2s;
@@ -502,20 +645,20 @@
     }
 
     .in-ring-colon {
-      font-size: 1.8rem;
+      font-size: 1.4rem;
       font-weight: 800;
       color: var(--text-dim);
-      margin-top: -18px;
+      margin-top: -12px;
       user-select: none;
     }
 
     .in-ring-unit {
-      font-size: 0.65rem;
+      font-size: 0.58rem;
       font-weight: 700;
       color: var(--text-dim);
       text-transform: uppercase;
-      letter-spacing: 0.06em;
-      margin-top: 2px;
+      letter-spacing: 0.05em;
+      margin-top: 1px;
     }
 
     /* Active Running Countdown View */
@@ -615,12 +758,225 @@
       transform: translateY(-100%) !important;
     }
 
+    body.timer-running .app-bottom-nav {
+      opacity: 0 !important;
+      pointer-events: none !important;
+      transform: translateY(100%) !important;
+    }
+
     body.timer-running .timer-presets {
       display: none !important;
     }
 
     body.timer-running main.main-viewport {
-      padding-top: 0 !important;
+      padding: 0 !important;
+    }
+
+    /* Settings Modal Card Styles */
+    .settings-modal-card {
+      background: var(--bg-settings-card);
+      border: 1px solid var(--border-light);
+      border-radius: 20px;
+      padding: 22px;
+      width: 100%;
+      max-width: 500px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+      max-height: 90vh;
+      overflow-y: auto;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    .settings-group {
+      background: var(--bg-settings-group);
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .settings-group-title {
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 2px;
+    }
+
+    .settings-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .settings-item-title {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .settings-item-desc {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    /* Profile Card Box in Settings */
+    .profile-card-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .profile-info-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .profile-avatar-large {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #a855f7, #38bdf8);
+      color: #ffffff;
+      font-size: 1.05rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(168, 85, 247, 0.4);
+      flex-shrink: 0;
+    }
+
+    .profile-user-name {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .profile-user-badge {
+      font-size: 0.65rem;
+      font-weight: 700;
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--accent-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .profile-user-email {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .profile-actions-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+      width: 100%;
+      border-top: 1px solid var(--border-light);
+      padding-top: 8px;
+    }
+
+    .btn-sync-action {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      color: var(--text-main);
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-sync-action:hover {
+      border-color: var(--accent-cyan);
+      background: var(--bg-card-hover);
+      color: var(--accent-cyan);
+    }
+
+    .btn-sync-action svg.spin {
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
+
+    .btn-signout-action {
+      background: transparent;
+      border: 1px solid rgba(244, 63, 94, 0.3);
+      color: var(--accent-rose);
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      margin-left: auto;
+    }
+
+    .btn-signout-action:hover {
+      background: rgba(244, 63, 94, 0.15);
+      border-color: var(--accent-rose);
+    }
+
+    /* Theme Switcher Segmented Control */
+    .theme-switcher-box {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      background: var(--bg-card);
+      padding: 4px;
+      border-radius: 10px;
+      border: 1px solid var(--border-light);
+    }
+
+    .theme-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 8px 6px;
+      border-radius: 7px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: all 0.2s ease;
+    }
+
+    .theme-btn:hover {
+      color: var(--text-main);
+      background: var(--bg-card-hover);
+    }
+
+    .theme-btn.active {
+      background: var(--accent-cyan);
+      color: #ffffff;
+      font-weight: 700;
+      box-shadow: 0 2px 8px rgba(56, 189, 248, 0.35);
     }
 
     /* ========================================================
@@ -628,42 +984,97 @@
        ======================================================== */
     .reminders-container {
       width: 100%;
-      max-width: 900px;
+      max-width: 680px;
       height: calc(100vh - 100px);
-      display: grid;
-      grid-template-columns: 360px 1fr;
-      gap: 20px;
+      display: flex;
+      flex-direction: column;
       padding: 10px;
-    }
-
-    @media (max-width: 800px) {
-      .reminders-container {
-        grid-template-columns: 1fr;
-        height: auto;
-        overflow-y: auto;
-        padding-bottom: 80px;
-      }
     }
 
     .reminders-panel {
       background: var(--bg-surface);
       border: 1px solid var(--border-light);
-      border-radius: 16px;
+      border-radius: 18px;
       padding: 20px;
       display: flex;
       flex-direction: column;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-      overflow-y: auto;
+      flex: 1;
+      overflow: hidden;
     }
 
     .panel-header {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 700;
       margin-bottom: 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       color: #ffffff;
+      gap: 10px;
+    }
+
+    .btn-add-reminder {
+      background: var(--accent-purple);
+      color: #ffffff;
+      border: none;
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 8px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 2px 10px rgba(168, 85, 247, 0.4);
+    }
+
+    .btn-add-reminder:hover {
+      background: #c084fc;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(168, 85, 247, 0.6);
+    }
+
+    .btn-add-reminder svg {
+      width: 15px;
+      height: 15px;
+      fill: currentColor;
+    }
+
+    .btn-icon-edit {
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      cursor: pointer;
+      padding: 6px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.15s, background 0.15s;
+    }
+
+    .btn-icon-edit:hover {
+      color: var(--accent-cyan);
+      background: rgba(56, 189, 248, 0.1);
+    }
+
+    /* Add / Edit Reminder Modal Card */
+    .reminder-modal-card {
+      background: #0f172a;
+      border: 1px solid var(--border-light);
+      border-radius: 20px;
+      padding: 24px;
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+      max-height: 90vh;
+      overflow-y: auto;
+      animation: fadeIn 0.2s ease-out;
     }
 
     .form-group {
@@ -843,6 +1254,9 @@
       font-weight: 700;
       color: var(--accent-cyan);
       font-variant-numeric: tabular-nums;
+      min-width: 85px;
+      text-align: right;
+      flex-shrink: 0;
     }
 
     .reminder-actions {
@@ -1638,67 +2052,25 @@
 
 <body>
 
-  <!-- Top App Navigation Header -->
+  <!-- Top App Header (Brand + User Profile + Settings Button) -->
   <header class="app-header" id="appHeader">
     <div class="brand">
-      <svg class="brand-icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+      <svg class="brand-icon" width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
         <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 14.5h-2v-2h2zm0-4h-2V7h2z" />
       </svg>
       <span>OmniTimer</span>
     </div>
 
-    <!-- Central Switcher Tabs -->
-    <nav class="nav-tabs" role="tablist">
-      <button class="nav-tab-btn active" id="tabNavUp" data-target="viewTimerUp">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M15 1H9v2h6V1zm-4 13h2V8h-2v6zm8.03-6.61l1.42-1.42c-.43-.51-.9-.99-1.41-1.41l-1.42 1.42A8.962 8.962 0 0 0 12 4c-4.97 0-9 4.03-9 9s4.02 9 9 9a8.994 8.994 0 0 0 7.03-14.61zM12 20c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z" />
-        </svg>
-        <span>Timer Up</span>
-      </button>
-
-      <button class="nav-tab-btn" id="tabNavDown" data-target="viewTimerDown">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M6 2v6h.01L6 8.01 10 12l-4 4 .01.01H6V22h12v-5.99h-.01L18 16l-4-4 4-3.99-.01-.01H18V2H6zm10 14.5V20H8v-3.5l4-4 4 4zm-4-5l-4-4V4h8v3.5l-4 4z" />
-        </svg>
-        <span>Timer Down</span>
-      </button>
-
-      <button class="nav-tab-btn" id="tabNavReminders" data-target="viewReminders">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z" />
-        </svg>
-        <span>Reminders</span>
-        <span class="tab-badge" id="reminderBadge" style="display: none;">0</span>
-      </button>
-    </nav>
-
-    <!-- Header Action Controls -->
+    <!-- Header Action Controls: User Profile + Settings Modal Trigger -->
     <div class="header-actions">
-      <!-- Sound/Mute Toggle -->
-      <button class="icon-btn" id="soundToggleBtn" title="Toggle Sound Tone">
-        <svg id="soundIcon" viewBox="0 0 24 24">
-          <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
-        </svg>
+      <button class="user-profile-btn" id="userHeaderBtn" title="User Profile & Sync">
+        <div class="user-avatar-circle" id="headerAvatar">MK</div>
+        <span id="headerUserName">Mahesh KSD</span>
       </button>
 
-      <!-- Notification Permission -->
-      <button class="icon-btn" id="notifPermBtn" title="Enable Web Notifications">
+      <button class="icon-btn" id="settingsBtn" title="Settings & Preferences">
         <svg viewBox="0 0 24 24">
-          <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.93 6 11v5l-2 2v1h16v-1l-2-2z"/>
-        </svg>
-      </button>
-
-      <!-- Logs / Analytics Modal -->
-      <button class="icon-btn" id="logModalBtn" title="Analytics & Logs (Press L or 4)">
-        <svg viewBox="0 0 24 24">
-          <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
-        </svg>
-      </button>
-
-      <!-- Fullscreen Toggle -->
-      <button class="icon-btn" id="fsBtn" title="Fullscreen">
-        <svg id="fsIcon" viewBox="0 0 24 24">
-          <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z" />
+          <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
         </svg>
       </button>
     </div>
@@ -1824,102 +2196,312 @@
          ========================================== -->
     <section class="view-section" id="viewReminders">
       <div class="reminders-container">
-
-        <!-- Left Column: Add / Schedule Reminder Form -->
+        <!-- Full-Width Scheduled Reminders Panel -->
         <div class="reminders-panel">
           <div class="panel-header">
-            <span>⏰ Add Reminder</span>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Reminder Title</label>
-            <input type="text" class="form-input" id="remTitle" placeholder="e.g. Drink Water, Stretch, Team Call" maxlength="50" />
-            <div class="quick-tags">
-              <span class="tag-chip" data-title="Drink Water 💧">💧 Water</span>
-              <span class="tag-chip" data-title="Stand up & Stretch 🧘">🧘 Stretch</span>
-              <span class="tag-chip" data-title="Take Medicine 💊">💊 Medicine</span>
-              <span class="tag-chip" data-title="Team Standup 📞">📞 Meeting</span>
-              <span class="tag-chip" data-title="Rest Eyes 👁️">👁️ Eyes Rest</span>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span>🔔 Scheduled Reminders</span>
+              <span style="font-size: 0.8rem; color: var(--text-dim);" id="remCountLabel">0 active</span>
             </div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Time Schedule Mode</label>
-            <div class="time-mode-switch">
-              <button class="mode-switch-btn active" id="modeRelativeBtn" type="button">In X Minutes</button>
-              <button class="mode-switch-btn" id="modeClockBtn" type="button">Exact Clock Time</button>
-            </div>
-
-            <!-- Mode 1: Relative Timer -->
-            <div id="relativeTimePickerWrap">
-              <div style="display: flex; gap: 8px; align-items: center;">
-                <input type="number" class="form-input" id="remRelMinutes" value="15" min="1" max="720" style="width: 90px;" />
-                <span style="font-size: 0.85rem; color: var(--text-muted);">minutes from now</span>
-              </div>
-              <div class="quick-tags" style="margin-top: 6px;">
-                <span class="tag-chip" data-rel="5">5m</span>
-                <span class="tag-chip" data-rel="10">10m</span>
-                <span class="tag-chip" data-rel="15">15m</span>
-                <span class="tag-chip" data-rel="30">30m</span>
-                <span class="tag-chip" data-rel="45">45m</span>
-                <span class="tag-chip" data-rel="60">1 hr</span>
-              </div>
-            </div>
-
-            <!-- Mode 2: Exact Clock Time -->
-            <div id="clockTimePickerWrap" style="display: none;">
-              <input type="time" class="form-input" id="remClockTime" style="width: 100%;" />
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Repeat</label>
-            <select class="form-input" id="remRepeat" style="cursor: pointer;">
-              <option value="none">Once (No Repeat)</option>
-              <option value="15m">Every 15 Minutes</option>
-              <option value="30m">Every 30 Minutes</option>
-              <option value="1h">Every 1 Hour</option>
-              <option value="daily">Daily at this time</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Sound Tone</label>
-            <div style="display:flex; gap:8px;">
-              <select class="form-input" id="remTone" style="flex:1; cursor: pointer;">
-                <option value="chime">Gentle Chime ✨</option>
-                <option value="bell">Zen Bell 🔔</option>
-                <option value="pulse">Melodic Pulse 🎵</option>
-                <option value="beep">Digital Beep ⚡</option>
-              </select>
-              <button class="in-ring-btn" id="testToneBtn" title="Preview Sound" type="button" style="height: 42px; width: 44px; border-radius: 8px;">
-                ▶
-              </button>
-            </div>
-          </div>
-
-          <button class="btn-create-reminder" id="saveReminderBtn" type="button">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
-            </svg>
-            <span>Set Reminder</span>
-          </button>
-        </div>
-
-        <!-- Right Column: Active Reminders List -->
-        <div class="reminders-panel">
-          <div class="panel-header">
-            <span>Scheduled Reminders</span>
-            <span style="font-size: 0.8rem; color: var(--text-dim);" id="remCountLabel">0 active</span>
+            <button class="btn-add-reminder" id="openAddReminderBtn">
+              <svg viewBox="0 0 24 24">
+                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+              </svg>
+              <span>Add Reminder</span>
+            </button>
           </div>
 
           <div class="reminders-list" id="remindersList">
             <!-- Dynamically populated -->
           </div>
         </div>
-
       </div>
     </section>
+
+  </main>
+
+  <!-- ==========================================
+       RESPONSIVE BOTTOM NAVIGATION BAR
+       ========================================== -->
+  <nav class="app-bottom-nav" id="appBottomNav" role="tablist">
+    <button class="nav-tab-btn active" id="tabNavUp" data-target="viewTimerUp">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M15 1H9v2h6V1zm-4 13h2V8h-2v6zm8.03-6.61l1.42-1.42c-.43-.51-.9-.99-1.41-1.41l-1.42 1.42A8.962 8.962 0 0 0 12 4c-4.97 0-9 4.03-9 9s4.02 9 9 9a8.994 8.994 0 0 0 7.03-14.61zM12 20c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z" />
+      </svg>
+      <span>Timer Up</span>
+    </button>
+
+    <button class="nav-tab-btn" id="tabNavDown" data-target="viewTimerDown">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M6 2v6h.01L6 8.01 10 12l-4 4 .01.01H6V22h12v-5.99h-.01L18 16l-4-4 4-3.99-.01-.01H18V2H6zm10 14.5V20H8v-3.5l4-4 4 4zm-4-5l-4-4V4h8v3.5l-4 4z" />
+      </svg>
+      <span>Timer Down</span>
+    </button>
+
+    <button class="nav-tab-btn" id="tabNavReminders" data-target="viewReminders" style="position: relative;">
+      <div style="position: relative; display: inline-flex; align-items: center;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z" />
+        </svg>
+        <span class="tab-badge" id="reminderBadge" style="display: none;">0</span>
+      </div>
+      <span>Reminders</span>
+    </button>
+  </nav>
+
+  <!-- ==========================================
+       SETTINGS & PREFERENCES MODAL
+       ========================================== -->
+  <div class="modal-overlay" id="settingsModal">
+    <div class="settings-modal-card">
+      <div class="modal-header">
+        <span style="display: flex; align-items: center; gap: 8px;">⚙️ Settings & Preferences</span>
+        <button id="closeSettingsBtn" class="modal-header-btn" title="Close (Esc)">✕</button>
+      </div>
+
+      <!-- Section 1: User Profile, Sync & Account -->
+      <div class="settings-group">
+        <div class="settings-group-title">👤 User Account & Cloud Sync</div>
+        <div class="profile-card-box">
+          <div class="profile-info-left">
+            <div class="profile-avatar-large" id="modalAvatar">MK</div>
+            <div>
+              <div class="profile-user-name">
+                <span id="modalUserName">Mahesh KSD</span>
+                <span class="profile-user-badge">Pro Active</span>
+              </div>
+              <div class="profile-user-email" id="modalUserEmail">mahesh@omnitimer.app</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-actions-row">
+          <button class="btn-sync-action" id="syncNowBtn" title="Sync local timers and reminders">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" id="syncIcon">
+              <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46A7.93 7.93 0 0 0 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74A7.93 7.93 0 0 0 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/>
+            </svg>
+            <span id="syncBtnText">Sync Now</span>
+          </button>
+          <span style="font-size: 0.7rem; color: var(--text-dim);" id="lastSyncLabel">Synced just now</span>
+
+          <button class="btn-signout-action" id="signOutBtn">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+            </svg>
+            <span>Sign Out</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Section 2: Theme Appearance (Day / Night / System) -->
+      <div class="settings-group">
+        <div class="settings-group-title">🎨 Theme Appearance</div>
+        <div class="theme-switcher-box">
+          <button class="theme-btn" id="themeLightBtn" data-theme="light">
+            <span>☀️</span>
+            <span>Day (Light)</span>
+          </button>
+          <button class="theme-btn active" id="themeDarkBtn" data-theme="dark">
+            <span>🌙</span>
+            <span>Night (Dark)</span>
+          </button>
+          <button class="theme-btn" id="themeSystemBtn" data-theme="system">
+            <span>💻</span>
+            <span>System</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Section 3: Sound & Audio -->
+      <div class="settings-group">
+        <div class="settings-group-title">🔊 Sound & Audio</div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-item-title">Sound Effects</div>
+            <div class="settings-item-desc">Enable audio feedback and chime tones</div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="settingsSoundToggle" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="settings-row" style="margin-top: 4px;">
+          <div style="flex: 1;">
+            <div class="settings-item-title">Default Alarm Tone</div>
+            <div class="settings-item-desc">Audio chime when timers & alarms end</div>
+          </div>
+          <div style="display: flex; gap: 6px; align-items: center;">
+            <select class="form-input" id="settingsToneSelect" style="padding: 6px 10px; font-size: 0.82rem; cursor: pointer;">
+              <option value="chime">Gentle Chime ✨</option>
+              <option value="bell">Zen Bell 🔔</option>
+              <option value="pulse">Melodic Pulse 🎵</option>
+              <option value="beep">Digital Beep ⚡</option>
+            </select>
+            <button class="in-ring-btn" id="settingsTestToneBtn" title="Test Sound" type="button" style="height: 36px; width: 36px; border-radius: 8px;">
+              ▶
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 4: Notifications -->
+      <div class="settings-group">
+        <div class="settings-group-title">🔔 Desktop Notifications</div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-item-title">System Alerts</div>
+            <div class="settings-item-desc" id="notifStatusDesc">Alerts when running in background tabs</div>
+          </div>
+          <button class="modal-header-btn" id="settingsNotifBtn" style="padding: 6px 14px; font-weight: 600;">
+            Enable
+          </button>
+        </div>
+      </div>
+
+      <!-- Section 5: Analytics & Activity Dashboard -->
+      <div class="settings-group">
+        <div class="settings-group-title">📊 Activity Dashboard & Heatmap</div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-item-title">Analytics & History</div>
+            <div class="settings-item-desc">Calendar heatmap, 3-bar weekly chart & logs</div>
+          </div>
+          <button class="btn-add-reminder" id="openAnalyticsFromSettingsBtn" style="background: var(--accent-cyan); color: #000; font-size: 0.8rem; box-shadow: 0 2px 10px rgba(56, 189, 248, 0.4);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
+            </svg>
+            <span>Open Dashboard</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Section 6: Data Management & Backup -->
+      <div class="settings-group">
+        <div class="settings-group-title">💾 Backup & Restore</div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button class="modal-header-btn" id="settingsDownloadBtn" style="flex: 1; min-width: 120px; padding: 8px; font-weight: 600;">
+            📥 Export Backup
+          </button>
+          <button class="modal-header-btn" id="settingsImportBtn" style="flex: 1; min-width: 120px; padding: 8px; font-weight: 600;">
+            📤 Import Backup
+          </button>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; margin-top: 4px;">
+        <button class="modal-header-btn" id="doneSettingsBtn" style="padding: 8px 24px; border-radius: 10px; font-weight: 700; background: var(--bg-card); color: var(--text-main);">
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       ADD / EDIT REMINDER MODAL
+       ========================================== -->
+  <div class="modal-overlay" id="reminderFormModal">
+    <div class="reminder-modal-card">
+      <div class="modal-header">
+        <span id="reminderModalTitle">⏰ Add Reminder</span>
+        <button id="closeReminderModalBtn" class="modal-header-btn" title="Close (Esc)">✕</button>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Reminder Title</label>
+        <input type="text" class="form-input" id="remTitle" placeholder="e.g. Drink Water, Stretch, Team Call" maxlength="50" />
+        <div class="quick-tags">
+          <span class="tag-chip" data-title="Drink Water 💧">💧 Water</span>
+          <span class="tag-chip" data-title="Stand up & Stretch 🧘">🧘 Stretch</span>
+          <span class="tag-chip" data-title="Take Medicine 💊">💊 Medicine</span>
+          <span class="tag-chip" data-title="Team Standup 📞">📞 Meeting</span>
+          <span class="tag-chip" data-title="Rest Eyes 👁️">👁️ Eyes Rest</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Time Schedule Mode</label>
+        <div class="time-mode-switch">
+          <button class="mode-switch-btn active" id="modeRelativeBtn" type="button">In X Minutes</button>
+          <button class="mode-switch-btn" id="modeClockBtn" type="button">Exact Clock Time</button>
+        </div>
+
+        <!-- Mode 1: Relative Timer -->
+        <div id="relativeTimePickerWrap">
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <input type="number" class="form-input" id="remRelMinutes" value="15" min="1" max="720" style="width: 90px;" />
+            <span style="font-size: 0.85rem; color: var(--text-muted);">minutes from now</span>
+          </div>
+          <div class="quick-tags" style="margin-top: 6px;">
+            <span class="tag-chip" data-rel="5">5m</span>
+            <span class="tag-chip" data-rel="10">10m</span>
+            <span class="tag-chip" data-rel="15">15m</span>
+            <span class="tag-chip" data-rel="30">30m</span>
+            <span class="tag-chip" data-rel="45">45m</span>
+            <span class="tag-chip" data-rel="60">1 hr</span>
+          </div>
+        </div>
+
+        <!-- Mode 2: Exact Clock Time -->
+        <div id="clockTimePickerWrap" style="display: none;">
+          <input type="time" class="form-input" id="remClockTime" style="width: 100%;" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Repeat</label>
+        <select class="form-input" id="remRepeat" style="cursor: pointer;">
+          <option value="none">Once (No Repeat)</option>
+          <option value="15m">Every 15 Minutes</option>
+          <option value="30m">Every 30 Minutes</option>
+          <option value="1h">Every 1 Hour</option>
+          <option value="daily">Daily at this time</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Sound Tone</label>
+        <div style="display:flex; gap:8px;">
+          <select class="form-input" id="remTone" style="flex:1; cursor: pointer;">
+            <option value="chime">Gentle Chime ✨</option>
+            <option value="bell">Zen Bell 🔔</option>
+            <option value="pulse">Melodic Pulse 🎵</option>
+            <option value="beep">Digital Beep ⚡</option>
+          </select>
+          <button class="in-ring-btn" id="testToneBtn" title="Preview Sound" type="button" style="height: 42px; width: 44px; border-radius: 8px;">
+            ▶
+          </button>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:10px; margin-top:8px;">
+        <button class="modal-header-btn" id="cancelReminderBtn" style="flex:1; height:44px; border-radius:10px; font-weight:600;">Cancel</button>
+        <button class="btn-create-reminder" id="saveReminderBtn" type="button" style="flex:2;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+          </svg>
+          <span id="saveReminderBtnText">Set Reminder</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       DELETE REMINDER CONFIRMATION MODAL
+       ========================================== -->
+  <div class="modal-overlay" id="deleteConfirmModal">
+    <div class="alarm-modal-card" style="border-color: var(--accent-rose); box-shadow: 0 0 40px rgba(244, 63, 94, 0.3); max-width: 400px; animation: none;">
+      <div class="alarm-icon-wrap" style="background: rgba(244, 63, 94, 0.15); color: var(--accent-rose); animation: none; width: 56px; height: 56px; font-size: 1.6rem;">
+        🗑️
+      </div>
+      <div class="alarm-title" style="font-size: 1.25rem;">Delete Reminder?</div>
+      <div class="alarm-message" id="deleteConfirmMsg" style="font-size: 0.88rem; color: var(--text-muted);">Are you sure you want to delete this reminder?</div>
+      <div class="alarm-actions">
+        <button class="btn-snooze" id="cancelDeleteBtn" type="button">Cancel</button>
+        <button class="btn-dismiss" id="confirmDeleteBtn" type="button" style="background: var(--accent-rose); color: #ffffff;">Delete</button>
+      </div>
+    </div>
+  </div>
 
   </main>
 
@@ -2126,6 +2708,7 @@
        2. WEB AUDIO API SYNTHESIZER (No external sound files)
        ======================================================== */
     let audioCtx = null;
+    let defaultAlarmTone = 'chime';
 
     function getAudioContext() {
       if (!audioCtx) {
@@ -2138,7 +2721,7 @@
       return audioCtx;
     }
 
-    function playTone(type = 'chime') {
+    function playTone(type = defaultAlarmTone) {
       if (!isSoundEnabled) return;
       try {
         const ctx = getAudioContext();
@@ -2182,7 +2765,7 @@
             const gain = ctx.createGain();
             osc.type = 'triangle';
             osc.frequency.setValueAtTime(freq, now + idx * 0.15);
-            gain.gain.setValueAtTime(0, now + idx * 0.15);
+            gain.gain.setValueAtTime(0.25, now + idx * 0.15);
             gain.gain.linearRampToValueAtTime(0.25, now + idx * 0.15 + 0.05);
             gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.15 + 0.9);
             osc.connect(gain);
@@ -2212,7 +2795,7 @@
 
     /* Sound Loop for Active Alarm Modal */
     let alarmSoundInterval = null;
-    function startAlarmSound(tone = 'chime') {
+    function startAlarmSound(tone = defaultAlarmTone) {
       playTone(tone);
       if (alarmSoundInterval) clearInterval(alarmSoundInterval);
       alarmSoundInterval = setInterval(() => {
@@ -2238,35 +2821,196 @@
       }
     }
 
-    const notifPermBtn = document.getElementById('notifPermBtn');
-    notifPermBtn.addEventListener('click', async () => {
-      if (!("Notification" in window)) {
-        alert("Notifications are not supported in this browser.");
-        return;
-      }
-      const perm = await Notification.requestPermission();
-      if (perm === 'granted') {
-        notifPermBtn.classList.add('active');
-        new Notification("Notifications Enabled", { body: "OmniTimer will alert you when timers and reminders trigger!" });
-      }
-    });
+    /* ========================================================
+       3. SETTINGS & PREFERENCES MODAL + THEME + USER SYNC
+       ======================================================== */
+    const settingsModal = document.getElementById('settingsModal');
+    const settingsBtn = document.getElementById('settingsBtn');
+    const userHeaderBtn = document.getElementById('userHeaderBtn');
+    const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+    const doneSettingsBtn = document.getElementById('doneSettingsBtn');
+    const settingsSoundToggle = document.getElementById('settingsSoundToggle');
+    const settingsToneSelect = document.getElementById('settingsToneSelect');
+    const settingsTestToneBtn = document.getElementById('settingsTestToneBtn');
+    const settingsNotifBtn = document.getElementById('settingsNotifBtn');
+    const notifStatusDesc = document.getElementById('notifStatusDesc');
+    const openAnalyticsFromSettingsBtn = document.getElementById('openAnalyticsFromSettingsBtn');
+    const settingsDownloadBtn = document.getElementById('settingsDownloadBtn');
+    const settingsImportBtn = document.getElementById('settingsImportBtn');
 
-    if ("Notification" in window && Notification.permission === 'granted') {
-      notifPermBtn.classList.add('active');
+    const syncNowBtn = document.getElementById('syncNowBtn');
+    const syncIcon = document.getElementById('syncIcon');
+    const syncBtnText = document.getElementById('syncBtnText');
+    const lastSyncLabel = document.getElementById('lastSyncLabel');
+    const signOutBtn = document.getElementById('signOutBtn');
+
+    const themeLightBtn = document.getElementById('themeLightBtn');
+    const themeDarkBtn = document.getElementById('themeDarkBtn');
+    const themeSystemBtn = document.getElementById('themeSystemBtn');
+
+    let currentThemeMode = localStorage.getItem('omnitimer_theme_mode') || 'dark';
+
+    /* Theme Engine */
+    function applyTheme(mode) {
+      currentThemeMode = mode;
+      localStorage.setItem('omnitimer_theme_mode', mode);
+
+      [themeLightBtn, themeDarkBtn, themeSystemBtn].forEach(b => b.classList.remove('active'));
+
+      if (mode === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+        themeLightBtn.classList.add('active');
+      } else if (mode === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        themeDarkBtn.classList.add('active');
+      } else {
+        // System preference
+        themeSystemBtn.classList.add('active');
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        document.documentElement.setAttribute('data-theme', systemPrefersDark ? 'dark' : 'light');
+      }
     }
 
-    /* Sound Toggle */
-    const soundToggleBtn = document.getElementById('soundToggleBtn');
-    const soundIcon = document.getElementById('soundIcon');
-    soundToggleBtn.addEventListener('click', () => {
-      isSoundEnabled = !isSoundEnabled;
-      soundIcon.innerHTML = isSoundEnabled ? icons.soundOn : icons.soundMuted;
-      soundToggleBtn.classList.toggle('active', isSoundEnabled);
-      if (isSoundEnabled) playTone('chime');
+    themeLightBtn.addEventListener('click', () => applyTheme('light'));
+    themeDarkBtn.addEventListener('click', () => applyTheme('dark'));
+    themeSystemBtn.addEventListener('click', () => applyTheme('system'));
+
+    // Listen for OS system theme changes if on system mode
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+      if (currentThemeMode === 'system') {
+        document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+      }
     });
 
+    // Apply saved theme on initial load
+    applyTheme(currentThemeMode);
+
+    /* Cloud / Local Sync Handler */
+    syncNowBtn.addEventListener('click', () => {
+      syncIcon.classList.add('spin');
+      syncBtnText.textContent = "Syncing...";
+
+      setTimeout(() => {
+        syncIcon.classList.remove('spin');
+        syncBtnText.textContent = "Sync Now";
+        const nowTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        lastSyncLabel.textContent = `Synced at ${nowTime} ✅`;
+        playTone('chime');
+      }, 700);
+    });
+
+    /* Sign Out Handler */
+    signOutBtn.addEventListener('click', () => {
+      const isSignedOut = signOutBtn.dataset.signedOut === "true";
+      if (!isSignedOut) {
+        if (confirm("Sign out of Mahesh KSD? You can continue using OmniTimer in Local Guest Mode.")) {
+          document.getElementById('headerUserName').textContent = "Guest User";
+          document.getElementById('headerAvatar').textContent = "GU";
+          document.getElementById('modalUserName').textContent = "Guest User";
+          document.getElementById('modalAvatar').textContent = "GU";
+          document.getElementById('modalUserEmail').textContent = "guest@local";
+          signOutBtn.innerHTML = `
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 14.5h-2v-2h2zm0-4h-2V7h2z"/>
+            </svg>
+            <span>Sign In</span>
+          `;
+          signOutBtn.dataset.signedOut = "true";
+          signOutBtn.style.color = "var(--accent-cyan)";
+          signOutBtn.style.borderColor = "rgba(56, 189, 248, 0.4)";
+        }
+      } else {
+        const name = prompt("Enter your Name to Sign In:", "Mahesh KSD") || "Mahesh KSD";
+        const initials = name.split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2) || "MK";
+        document.getElementById('headerUserName').textContent = name;
+        document.getElementById('headerAvatar').textContent = initials;
+        document.getElementById('modalUserName').textContent = name;
+        document.getElementById('modalAvatar').textContent = initials;
+        document.getElementById('modalUserEmail').textContent = `${name.toLowerCase().replace(/\s+/g, '')}@omnitimer.app`;
+        signOutBtn.innerHTML = `
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+          </svg>
+          <span>Sign Out</span>
+        `;
+        signOutBtn.dataset.signedOut = "false";
+        signOutBtn.style.color = "var(--accent-rose)";
+        signOutBtn.style.borderColor = "rgba(244, 63, 94, 0.3)";
+      }
+    });
+
+    function updateNotifStatusUI() {
+      if (!("Notification" in window)) {
+        notifStatusDesc.textContent = "Not supported in this browser.";
+        settingsNotifBtn.style.display = 'none';
+        return;
+      }
+      if (Notification.permission === 'granted') {
+        notifStatusDesc.textContent = "Status: Enabled ✅";
+        settingsNotifBtn.textContent = "Granted";
+        settingsNotifBtn.style.opacity = '0.6';
+        settingsNotifBtn.disabled = true;
+      } else if (Notification.permission === 'denied') {
+        notifStatusDesc.textContent = "Status: Blocked in browser settings ❌";
+        settingsNotifBtn.textContent = "Blocked";
+        settingsNotifBtn.disabled = true;
+      } else {
+        notifStatusDesc.textContent = "Status: Not configured yet.";
+        settingsNotifBtn.textContent = "Enable";
+        settingsNotifBtn.disabled = false;
+      }
+    }
+
+    function openSettingsModal() {
+      updateNotifStatusUI();
+      settingsSoundToggle.checked = isSoundEnabled;
+      settingsToneSelect.value = defaultAlarmTone;
+      settingsModal.classList.add('open');
+    }
+
+    function closeSettingsModal() {
+      settingsModal.classList.remove('open');
+    }
+
+    settingsBtn.addEventListener('click', openSettingsModal);
+    userHeaderBtn.addEventListener('click', openSettingsModal);
+    closeSettingsBtn.addEventListener('click', closeSettingsModal);
+    doneSettingsBtn.addEventListener('click', closeSettingsModal);
+
+    settingsSoundToggle.addEventListener('change', (e) => {
+      isSoundEnabled = e.target.checked;
+      if (isSoundEnabled) playTone(defaultAlarmTone);
+    });
+
+    settingsToneSelect.addEventListener('change', (e) => {
+      defaultAlarmTone = e.target.value;
+      playTone(defaultAlarmTone);
+    });
+
+    settingsTestToneBtn.addEventListener('click', () => {
+      playTone(settingsToneSelect.value);
+    });
+
+    settingsNotifBtn.addEventListener('click', async () => {
+      if (!("Notification" in window)) return alert("Notifications not supported.");
+      const perm = await Notification.requestPermission();
+      updateNotifStatusUI();
+      if (perm === 'granted') {
+        new Notification("OmniTimer Notifications Active!", { body: "You will receive timer and reminder alerts." });
+      }
+    });
+
+    openAnalyticsFromSettingsBtn.addEventListener('click', () => {
+      closeSettingsModal();
+      logModal.classList.add('open');
+      renderDashboard();
+    });
+
+    settingsDownloadBtn.addEventListener('click', () => downloadBtn.click());
+    settingsImportBtn.addEventListener('click', () => importBtn.click());
+
     /* ========================================================
-       3. NAVIGATION & TAB SWITCHING
+       4. NAVIGATION & TAB SWITCHING
        ======================================================== */
     const navTabButtons = document.querySelectorAll('.nav-tab-btn');
     const viewSections = document.querySelectorAll('.view-section');
@@ -2763,6 +3507,7 @@
        ======================================================== */
     let remindersList = [];
     let reminderTicker = null;
+    let editingReminderId = null;
 
     const remTitle = document.getElementById('remTitle');
     const remRepeat = document.getElementById('remRepeat');
@@ -2774,12 +3519,71 @@
     const relativeTimePickerWrap = document.getElementById('relativeTimePickerWrap');
     const clockTimePickerWrap = document.getElementById('clockTimePickerWrap');
     const saveReminderBtn = document.getElementById('saveReminderBtn');
+    const saveReminderBtnText = document.getElementById('saveReminderBtnText');
     const remindersListEl = document.getElementById('remindersList');
     const remCountLabel = document.getElementById('remCountLabel');
     const reminderBadge = document.getElementById('reminderBadge');
     const testToneBtn = document.getElementById('testToneBtn');
 
+    const reminderFormModal = document.getElementById('reminderFormModal');
+    const reminderModalTitle = document.getElementById('reminderModalTitle');
+    const openAddReminderBtn = document.getElementById('openAddReminderBtn');
+    const closeReminderModalBtn = document.getElementById('closeReminderModalBtn');
+    const cancelReminderBtn = document.getElementById('cancelReminderBtn');
+
     let reminderScheduleMode = 'relative'; // 'relative' or 'clock'
+
+    function openAddReminderModal() {
+      editingReminderId = null;
+      reminderModalTitle.textContent = '⏰ Add Reminder';
+      saveReminderBtnText.textContent = 'Set Reminder';
+
+      remTitle.value = '';
+      remRepeat.value = 'none';
+      remTone.value = 'chime';
+      remRelMinutes.value = '15';
+
+      const d = new Date();
+      d.setMinutes(d.getMinutes() + 15);
+      remClockTime.value = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+
+      modeRelativeBtn.click();
+      reminderFormModal.classList.add('open');
+      setTimeout(() => remTitle.focus(), 100);
+    }
+
+    function openEditReminderModal(rem) {
+      editingReminderId = rem.id;
+      reminderModalTitle.textContent = '✏️ Edit Reminder';
+      saveReminderBtnText.textContent = 'Update Reminder';
+
+      remTitle.value = rem.title || '';
+      remRepeat.value = rem.repeat || 'none';
+      remTone.value = rem.tone || 'chime';
+
+      const target = new Date(rem.targetTime);
+      remClockTime.value = `${String(target.getHours()).padStart(2, '0')}:${String(target.getMinutes()).padStart(2, '0')}`;
+
+      const diffMins = Math.max(1, Math.round((rem.targetTime - Date.now()) / (1000 * 60)));
+      if (diffMins <= 720) {
+        remRelMinutes.value = diffMins;
+        modeRelativeBtn.click();
+      } else {
+        modeClockBtn.click();
+      }
+
+      reminderFormModal.classList.add('open');
+      setTimeout(() => remTitle.focus(), 100);
+    }
+
+    function closeReminderModal() {
+      reminderFormModal.classList.remove('open');
+      editingReminderId = null;
+    }
+
+    openAddReminderBtn.addEventListener('click', openAddReminderModal);
+    closeReminderModalBtn.addEventListener('click', closeReminderModal);
+    cancelReminderBtn.addEventListener('click', closeReminderModal);
 
     modeRelativeBtn.addEventListener('click', () => {
       reminderScheduleMode = 'relative';
@@ -2796,10 +3600,11 @@
       relativeTimePickerWrap.style.display = 'none';
       clockTimePickerWrap.style.display = 'block';
 
-      // Default clock time to 15m in future
-      const d = new Date();
-      d.setMinutes(d.getMinutes() + 15);
-      remClockTime.value = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+      if (!remClockTime.value) {
+        const d = new Date();
+        d.setMinutes(d.getMinutes() + 15);
+        remClockTime.value = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+      }
     });
 
     // Quick tag chips
@@ -2835,7 +3640,9 @@
       const tx = db.transaction([storeReminders], "readwrite");
       const store = tx.objectStore(storeReminders);
       if (rem.id) {
-        store.put(rem);
+        store.put(rem).onsuccess = () => {
+          loadRemindersFromDB();
+        };
       } else {
         const addReq = store.add(rem);
         addReq.onsuccess = (e) => {
@@ -2874,20 +3681,90 @@
         targetTimeMs = target.getTime();
       }
 
-      const newRem = {
-        title,
-        targetTime: targetTimeMs,
-        repeat,
-        tone,
-        active: true,
-        createdAt: new Date().toISOString()
-      };
+      if (editingReminderId) {
+        // Edit Existing Reminder
+        const existing = remindersList.find(r => r.id === editingReminderId);
+        if (existing) {
+          existing.title = title;
+          existing.targetTime = targetTimeMs;
+          existing.repeat = repeat;
+          existing.tone = tone;
+          existing.active = true;
+          saveReminderToDB(existing);
+        }
+      } else {
+        // Create New Reminder
+        const newRem = {
+          title,
+          targetTime: targetTimeMs,
+          repeat,
+          tone,
+          active: true,
+          createdAt: new Date().toISOString()
+        };
+        remindersList.push(newRem);
+        saveReminderToDB(newRem);
+      }
 
-      remindersList.push(newRem);
-      saveReminderToDB(newRem);
-      remTitle.value = '';
+      closeReminderModal();
       playTone('chime');
     });
+
+    /* Delete Confirmation Dialog Handling */
+    let pendingDeleteReminderId = null;
+    const deleteConfirmModal = document.getElementById('deleteConfirmModal');
+    const deleteConfirmMsg = document.getElementById('deleteConfirmMsg');
+    const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+
+    function promptDeleteReminder(rem) {
+      pendingDeleteReminderId = rem.id;
+      deleteConfirmMsg.textContent = `Are you sure you want to delete "${rem.title}"? This action cannot be undone.`;
+      deleteConfirmModal.classList.add('open');
+    }
+
+    function closeDeleteConfirmModal() {
+      deleteConfirmModal.classList.remove('open');
+      pendingDeleteReminderId = null;
+    }
+
+    cancelDeleteBtn.addEventListener('click', closeDeleteConfirmModal);
+
+    confirmDeleteBtn.addEventListener('click', () => {
+      if (pendingDeleteReminderId) {
+        deleteReminderFromDB(pendingDeleteReminderId);
+      }
+      closeDeleteConfirmModal();
+    });
+
+    function formatReminderCountdown(targetTime, now) {
+      const diffSecs = Math.max(0, Math.round((targetTime - now) / 1000));
+      if (diffSecs >= 3600) {
+        const h = Math.floor(diffSecs / 3600);
+        const m = Math.floor((diffSecs % 3600) / 60);
+        return `in ${h}h ${m}m`;
+      } else if (diffSecs >= 60) {
+        const m = Math.floor(diffSecs / 60);
+        const s = diffSecs % 60;
+        return `in ${m}m ${s}s`;
+      } else {
+        return `in ${diffSecs}s`;
+      }
+    }
+
+    function updateReminderCountdownLabels() {
+      const now = Date.now();
+      document.querySelectorAll('.reminder-card').forEach(card => {
+        const remId = parseInt(card.dataset.id, 10);
+        const rem = remindersList.find(r => r.id === remId);
+        if (rem) {
+          const countdownEl = card.querySelector('.reminder-time-countdown');
+          if (countdownEl) {
+            countdownEl.textContent = rem.active ? formatReminderCountdown(rem.targetTime, now) : 'Paused';
+          }
+        }
+      });
+    }
 
     function renderRemindersList() {
       remindersListEl.innerHTML = '';
@@ -2905,13 +3782,21 @@
       if (remindersList.length === 0) {
         remindersListEl.innerHTML = `
           <div class="empty-state">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor" style="opacity:0.3;">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor" style="opacity:0.3; margin-bottom: 6px;">
               <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
             </svg>
-            <span style="font-size:0.9rem; font-weight:600;">No reminders set</span>
-            <span style="font-size:0.75rem;">Create your first reminder using the form on the left.</span>
+            <span style="font-size:1rem; font-weight:700; color:#ffffff;">No reminders scheduled</span>
+            <span style="font-size:0.8rem; color:var(--text-muted); margin-bottom:14px;">Create reminders for hydration, stretch, team meetings, or focus breaks.</span>
+            <button class="btn-add-reminder" id="emptyAddBtn">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+              </svg>
+              <span>Add Your First Reminder</span>
+            </button>
           </div>
         `;
+
+        document.getElementById('emptyAddBtn').addEventListener('click', openAddReminderModal);
         return;
       }
 
@@ -2921,24 +3806,11 @@
       sorted.forEach(rem => {
         const card = document.createElement('div');
         card.className = `reminder-card ${rem.active ? '' : 'inactive'}`;
+        card.dataset.id = rem.id;
 
-        const diffSecs = Math.max(0, Math.round((rem.targetTime - now) / 1000));
-        let countdownStr = '';
-        if (diffSecs >= 3600) {
-          const h = Math.floor(diffSecs / 3600);
-          const m = Math.floor((diffSecs % 3600) / 60);
-          countdownStr = `in ${h}h ${m}m`;
-        } else if (diffSecs >= 60) {
-          const m = Math.floor(diffSecs / 60);
-          const s = diffSecs % 60;
-          countdownStr = `in ${m}m ${s}s`;
-        } else {
-          countdownStr = `in ${diffSecs}s`;
-        }
-
+        const countdownStr = formatReminderCountdown(rem.targetTime, now);
         const targetDate = new Date(rem.targetTime);
         const timeStr = targetDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
         const repeatLabel = rem.repeat !== 'none' ? `<span class="meta-badge">🔄 ${rem.repeat}</span>` : '';
 
         card.innerHTML = `
@@ -2954,12 +3826,17 @@
           <div class="reminder-time-countdown">${rem.active ? countdownStr : 'Paused'}</div>
 
           <div class="reminder-actions">
-            <label class="toggle-switch">
+            <label class="toggle-switch" title="Toggle active/paused">
               <input type="checkbox" ${rem.active ? 'checked' : ''} data-id="${rem.id}">
               <span class="slider"></span>
             </label>
+            <button class="btn-icon-edit" data-id="${rem.id}" title="Edit Reminder">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+              </svg>
+            </button>
             <button class="btn-icon-del" data-id="${rem.id}" title="Delete Reminder">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
               </svg>
             </button>
@@ -2975,9 +3852,16 @@
           saveReminderToDB(rem);
         });
 
-        // Delete
-        card.querySelector('.btn-icon-del').addEventListener('click', () => {
-          deleteReminderFromDB(rem.id);
+        // Edit
+        card.querySelector('.btn-icon-edit').addEventListener('click', (e) => {
+          e.stopPropagation();
+          openEditReminderModal(rem);
+        });
+
+        // Delete (Prompt Modal)
+        card.querySelector('.btn-icon-del').addEventListener('click', (e) => {
+          e.stopPropagation();
+          promptDeleteReminder(rem);
         });
 
         remindersListEl.appendChild(card);
@@ -2996,9 +3880,9 @@
         }
       });
 
-      // Update countdown UI labels every second if view is visible
+      // Update in-place countdown labels without DOM recreation to prevent card shaking
       if (document.getElementById('viewReminders').classList.contains('active')) {
-        renderRemindersList();
+        updateReminderCountdownLabels();
       }
     }, 1000);
 
@@ -3082,7 +3966,6 @@
     let chartWeekOffset = 0;
     let currentRawFilter = 'all';
 
-    const logModalBtn = document.getElementById('logModalBtn');
     const logModal = document.getElementById('logModal');
     const closeModalBtn = document.getElementById('closeModalBtn');
     const copyBtn = document.getElementById('copyBtn');
@@ -3090,11 +3973,6 @@
     const importBtn = document.getElementById('importBtn');
     const importFileInput = document.getElementById('importFileInput');
     const clearBtn = document.getElementById('clearBtn');
-
-    logModalBtn.addEventListener('click', () => {
-      renderDashboard();
-      logModal.classList.add('open');
-    });
 
     closeModalBtn.addEventListener('click', () => {
       logModal.classList.remove('open');
@@ -3639,11 +4517,8 @@
     });
 
     /* ========================================================
-       9. FULLSCREEN, WAKELOCK & KEYBOARD SHORTCUTS
+       9. WAKELOCK & KEYBOARD SHORTCUTS
        ======================================================== */
-    const fsBtn = document.getElementById('fsBtn');
-    const fsIcon = document.getElementById('fsIcon');
-
     async function requestWakeLock() {
       if ('wakeLock' in navigator) {
         try { wakeLock = await navigator.wakeLock.request('screen'); } catch (err) { }
@@ -3659,25 +4534,6 @@
         wakeLock = null;
       }
     }
-
-    fsBtn.addEventListener('click', async (e) => {
-      e.stopPropagation();
-      if (!document.fullscreenElement) {
-        await document.documentElement.requestFullscreen().catch(() => { });
-        fsIcon.innerHTML = icons.compress;
-      } else {
-        await document.exitFullscreen().catch(() => { });
-        fsIcon.innerHTML = icons.expand;
-      }
-    });
-
-    document.addEventListener('fullscreenchange', () => {
-      if (document.fullscreenElement) {
-        fsIcon.innerHTML = icons.compress;
-      } else {
-        fsIcon.innerHTML = icons.expand;
-      }
-    });
 
     // Keyboard Shortcuts
     window.addEventListener('keydown', (e) => {
@@ -3706,11 +4562,20 @@
       } else if (e.key === '3') {
         document.getElementById('tabNavReminders').click();
       } else if (e.key === '4' || e.key === 'l' || e.key === 'L') {
-        logModalBtn.click();
+        logModal.classList.add('open');
+        renderDashboard();
+      } else if (e.key === 's' || e.key === 'S') {
+        openSettingsModal();
       } else if (e.key === 'Escape') {
-        if (alarmTriggerModal.classList.contains('open')) {
+        if (deleteConfirmModal && deleteConfirmModal.classList.contains('open')) {
+          closeDeleteConfirmModal();
+        } else if (settingsModal && settingsModal.classList.contains('open')) {
+          closeSettingsModal();
+        } else if (reminderFormModal && reminderFormModal.classList.contains('open')) {
+          closeReminderModal();
+        } else if (alarmTriggerModal && alarmTriggerModal.classList.contains('open')) {
           closeTriggerModal();
-        } else if (logModal.classList.contains('open')) {
+        } else if (logModal && logModal.classList.contains('open')) {
           logModal.classList.remove('open');
         }
       }
