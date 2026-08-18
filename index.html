@@ -4,8 +4,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Full Screen Timer</title>
+  <title>OmniTimer - Timer Up, Timer Down & Reminders</title>
   <style>
+    :root {
+      --bg-main: #050811;
+      --bg-surface: #0f172a;
+      --bg-card: #1e293b;
+      --bg-card-hover: #334155;
+      --border-subtle: #1e293b;
+      --border-light: #334155;
+      --accent-cyan: #38bdf8;
+      --accent-emerald: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-rose: #f43f5e;
+      --accent-purple: #a855f7;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -13,42 +30,228 @@
     }
 
     body {
-      background-color: #000000;
-      color: #ffffff;
-      font-family: system-ui, -apple-system, Roboto, sans-serif;
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
       height: 100vh;
       width: 100vw;
       display: flex;
       flex-direction: column;
-      justify-content: center;
-      align-items: center;
       overflow: hidden;
       user-select: none;
       cursor: default;
     }
 
-    /* Timer Display */
-    .timer-display {
+    /* Top Navigation Bar */
+    header.app-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      z-index: 50;
+      background: rgba(5, 8, 17, 0.8);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
       font-weight: 700;
+      font-size: 1rem;
+      color: var(--text-main);
+      letter-spacing: -0.02em;
+    }
+
+    .brand-icon {
+      color: var(--accent-cyan);
+    }
+
+    /* Main Tab Navigation Pill */
+    .nav-tabs {
+      display: flex;
+      align-items: center;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid var(--border-light);
+      border-radius: 40px;
+      padding: 3px;
+      gap: 3px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    .nav-tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 7px 15px;
+      border-radius: 30px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .nav-tab-btn:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .nav-tab-btn.active {
+      background: var(--accent-cyan);
+      color: #000000;
+      font-weight: 700;
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.4);
+    }
+
+    .nav-tab-btn.active.tab-amber {
+      background: var(--accent-amber);
+      box-shadow: 0 0 16px rgba(245, 158, 11, 0.4);
+    }
+
+    .nav-tab-btn.active.tab-purple {
+      background: var(--accent-purple);
+      box-shadow: 0 0 16px rgba(168, 85, 247, 0.4);
+    }
+
+    .tab-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--accent-rose);
+      color: #fff;
+      font-size: 0.65rem;
+      font-weight: 800;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      margin-left: 2px;
+    }
+
+    .nav-tab-btn.active .tab-badge {
+      background: #000;
+      color: #fff;
+    }
+
+    /* Header Actions */
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .icon-btn {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--border-light);
+      color: var(--text-muted);
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .icon-btn:hover {
+      color: var(--text-main);
+      border-color: var(--accent-cyan);
+      background: rgba(30, 41, 59, 0.9);
+      transform: translateY(-1px);
+    }
+
+    .icon-btn.active {
+      color: var(--accent-cyan);
+      border-color: var(--accent-cyan);
+    }
+
+    .icon-btn svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+    }
+
+    /* Main Container Views */
+    main.main-viewport {
+      flex: 1;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      padding-top: 60px;
+    }
+
+    .view-section {
+      display: none;
+      width: 100%;
+      height: 100%;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      animation: fadeIn 0.25s ease-out;
+    }
+
+    .view-section.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.985);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    /* Auto-Hide when active and idle */
+    body.user-idle {
+      cursor: none;
+    }
+
+    body.user-idle .app-header,
+    body.user-idle .controls-row,
+    body.user-idle .timer-presets,
+    body.user-idle .timer-adjust-row {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-8px);
+    }
+
+    /* ========================================================
+       TAB 1: TIMER UP (STOPWATCH) STYLES
+       ======================================================== */
+    .timer-display {
+      font-weight: 800;
       font-variant-numeric: tabular-nums;
       line-height: 1;
       text-align: center;
-      transition: font-size 0.2s ease, margin 0.2s ease;
+      letter-spacing: -0.03em;
+      text-shadow: 0 0 40px rgba(56, 189, 248, 0.15);
+      transition: font-size 0.2s ease, margin 0.2s ease, color 0.3s;
     }
 
     @media (orientation: landscape) {
       .timer-display {
-        font-size: 32vh;
-        margin-bottom: 15px;
-      }
-
-      .controls {
-        gap: 20px;
-      }
-
-      .controls button {
-        padding: 10px 24px;
-        font-size: 1.1rem;
+        font-size: 28vh;
+        margin-bottom: 25px;
       }
     }
 
@@ -57,86 +260,676 @@
         font-size: 16vw;
         margin-bottom: 35px;
       }
-
-      .controls {
-        gap: 15px;
-      }
-
-      .controls button {
-        padding: 14px 26px;
-        font-size: 1.2rem;
-      }
     }
 
-    .controls {
+    .timer-subtext {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-top: -15px;
+      margin-bottom: 25px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    /* Common Button & Controls */
+    .controls-row {
       display: flex;
+      align-items: center;
+      gap: 16px;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      z-index: 10;
     }
 
-    button {
+    .btn-action {
       background: #000000;
       color: #ffffff;
       border: 2px solid #ffffff;
-      font-weight: 600;
-      border-radius: 30px;
+      font-weight: 700;
+      border-radius: 40px;
       cursor: pointer;
       outline: none;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      transition: background-color 0.15s, opacity 0.4s ease, border-color 0.2s;
+      gap: 8px;
+      padding: 12px 0;
+      width: 156px;
+      min-width: 156px;
+      max-width: 156px;
+      text-align: center;
+      font-size: 1.15rem;
+      transition: background-color 0.18s, color 0.18s, border-color 0.18s, box-shadow 0.18s, transform 0.18s;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
     }
 
-    button svg {
-      width: 1.1em;
-      height: 1.1em;
+    .btn-action svg {
+      width: 1.2em;
+      height: 1.2em;
       fill: currentColor;
-      flex-shrink: 0;
     }
 
-    button:active:not(:disabled) {
+    .btn-action:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 255, 255, 0.25);
       background-color: #ffffff;
       color: #000000;
     }
 
-    button:disabled {
-      opacity: 0.25;
+    .btn-action:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .btn-action.btn-cyan {
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+    }
+
+    .btn-action.btn-cyan:hover:not(:disabled) {
+      background: var(--accent-cyan);
+      color: #000000;
+      box-shadow: 0 0 24px rgba(56, 189, 248, 0.5);
+    }
+
+    .btn-action.btn-amber {
+      border-color: var(--accent-amber);
+      color: var(--accent-amber);
+    }
+
+    .btn-action.btn-amber:hover:not(:disabled) {
+      background: var(--accent-amber);
+      color: #000000;
+      box-shadow: 0 0 24px rgba(245, 158, 11, 0.5);
+    }
+
+    .btn-action.btn-rose {
+      border-color: var(--accent-rose);
+      color: var(--accent-rose);
+    }
+
+    .btn-action.btn-rose:hover:not(:disabled) {
+      background: var(--accent-rose);
+      color: #ffffff;
+      box-shadow: 0 0 24px rgba(244, 63, 94, 0.5);
+    }
+
+    .btn-action.btn-secondary {
+      border-color: var(--border-light);
+      color: var(--text-muted);
+      background: var(--bg-surface);
+      width: 140px;
+      min-width: 140px;
+      max-width: 140px;
+      padding: 12px 0;
+    }
+
+    .btn-action.btn-secondary:hover:not(:disabled) {
+      border-color: #ffffff;
+      color: #ffffff;
+      background: var(--bg-card-hover);
+    }
+
+    .btn-action:disabled {
+      opacity: 0.3;
       cursor: not-allowed;
-      border-color: #555555;
-      color: #888888;
+      border-color: #475569;
+      color: #64748b;
+      transform: none !important;
     }
 
-    /* Top Header Buttons */
-    .header-btn {
+    /* ========================================================
+       TAB 2: TIMER DOWN (COUNTDOWN) - IN-RING TIME STEPPER
+       ======================================================== */
+    .countdown-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      width: 100%;
+      max-width: 600px;
+    }
+
+    /* Circular Progress Ring */
+    .ring-container {
+      position: relative;
+      width: 340px;
+      height: 340px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    @media (min-height: 720px) and (min-width: 600px) {
+      .ring-container {
+        width: 380px;
+        height: 380px;
+      }
+    }
+
+    .progress-ring {
       position: absolute;
-      top: 15px;
-      padding: 8px 16px;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+    }
+
+    .progress-ring-bg {
+      stroke: rgba(255, 255, 255, 0.06);
+    }
+
+    .progress-ring-circle {
+      stroke: var(--accent-amber);
+      stroke-dasharray: 942.48;
+      stroke-dashoffset: 0;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 0.3s linear, stroke 0.3s ease;
+      filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.4));
+    }
+
+    .ring-inner-content {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* In-Ring Interactive Stepper (Setup Mode) */
+    .ring-stepper-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    .in-ring-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      width: 66px;
+    }
+
+    .in-ring-btn {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid var(--border-light);
+      color: var(--text-muted);
+      width: 48px;
+      height: 28px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: bold;
+      transition: all 0.15s ease;
+    }
+
+    .in-ring-btn:hover {
+      border-color: var(--accent-amber);
+      color: #ffffff;
+      background: rgba(245, 158, 11, 0.2);
+      transform: scale(1.08);
+    }
+
+    .in-ring-input {
+      background: rgba(15, 23, 42, 0.9);
+      border: 2px solid var(--border-light);
+      color: #ffffff;
+      font-size: 1.9rem;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      width: 66px;
+      height: 54px;
+      border-radius: 10px;
+      text-align: center;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .in-ring-input:focus {
+      border-color: var(--accent-amber);
+      box-shadow: 0 0 16px rgba(245, 158, 11, 0.4);
+    }
+
+    .in-ring-colon {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--text-dim);
+      margin-top: -18px;
+      user-select: none;
+    }
+
+    .in-ring-unit {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-top: 2px;
+    }
+
+    /* Active Running Countdown View */
+    .ring-active-display {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    .countdown-display {
+      font-size: 3.4rem;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
+      color: #ffffff;
+      text-shadow: 0 0 24px rgba(245, 158, 11, 0.35);
+      letter-spacing: -0.02em;
+    }
+
+    .countdown-status-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      margin-top: 8px;
+      font-weight: 600;
+    }
+
+    /* Preset Quick Chips */
+    .timer-presets {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      max-width: 520px;
+      margin-bottom: 24px;
+    }
+
+    .preset-chip {
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid var(--border-light);
+      color: var(--text-muted);
       font-size: 0.85rem;
-      border-width: 1px;
-      transition: opacity 0.4s ease;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.18s ease;
     }
 
-    .log-top-btn {
-      right: 15px;
+    .preset-chip:hover {
+      border-color: var(--accent-amber);
+      color: #ffffff;
+      background: rgba(245, 158, 11, 0.15);
+      transform: translateY(-1px);
     }
 
-    .fs-btn {
-      left: 15px;
+    .preset-chip.active {
+      background: var(--accent-amber);
+      color: #000000;
+      font-weight: 700;
+      border-color: var(--accent-amber);
     }
 
-    /* Auto-Hide Controls */
-    body.user-idle {
-      cursor: none;
+    /* Quick adjustment inside circular ring */
+    .in-ring-adjust-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
     }
 
-    body.user-idle .controls,
-    body.user-idle .header-btn {
+    .in-ring-adjust-chip {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid var(--border-light);
+      color: var(--text-muted);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .in-ring-adjust-chip:hover {
+      color: #ffffff;
+      border-color: var(--accent-amber);
+      background: rgba(245, 158, 11, 0.25);
+      transform: translateY(-1px);
+    }
+
+    /* Immersion Fullscreen Running Mode */
+    body.timer-running header.app-header {
+      opacity: 0 !important;
+      pointer-events: none !important;
+      transform: translateY(-100%) !important;
+    }
+
+    body.timer-running .timer-presets {
+      display: none !important;
+    }
+
+    body.timer-running main.main-viewport {
+      padding-top: 0 !important;
+    }
+
+    /* ========================================================
+       TAB 3: REMINDERS & ALARMS STYLES
+       ======================================================== */
+    .reminders-container {
+      width: 100%;
+      max-width: 900px;
+      height: calc(100vh - 100px);
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 20px;
+      padding: 10px;
+    }
+
+    @media (max-width: 800px) {
+      .reminders-container {
+        grid-template-columns: 1fr;
+        height: auto;
+        overflow-y: auto;
+        padding-bottom: 80px;
+      }
+    }
+
+    .reminders-panel {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-light);
+      border-radius: 16px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      overflow-y: auto;
+    }
+
+    .panel-header {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #ffffff;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .form-input {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      color: #ffffff;
+      font-size: 0.95rem;
+      padding: 10px 14px;
+      border-radius: 8px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .form-input:focus {
+      border-color: var(--accent-purple);
+      box-shadow: 0 0 10px rgba(168, 85, 247, 0.3);
+    }
+
+    .time-mode-switch {
+      display: flex;
+      background: var(--bg-card);
+      border-radius: 8px;
+      padding: 3px;
+      gap: 4px;
+      margin-bottom: 10px;
+    }
+
+    .mode-switch-btn {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 6px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .mode-switch-btn.active {
+      background: var(--accent-purple);
+      color: #ffffff;
+      font-weight: 700;
+    }
+
+    .quick-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .tag-chip {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      padding: 4px 10px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .tag-chip:hover {
+      border-color: var(--accent-purple);
+      color: var(--text-main);
+      background: rgba(168, 85, 247, 0.15);
+    }
+
+    .btn-create-reminder {
+      background: var(--accent-purple);
+      color: #ffffff;
+      border: none;
+      font-size: 0.95rem;
+      font-weight: 700;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: auto;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 16px rgba(168, 85, 247, 0.4);
+    }
+
+    .btn-create-reminder:hover {
+      background: #c084fc;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(168, 85, 247, 0.6);
+    }
+
+    /* Reminders List Column */
+    .reminders-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .reminder-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      transition: all 0.2s ease;
+    }
+
+    .reminder-card:hover {
+      border-color: rgba(168, 85, 247, 0.4);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .reminder-card.inactive {
+      opacity: 0.55;
+      filter: grayscale(0.6);
+    }
+
+    .reminder-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex: 1;
+    }
+
+    .reminder-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .reminder-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .meta-badge {
+      background: rgba(168, 85, 247, 0.15);
+      color: #c084fc;
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    .reminder-time-countdown {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .reminder-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Switch toggle */
+    .toggle-switch {
+      position: relative;
+      width: 40px;
+      height: 22px;
+      display: inline-block;
+    }
+
+    .toggle-switch input {
       opacity: 0;
-      pointer-events: none;
+      width: 0;
+      height: 0;
     }
 
-    /* Log Modal Overlay */
-    .modal {
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: var(--border-light);
+      border-radius: 22px;
+      transition: 0.25s;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      border-radius: 50%;
+      transition: 0.25s;
+    }
+
+    input:checked+.slider {
+      background-color: var(--accent-purple);
+    }
+
+    input:checked+.slider:before {
+      transform: translateX(18px);
+    }
+
+    .btn-icon-del {
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      cursor: pointer;
+      padding: 6px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.15s, background 0.15s;
+    }
+
+    .btn-icon-del:hover {
+      color: var(--accent-rose);
+      background: rgba(244, 63, 94, 0.1);
+    }
+
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 240px;
+      color: var(--text-dim);
+      text-align: center;
+      gap: 8px;
+    }
+
+    /* ========================================================
+       MODALS & DIALOGS (Alerts, Triggers, Analytics)
+       ======================================================== */
+    .modal-overlay {
       display: none;
       position: fixed;
       top: 0;
@@ -146,32 +939,147 @@
       background: rgba(0, 0, 0, 0.85);
       justify-content: center;
       align-items: center;
-      z-index: 100;
-      padding: 12px;
+      z-index: 200;
+      padding: 16px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
     }
 
-    /* Modal Layout Container */
-    .modal-content {
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    /* Trigger / Alarm Ringing Modal */
+    .alarm-modal-card {
       background: #0f172a;
-      border: 1px solid #1e293b;
-      border-radius: 12px;
-      padding: 16px;
+      border: 2px solid var(--accent-amber);
+      border-radius: 20px;
+      padding: 32px 24px;
       width: 100%;
-      max-width: 580px;
-      height: 480px;
+      max-width: 440px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 16px;
+      box-shadow: 0 0 50px rgba(245, 158, 11, 0.35);
+      animation: pulseGlow 1.5s infinite alternate;
+    }
+
+    .alarm-modal-card.purple {
+      border-color: var(--accent-purple);
+      box-shadow: 0 0 50px rgba(168, 85, 247, 0.35);
+    }
+
+    @keyframes pulseGlow {
+      from {
+        box-shadow: 0 0 30px rgba(245, 158, 11, 0.2);
+      }
+      to {
+        box-shadow: 0 0 60px rgba(245, 158, 11, 0.6);
+      }
+    }
+
+    .alarm-icon-wrap {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--accent-amber);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      animation: bounce 0.6s infinite alternate;
+    }
+
+    .alarm-modal-card.purple .alarm-icon-wrap {
+      background: rgba(168, 85, 247, 0.15);
+      color: var(--accent-purple);
+    }
+
+    @keyframes bounce {
+      from {
+        transform: scale(0.95);
+      }
+      to {
+        transform: scale(1.1);
+      }
+    }
+
+    .alarm-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #ffffff;
+    }
+
+    .alarm-message {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    .alarm-actions {
+      display: flex;
+      gap: 12px;
+      width: 100%;
+      margin-top: 8px;
+    }
+
+    .alarm-actions button {
+      flex: 1;
+      padding: 12px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      border-radius: 12px;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s;
+    }
+
+    .btn-dismiss {
+      background: #ffffff;
+      color: #000000;
+    }
+
+    .btn-dismiss:hover {
+      background: #e2e8f0;
+      transform: translateY(-1px);
+    }
+
+    .btn-snooze {
+      background: var(--bg-card);
+      color: var(--text-main);
+      border: 1px solid var(--border-light) !important;
+    }
+
+    .btn-snooze:hover {
+      background: var(--bg-card-hover);
+    }
+
+    /* ========================================================
+       ANALYTICS DASHBOARD MODAL & MULTI-TYPE VISUALIZATIONS
+       ======================================================== */
+    .dashboard-modal-card {
+      background: #0b1120;
+      border: 1px solid #1e293b;
+      border-radius: 18px;
+      padding: 20px;
+      width: 100%;
+      max-width: 680px;
+      height: 560px;
       display: flex;
       flex-direction: column;
       gap: 12px;
       color: #e2e8f0;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
     }
 
     .modal-header {
-      font-size: 1rem;
-      font-weight: 600;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      font-weight: 700;
+      font-size: 1.05rem;
     }
 
     .header-icon-group {
@@ -180,61 +1088,78 @@
     }
 
     .modal-header-btn {
-      padding: 4px 8px;
+      padding: 6px 10px;
       font-size: 0.85rem;
-      border-width: 1px;
-      border-radius: 6px;
-      min-width: 30px;
-      height: 30px;
+      border-radius: 8px;
       background: transparent;
-      border-color: #334155;
-    }
-
-    /* Tab Navigation */
-    .tab-nav {
-      display: flex;
-      gap: 8px;
-      border-bottom: 1px solid #1e293b;
-      padding-bottom: 6px;
-    }
-
-    .tab-btn {
-      background: transparent;
-      border: none;
-      color: #94a3b8;
-      font-size: 0.8rem;
-      padding: 6px 8px;
+      border: 1px solid #334155;
+      color: var(--text-muted);
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 4px;
+      justify-content: center;
+      transition: all 0.15s ease;
     }
 
-    .tab-btn.active {
-      color: #38bdf8;
-      border-bottom: 2px solid #38bdf8;
-      border-radius: 0;
+    .modal-header-btn:hover {
+      color: #ffffff;
+      border-color: var(--accent-cyan);
+      background: var(--bg-card);
+    }
+
+    .modal-header-btn svg {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+    }
+
+    /* Tab Navigation inside Modal */
+    .dash-tab-nav {
+      display: flex;
+      gap: 6px;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 6px;
+    }
+
+    .dash-tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.8rem;
       font-weight: 600;
+      padding: 6px 10px;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.15s;
     }
 
-    /* Tab Content Frame */
-    .tab-content {
+    .dash-tab-btn:hover {
+      color: #ffffff;
+    }
+
+    .dash-tab-btn.active {
+      color: var(--accent-cyan);
+      background: rgba(56, 189, 248, 0.12);
+      font-weight: 700;
+    }
+
+    /* Modal Content Panels */
+    .dash-tab-content {
       display: none;
-      background: #1e293b;
-      border: 1px solid #334155;
-      border-radius: 8px;
-      padding: 12px;
+      background: #111827;
+      border: 1px solid #1f2937;
+      border-radius: 12px;
+      padding: 14px;
       flex: 1;
       overflow-y: auto;
     }
 
-    .tab-content.active {
+    .dash-tab-content.active {
       display: flex;
       flex-direction: column;
       justify-content: space-between;
     }
 
-    /* View Controls */
     .view-header {
       display: flex;
       justify-content: space-between;
@@ -243,22 +1168,25 @@
     }
 
     .view-title {
-      font-weight: 600;
+      font-weight: 700;
       font-size: 0.85rem;
       text-align: center;
+      color: var(--text-main);
     }
 
     .nav-btn {
       background: #0f172a;
       border: 1px solid #334155;
-      border-radius: 4px;
+      border-radius: 6px;
       color: #fff;
-      padding: 2px 8px;
-      font-size: 0.8rem;
+      padding: 3px 10px;
+      font-size: 0.85rem;
       cursor: pointer;
     }
 
-    /* Calendar Grid */
+    /* ========================================================
+       1. MULTI-TYPE CALENDAR HEATMAP
+       ======================================================== */
     .cal-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
@@ -270,55 +1198,123 @@
     .cal-day-label {
       font-size: 0.7rem;
       color: #94a3b8;
-      padding-bottom: 2px;
       font-weight: bold;
     }
 
     .cal-cell {
-      height: 32px;
-      border-radius: 4px;
-      background-color: #0f172a;
+      height: 38px;
+      border-radius: 6px;
+      background-color: #0b1329;
+      border: 1px solid rgba(255, 255, 255, 0.03);
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: center;
-      font-size: 0.75rem;
+      justify-content: space-between;
+      padding: 3px 2px;
+      font-size: 0.72rem;
       color: #64748b;
+      position: relative;
+      transition: all 0.15s ease;
     }
 
     .cal-cell.empty {
       background: transparent;
+      border-color: transparent;
+    }
+
+    /* Green Heat Intensity when ANY activity is present */
+    .cal-cell.has-activity {
+      border-color: rgba(16, 185, 129, 0.3);
+      background-color: #063c2c;
+      color: #e2e8f0;
+      font-weight: 600;
     }
 
     .cal-cell.level-1 {
       background-color: #064e3b;
-      color: #a7f3d0;
+      border-color: #059669;
     }
 
     .cal-cell.level-2 {
       background-color: #047857;
+      border-color: #10b981;
       color: #ffffff;
     }
 
     .cal-cell.level-3 {
-      background-color: #10b981;
+      background-color: #059669;
+      border-color: #34d399;
       color: #ffffff;
-      font-weight: bold;
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.3);
     }
 
     .cal-cell.level-4 {
-      background-color: #34d399;
+      background-color: #10b981;
+      border-color: #6ee7b7;
       color: #000000;
-      font-weight: bold;
+      font-weight: 800;
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.5);
     }
 
-    .cal-legend {
+    /* Tri-type dot indicators inside calendar cell */
+    .cal-type-dots {
       display: flex;
       align-items: center;
-      justify-content: flex-end;
-      gap: 4px;
+      justify-content: center;
+      gap: 3px;
+      width: 100%;
+      height: 6px;
+    }
+
+    .dot-pill {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+    }
+
+    .dot-pill.dot-up {
+      background: var(--accent-cyan);
+      box-shadow: 0 0 4px var(--accent-cyan);
+    }
+
+    .dot-pill.dot-down {
+      background: var(--accent-amber);
+      box-shadow: 0 0 4px var(--accent-amber);
+    }
+
+    .dot-pill.dot-rem {
+      background: var(--accent-purple);
+      box-shadow: 0 0 4px var(--accent-purple);
+    }
+
+    .cal-legend-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       margin-top: 6px;
+      padding-top: 6px;
+      border-top: 1px solid #1f2937;
       font-size: 0.7rem;
       color: #94a3b8;
+    }
+
+    .cal-type-legend {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .type-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.68rem;
+    }
+
+    .cal-heat-legend {
+      display: flex;
+      align-items: center;
+      gap: 3px;
     }
 
     .legend-box {
@@ -327,90 +1323,228 @@
       border-radius: 2px;
     }
 
-    /* Weekly Chart */
-    .chart-container {
+    /* ========================================================
+       2. 3-BAR CLUSTERED WEEKLY CHART
+       ======================================================== */
+    .chart-legend-top {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      font-size: 0.72rem;
+      margin-bottom: 8px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid #1f2937;
+    }
+
+    .legend-indicator {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+    }
+
+    .chart-container-3bar {
       display: flex;
       justify-content: space-around;
       align-items: flex-end;
       flex: 1;
-      padding-top: 10px;
+      padding-top: 16px;
       border-bottom: 1px solid #334155;
       margin-bottom: 4px;
+      gap: 4px;
     }
 
-    .chart-col {
+    .day-cluster-col {
       display: flex;
       flex-direction: column;
       align-items: center;
       height: 100%;
       justify-content: flex-end;
-      width: 12%;
+      flex: 1;
     }
 
-    .chart-bar-wrap {
+    .cluster-bars-wrap {
       width: 100%;
       height: 100%;
       display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 3px;
+      padding: 0 2px;
+    }
+
+    .cluster-bar-col {
+      display: flex;
       flex-direction: column;
-      justify-content: flex-end;
       align-items: center;
+      justify-content: flex-end;
+      height: 100%;
+      flex: 1;
+      max-width: 16px;
+      position: relative;
     }
 
-    .chart-val {
-      font-size: 0.65rem;
-      color: #38bdf8;
-      margin-bottom: 2px;
-    }
-
-    .chart-bar {
+    .bar-pill {
       width: 100%;
-      background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%);
       border-radius: 3px 3px 0 0;
       min-height: 2px;
-      transition: height 0.3s ease;
+      transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .chart-label {
-      font-size: 0.7rem;
+    .bar-pill.bar-up {
+      background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%);
+      box-shadow: 0 0 6px rgba(56, 189, 248, 0.3);
+    }
+
+    .bar-pill.bar-down {
+      background: linear-gradient(180deg, #fbbf24 0%, #d97706 100%);
+      box-shadow: 0 0 6px rgba(245, 158, 11, 0.3);
+    }
+
+    .bar-pill.bar-rem {
+      background: linear-gradient(180deg, #c084fc 0%, #9333ea 100%);
+      box-shadow: 0 0 6px rgba(168, 85, 247, 0.3);
+    }
+
+    .cluster-day-label {
+      font-size: 0.72rem;
       color: #94a3b8;
       margin-top: 6px;
-      margin-bottom: 4px;
+      margin-bottom: 2px;
+      font-weight: 600;
     }
 
-    /* Total Progress Grid */
-    .stats-grid {
+    /* Tooltip popup on bar hover */
+    .bar-hover-val {
+      position: absolute;
+      bottom: calc(100% + 4px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: #000;
+      color: #fff;
+      font-size: 0.6rem;
+      padding: 2px 4px;
+      border-radius: 4px;
+      white-space: nowrap;
+      display: none;
+      z-index: 10;
+      border: 1px solid #334155;
+    }
+
+    .cluster-bar-col:hover .bar-hover-val {
+      display: block;
+    }
+
+    /* ========================================================
+       3. CATEGORIZED TOTAL PROGRESS BREAKDOWN
+       ======================================================== */
+    .progress-section-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .progress-group-box {
+      background: #0b1329;
+      border: 1px solid #1e293b;
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+
+    .group-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .group-title.color-cyan { color: var(--accent-cyan); }
+    .group-title.color-amber { color: var(--accent-amber); }
+    .group-title.color-purple { color: var(--accent-purple); }
+
+    .stats-row-3 {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin-top: 4px;
+      gap: 6px;
     }
 
-    .stat-card {
-      background: #0f172a;
-      border: 1px solid #334155;
+    .stats-row-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+    }
+
+    .mini-stat-card {
+      background: #111c38;
+      border: 1px solid rgba(255, 255, 255, 0.05);
       border-radius: 6px;
-      padding: 10px 8px;
+      padding: 6px 8px;
       text-align: center;
     }
 
-    .stat-val {
-      font-size: 1.1rem;
-      font-weight: bold;
-      color: #38bdf8;
+    .mini-stat-val {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #ffffff;
       margin-top: 2px;
     }
 
-    .stat-lbl {
-      font-size: 0.7rem;
+    .mini-stat-lbl {
+      font-size: 0.65rem;
       color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
     }
 
-    /* Raw Logs Tabular Styling */
+    /* ========================================================
+       4. RAW LOGS TAB WITH TYPE FILTERS
+       ======================================================== */
+    .raw-logs-top-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      gap: 8px;
+    }
+
+    .log-filter-pills {
+      display: flex;
+      gap: 4px;
+    }
+
+    .filter-pill-btn {
+      background: #0f172a;
+      border: 1px solid #334155;
+      color: var(--text-muted);
+      font-size: 0.72rem;
+      padding: 4px 8px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .filter-pill-btn.active {
+      background: #ffffff;
+      color: #000000;
+      font-weight: 700;
+    }
+
     .raw-logs-wrap {
       flex: 1;
       overflow-y: auto;
       border: 1px solid #334155;
-      border-radius: 6px;
+      border-radius: 8px;
       background: #0f172a;
     }
 
@@ -419,10 +1553,6 @@
       border-collapse: collapse;
       font-size: 0.75rem;
       text-align: left;
-    }
-
-    .raw-table:has(tbody #no-records) {
-      height: 100%;
     }
 
     .raw-table th,
@@ -444,6 +1574,33 @@
       background: #1e293b;
     }
 
+    .type-pill {
+      font-size: 0.65rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 700;
+      text-transform: uppercase;
+      display: inline-block;
+    }
+
+    .type-pill.up {
+      background: rgba(56, 189, 248, 0.15);
+      color: #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+
+    .type-pill.down {
+      background: rgba(245, 158, 11, 0.15);
+      color: #f59e0b;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .type-pill.reminder {
+      background: rgba(168, 85, 247, 0.15);
+      color: #c084fc;
+      border: 1px solid rgba(168, 85, 247, 0.3);
+    }
+
     .modal-actions {
       display: flex;
       gap: 8px;
@@ -454,45 +1611,340 @@
     .modal-actions button {
       padding: 6px 14px;
       font-size: 0.8rem;
-      border-width: 1px;
       border-radius: 16px;
       flex: 1;
+      background: transparent;
+      border: 1px solid #475569;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .modal-actions button:hover {
+      background: var(--bg-card);
+      border-color: #fff;
+    }
+
+    .modal-actions button svg {
+      width: 14px;
+      height: 14px;
+      fill: currentColor;
     }
   </style>
 </head>
 
 <body>
 
-  <!-- Top Action Buttons -->
-  <button class="header-btn log-top-btn" id="logBtn">
-    <svg viewBox="0 0 24 24">
-      <path
-        d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
-    </svg>
-    <span>Log</span>
-  </button>
-
-  <div class="timer-display" id="display">00:00:00</div>
-
-  <!-- Dynamic Control Buttons -->
-  <div class="controls">
-    <button id="primaryBtn">
-      <svg id="primaryIcon" viewBox="0 0 24 24">
-        <path d="M8 5v14l11-7z" />
+  <!-- Top App Navigation Header -->
+  <header class="app-header" id="appHeader">
+    <div class="brand">
+      <svg class="brand-icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 14.5h-2v-2h2zm0-4h-2V7h2z" />
       </svg>
-      <span id="primaryText">Start</span>
-    </button>
-    <button id="secondaryBtn" style="display: none;">
-      <svg id="secondaryIcon" viewBox="0 0 24 24">
-        <path d="M6 6h12v12H6z" />
-      </svg>
-      <span id="secondaryText">Stop</span>
-    </button>
+      <span>OmniTimer</span>
+    </div>
+
+    <!-- Central Switcher Tabs -->
+    <nav class="nav-tabs" role="tablist">
+      <button class="nav-tab-btn active" id="tabNavUp" data-target="viewTimerUp">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M15 1H9v2h6V1zm-4 13h2V8h-2v6zm8.03-6.61l1.42-1.42c-.43-.51-.9-.99-1.41-1.41l-1.42 1.42A8.962 8.962 0 0 0 12 4c-4.97 0-9 4.03-9 9s4.02 9 9 9a8.994 8.994 0 0 0 7.03-14.61zM12 20c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z" />
+        </svg>
+        <span>Timer Up</span>
+      </button>
+
+      <button class="nav-tab-btn" id="tabNavDown" data-target="viewTimerDown">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M6 2v6h.01L6 8.01 10 12l-4 4 .01.01H6V22h12v-5.99h-.01L18 16l-4-4 4-3.99-.01-.01H18V2H6zm10 14.5V20H8v-3.5l4-4 4 4zm-4-5l-4-4V4h8v3.5l-4 4z" />
+        </svg>
+        <span>Timer Down</span>
+      </button>
+
+      <button class="nav-tab-btn" id="tabNavReminders" data-target="viewReminders">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z" />
+        </svg>
+        <span>Reminders</span>
+        <span class="tab-badge" id="reminderBadge" style="display: none;">0</span>
+      </button>
+    </nav>
+
+    <!-- Header Action Controls -->
+    <div class="header-actions">
+      <!-- Sound/Mute Toggle -->
+      <button class="icon-btn" id="soundToggleBtn" title="Toggle Sound Tone">
+        <svg id="soundIcon" viewBox="0 0 24 24">
+          <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+        </svg>
+      </button>
+
+      <!-- Notification Permission -->
+      <button class="icon-btn" id="notifPermBtn" title="Enable Web Notifications">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.93 6 11v5l-2 2v1h16v-1l-2-2z"/>
+        </svg>
+      </button>
+
+      <!-- Logs / Analytics Modal -->
+      <button class="icon-btn" id="logModalBtn" title="Analytics & Logs (Press L or 4)">
+        <svg viewBox="0 0 24 24">
+          <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
+        </svg>
+      </button>
+
+      <!-- Fullscreen Toggle -->
+      <button class="icon-btn" id="fsBtn" title="Fullscreen">
+        <svg id="fsIcon" viewBox="0 0 24 24">
+          <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z" />
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Viewport Area -->
+  <main class="main-viewport">
+
+    <!-- ==========================================
+         VIEW 1: TIMER UP (STOPWATCH)
+         ========================================== -->
+    <section class="view-section active" id="viewTimerUp">
+      <div class="timer-display" id="upDisplay">00:00:00</div>
+      <div class="timer-subtext">Stopwatch Mode</div>
+
+      <div class="controls-row">
+        <button class="btn-action btn-cyan" id="upPrimaryBtn">
+          <svg id="upPrimaryIcon" viewBox="0 0 24 24">
+            <path d="M8 5v14l11-7z" />
+          </svg>
+          <span id="upPrimaryText">Start</span>
+        </button>
+
+        <button class="btn-action btn-secondary" id="upSecondaryBtn" style="display: none;">
+          <svg id="upSecondaryIcon" viewBox="0 0 24 24">
+            <path d="M6 6h12v12H6z" />
+          </svg>
+          <span id="upSecondaryText">Stop</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         VIEW 2: TIMER DOWN (COUNTDOWN WITH IN-RING STEPPERS)
+         ========================================== -->
+    <section class="view-section" id="viewTimerDown">
+      <div class="countdown-wrapper">
+
+        <!-- Countdown Running Ring Display -->
+        <div class="ring-container" id="downRingContainer">
+          <svg class="progress-ring" viewBox="0 0 340 340">
+            <circle class="progress-ring-bg" cx="170" cy="170" r="150" stroke-width="10" fill="transparent" />
+            <circle class="progress-ring-circle" id="downRingCircle" cx="170" cy="170" r="150" stroke-width="10" fill="transparent" />
+          </svg>
+
+          <div class="ring-inner-content">
+            <!-- 1. Interactive Time Stepper (Directly inside Ring in Setup Mode) -->
+            <div class="ring-stepper-box" id="downRingStepper">
+              <!-- Hours Column -->
+              <div class="in-ring-col">
+                <button class="in-ring-btn picker-btn" data-step="h" data-val="1" title="Add Hour">▲</button>
+                <input type="text" class="in-ring-input picker-val-input" id="pickHours" value="00" maxlength="2" inputmode="numeric" />
+                <button class="in-ring-btn picker-btn" data-step="h" data-val="-1" title="Subtract Hour">▼</button>
+                <span class="in-ring-unit">Hours</span>
+              </div>
+
+              <span class="in-ring-colon">:</span>
+
+              <!-- Minutes Column -->
+              <div class="in-ring-col">
+                <button class="in-ring-btn picker-btn" data-step="m" data-val="1" title="Add Minute">▲</button>
+                <input type="text" class="in-ring-input picker-val-input" id="pickMins" value="05" maxlength="2" inputmode="numeric" />
+                <button class="in-ring-btn picker-btn" data-step="m" data-val="-1" title="Subtract Minute">▼</button>
+                <span class="in-ring-unit">Minutes</span>
+              </div>
+
+              <span class="in-ring-colon">:</span>
+
+              <!-- Seconds Column -->
+              <div class="in-ring-col">
+                <button class="in-ring-btn picker-btn" data-step="s" data-val="1" title="Add Second">▲</button>
+                <input type="text" class="in-ring-input picker-val-input" id="pickSecs" value="00" maxlength="2" inputmode="numeric" />
+                <button class="in-ring-btn picker-btn" data-step="s" data-val="-1" title="Subtract Second">▼</button>
+                <span class="in-ring-unit">Seconds</span>
+              </div>
+            </div>
+
+            <!-- 2. Active Running Countdown Display (Visible when Running or Paused) -->
+            <div class="ring-active-display" id="downActiveDisplay" style="display: none;">
+              <div class="countdown-display" id="downDisplay">00:05:00</div>
+              <div class="countdown-status-label" id="downStatusLabel">Counting down</div>
+              <!-- In-Ring Quick Add while running -->
+              <div class="in-ring-adjust-row" id="downAdjustRow">
+                <button class="in-ring-adjust-chip" id="add1MinBtn">+1 Min</button>
+                <button class="in-ring-adjust-chip" id="add5MinBtn">+5 Min</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Preset Chips Below the Ring -->
+        <div class="timer-presets" id="downPresets">
+          <button class="preset-chip" data-secs="60">1 min</button>
+          <button class="preset-chip active" data-secs="300">5 min</button>
+          <button class="preset-chip" data-secs="600">10 min</button>
+          <button class="preset-chip" data-secs="1500">25 min 🍅</button>
+          <button class="preset-chip" data-secs="1800">30 min</button>
+          <button class="preset-chip" data-secs="3600">1 hr</button>
+        </div>
+
+        <!-- Action Control Buttons -->
+        <div class="controls-row">
+          <button class="btn-action btn-amber" id="downPrimaryBtn">
+            <svg id="downPrimaryIcon" viewBox="0 0 24 24">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+            <span id="downPrimaryText">Start</span>
+          </button>
+
+          <button class="btn-action btn-secondary" id="downSecondaryBtn" style="display: none;">
+            <svg id="downSecondaryIcon" viewBox="0 0 24 24">
+              <path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
+            </svg>
+            <span id="downSecondaryText">Reset</span>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==========================================
+         VIEW 3: REMINDERS & SCHEDULED ALARMS
+         ========================================== -->
+    <section class="view-section" id="viewReminders">
+      <div class="reminders-container">
+
+        <!-- Left Column: Add / Schedule Reminder Form -->
+        <div class="reminders-panel">
+          <div class="panel-header">
+            <span>⏰ Add Reminder</span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Reminder Title</label>
+            <input type="text" class="form-input" id="remTitle" placeholder="e.g. Drink Water, Stretch, Team Call" maxlength="50" />
+            <div class="quick-tags">
+              <span class="tag-chip" data-title="Drink Water 💧">💧 Water</span>
+              <span class="tag-chip" data-title="Stand up & Stretch 🧘">🧘 Stretch</span>
+              <span class="tag-chip" data-title="Take Medicine 💊">💊 Medicine</span>
+              <span class="tag-chip" data-title="Team Standup 📞">📞 Meeting</span>
+              <span class="tag-chip" data-title="Rest Eyes 👁️">👁️ Eyes Rest</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Time Schedule Mode</label>
+            <div class="time-mode-switch">
+              <button class="mode-switch-btn active" id="modeRelativeBtn" type="button">In X Minutes</button>
+              <button class="mode-switch-btn" id="modeClockBtn" type="button">Exact Clock Time</button>
+            </div>
+
+            <!-- Mode 1: Relative Timer -->
+            <div id="relativeTimePickerWrap">
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <input type="number" class="form-input" id="remRelMinutes" value="15" min="1" max="720" style="width: 90px;" />
+                <span style="font-size: 0.85rem; color: var(--text-muted);">minutes from now</span>
+              </div>
+              <div class="quick-tags" style="margin-top: 6px;">
+                <span class="tag-chip" data-rel="5">5m</span>
+                <span class="tag-chip" data-rel="10">10m</span>
+                <span class="tag-chip" data-rel="15">15m</span>
+                <span class="tag-chip" data-rel="30">30m</span>
+                <span class="tag-chip" data-rel="45">45m</span>
+                <span class="tag-chip" data-rel="60">1 hr</span>
+              </div>
+            </div>
+
+            <!-- Mode 2: Exact Clock Time -->
+            <div id="clockTimePickerWrap" style="display: none;">
+              <input type="time" class="form-input" id="remClockTime" style="width: 100%;" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Repeat</label>
+            <select class="form-input" id="remRepeat" style="cursor: pointer;">
+              <option value="none">Once (No Repeat)</option>
+              <option value="15m">Every 15 Minutes</option>
+              <option value="30m">Every 30 Minutes</option>
+              <option value="1h">Every 1 Hour</option>
+              <option value="daily">Daily at this time</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Sound Tone</label>
+            <div style="display:flex; gap:8px;">
+              <select class="form-input" id="remTone" style="flex:1; cursor: pointer;">
+                <option value="chime">Gentle Chime ✨</option>
+                <option value="bell">Zen Bell 🔔</option>
+                <option value="pulse">Melodic Pulse 🎵</option>
+                <option value="beep">Digital Beep ⚡</option>
+              </select>
+              <button class="in-ring-btn" id="testToneBtn" title="Preview Sound" type="button" style="height: 42px; width: 44px; border-radius: 8px;">
+                ▶
+              </button>
+            </div>
+          </div>
+
+          <button class="btn-create-reminder" id="saveReminderBtn" type="button">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+            </svg>
+            <span>Set Reminder</span>
+          </button>
+        </div>
+
+        <!-- Right Column: Active Reminders List -->
+        <div class="reminders-panel">
+          <div class="panel-header">
+            <span>Scheduled Reminders</span>
+            <span style="font-size: 0.8rem; color: var(--text-dim);" id="remCountLabel">0 active</span>
+          </div>
+
+          <div class="reminders-list" id="remindersList">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==========================================
+       RINGING ALARM / TRIGGER MODAL
+       ========================================== -->
+  <div class="modal-overlay" id="alarmTriggerModal">
+    <div class="alarm-modal-card" id="alarmModalCard">
+      <div class="alarm-icon-wrap">
+        🔔
+      </div>
+      <div class="alarm-title" id="alarmTriggerTitle">Timer Finished!</div>
+      <div class="alarm-message" id="alarmTriggerMsg">Your scheduled countdown timer has ended.</div>
+      <div class="alarm-actions">
+        <button class="btn-snooze" id="alarmSnoozeBtn">Snooze +5m</button>
+        <button class="btn-dismiss" id="alarmDismissBtn">Dismiss</button>
+      </div>
+    </div>
   </div>
 
-  <!-- Dashboard Modal -->
-  <div class="modal" id="logModal">
-    <div class="modal-content">
+  <!-- ==========================================
+       ANALYTICS & LOGS MODAL (UPGRADED TRI-COLOR)
+       ========================================== -->
+  <div class="modal-overlay" id="logModal">
+    <div class="dashboard-modal-card">
       <div class="modal-header">
         <div class="header-icon-group">
           <button id="downloadBtn" class="modal-header-btn" title="Download Log JSON">
@@ -509,63 +1961,91 @@
         </div>
 
         <span>Analytics Dashboard</span>
-        <button id="closeModalBtn" class="modal-header-btn" title="Close">✕</button>
+        <button id="closeModalBtn" class="modal-header-btn" title="Close (Esc)">✕</button>
       </div>
 
-      <!-- Tab Bar -->
-      <div class="tab-nav">
-        <button class="tab-btn active" data-tab="calTab">📅 Calendar View</button>
-        <button class="tab-btn" data-tab="chartTab">📊 Weekly Chart</button>
-        <button class="tab-btn" data-tab="progressTab">⭕ Total Progress</button>
-        <button class="tab-btn" data-tab="rawTab">📝 Raw Logs</button>
+      <!-- Tab Bar inside Modal -->
+      <div class="dash-tab-nav">
+        <button class="dash-tab-btn active" data-tab="calTab">📅 Calendar Heatmap</button>
+        <button class="dash-tab-btn" data-tab="chartTab">📊 3-Bar Weekly Chart</button>
+        <button class="dash-tab-btn" data-tab="progressTab">⭕ Categorized Progress</button>
+        <button class="dash-tab-btn" data-tab="rawTab">📝 Raw Logs</button>
       </div>
 
-      <!-- Tab 1: Calendar View -->
-      <div class="tab-content active" id="calTab">
+      <!-- Tab 1: Calendar View (Heatmap & Tri-Type Indicators) -->
+      <div class="dash-tab-content active" id="calTab">
         <div class="view-header">
           <button class="nav-btn" id="prevMonthBtn">‹</button>
           <div class="view-title" id="calMonthTitle">Calendar Heatmap</div>
           <button class="nav-btn" id="nextMonthBtn">›</button>
         </div>
+
         <div class="cal-grid" id="calGrid"></div>
-        <div class="cal-legend">
-          <span>Less</span>
-          <div class="legend-box" style="background: #0f172a"></div>
-          <div class="legend-box" style="background: #064e3b"></div>
-          <div class="legend-box" style="background: #047857"></div>
-          <div class="legend-box" style="background: #10b981"></div>
-          <div class="legend-box" style="background: #34d399"></div>
-          <span>More</span>
+
+        <!-- Enhanced Tri-Type & Heat Legend -->
+        <div class="cal-legend-bar">
+          <div class="cal-type-legend">
+            <span class="type-legend-item"><span class="dot-pill dot-up"></span> Up</span>
+            <span class="type-legend-item"><span class="dot-pill dot-down"></span> Down</span>
+            <span class="type-legend-item"><span class="dot-pill dot-rem"></span> Reminder</span>
+          </div>
+          <div class="cal-heat-legend">
+            <span>Less</span>
+            <div class="legend-box" style="background: #0b1329"></div>
+            <div class="legend-box" style="background: #064e3b"></div>
+            <div class="legend-box" style="background: #047857"></div>
+            <div class="legend-box" style="background: #059669"></div>
+            <div class="legend-box" style="background: #10b981"></div>
+            <span>More</span>
+          </div>
         </div>
       </div>
 
-      <!-- Tab 2: Weekly Chart -->
-      <div class="tab-content" id="chartTab">
+      <!-- Tab 2: Clustered 3-Bar Weekly Chart -->
+      <div class="dash-tab-content" id="chartTab">
         <div class="view-header">
           <button class="nav-btn" id="prevWeekBtn">‹</button>
-          <div class="view-title" id="chartWeekTitle">Time Spent</div>
+          <div class="view-title" id="chartWeekTitle">Weekly Tri-Type Breakdown</div>
           <button class="nav-btn" id="nextWeekBtn">›</button>
         </div>
-        <div class="chart-container" id="weeklyChart"></div>
+
+        <!-- 3-Bar Legend -->
+        <div class="chart-legend-top">
+          <span class="legend-indicator"><span class="legend-dot" style="background: var(--accent-cyan);"></span> ⏱️ Timer Up (Duration)</span>
+          <span class="legend-indicator"><span class="legend-dot" style="background: var(--accent-amber);"></span> ⏳ Timer Down (Duration)</span>
+          <span class="legend-indicator"><span class="legend-dot" style="background: var(--accent-purple);"></span> 🔔 Reminders (Alert Count)</span>
+        </div>
+
+        <div class="chart-container-3bar" id="weeklyChart3Bar"></div>
       </div>
 
-      <!-- Tab 3: Total Progress -->
-      <div class="tab-content" id="progressTab">
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-          <div style="font-size:0.85rem; font-weight:600;">Detailed Analytics Overview</div>
-          <div class="stats-grid" id="statsSummary"></div>
+      <!-- Tab 3: Categorized Total Progress -->
+      <div class="dash-tab-content" id="progressTab">
+        <div class="progress-section-wrap" id="statsCategorizedWrap">
+          <!-- Dynamically populated -->
         </div>
       </div>
 
-      <!-- Tab 4: Raw Logs (Tabular View) -->
-      <div class="tab-content" id="rawTab">
+      <!-- Tab 4: Raw Logs Table with Type Filters -->
+      <div class="dash-tab-content" id="rawTab">
+        <div class="raw-logs-top-controls">
+          <div class="log-filter-pills" id="logFilterPills">
+            <button class="filter-pill-btn active" data-filter="all">All</button>
+            <button class="filter-pill-btn" data-filter="count_up">⏱️ Up</button>
+            <button class="filter-pill-btn" data-filter="count_down">⏳ Down</button>
+            <button class="filter-pill-btn" data-filter="reminder">🔔 Reminders</button>
+          </div>
+        </div>
+
         <div class="raw-logs-wrap">
           <table class="raw-table">
             <thead>
               <tr>
+                <th>Type</th>
+                <th>Details</th>
                 <th>Date</th>
-                <th>Start Time</th>
-                <th>End Time</th>
+                <th>Start / Set</th>
+                <th>End / Trigger</th>
                 <th>Duration</th>
               </tr>
             </thead>
@@ -573,19 +2053,19 @@
             </tbody>
           </table>
         </div>
+
         <div class="modal-actions">
           <button id="copyBtn">
             <svg viewBox="0 0 24 24">
-              <path
-                d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
+              <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
             </svg>
-            <span>Copy</span>
+            <span>Copy TSV</span>
           </button>
-          <button id="clearBtn" style="border-color: #666; color: #aaa;">
+          <button id="clearBtn" style="border-color: #f43f5e; color: #f43f5e;">
             <svg viewBox="0 0 24 24">
               <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
             </svg>
-            <span>Clear</span>
+            <span>Clear Logs</span>
           </button>
         </div>
       </div>
@@ -593,34 +2073,1016 @@
     </div>
   </div>
 
+  <!-- ==========================================
+       JAVASCRIPT LOGIC
+       ========================================== -->
   <script>
-    let timerInterval = null;
-    let secondsElapsed = 0;
-    let isRunning = false;
-    let isPaused = false;
+    /* ========================================================
+       1. GLOBAL STATE & ICONS
+       ======================================================== */
+    const icons = {
+      start: '<path d="M8 5v14l11-7z"/>',
+      pause: '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>',
+      stop: '<path d="M6 6h12v12H6z"/>',
+      reset: '<path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>',
+      expand: '<path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>',
+      compress: '<path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/>',
+      soundOn: '<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>',
+      soundMuted: '<path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>'
+    };
+
+    let isSoundEnabled = true;
     let wakeLock = null;
     let idleTimeout = null;
-    let db = null;
-    let currentSessionId = null;
-    let sessionStartTimestamp = null;
 
+    /* Database Setup (IndexedDB v2 with timer_sessions and reminders) */
+    let db = null;
+    const dbName = "OmniTimerDB";
+    const storeSessions = "timer_sessions";
+    const storeReminders = "reminders";
+
+    const dbReq = indexedDB.open(dbName, 2);
+
+    dbReq.onupgradeneeded = function (e) {
+      db = e.target.result;
+      if (!db.objectStoreNames.contains(storeSessions)) {
+        const osSessions = db.createObjectStore(storeSessions, { keyPath: "id", autoIncrement: true });
+        osSessions.createIndex("timestamp", "timestamp", { unique: false });
+        osSessions.createIndex("type", "type", { unique: false });
+      }
+      if (!db.objectStoreNames.contains(storeReminders)) {
+        const osReminders = db.createObjectStore(storeReminders, { keyPath: "id", autoIncrement: true });
+        osReminders.createIndex("targetTime", "targetTime", { unique: false });
+        osReminders.createIndex("active", "active", { unique: false });
+      }
+    };
+
+    dbReq.onsuccess = function (e) {
+      db = e.target.result;
+      loadRemindersFromDB();
+    };
+
+    /* ========================================================
+       2. WEB AUDIO API SYNTHESIZER (No external sound files)
+       ======================================================== */
+    let audioCtx = null;
+
+    function getAudioContext() {
+      if (!audioCtx) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new AudioContextClass();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function playTone(type = 'chime') {
+      if (!isSoundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        const now = ctx.currentTime;
+
+        if (type === 'chime') {
+          // Melodic gentle chords: C5 (523Hz), E5 (659Hz), G5 (784Hz), C6 (1046Hz)
+          const notes = [523.25, 659.25, 783.99, 1046.50];
+          notes.forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, now + i * 0.12);
+            gain.gain.setValueAtTime(0, now + i * 0.12);
+            gain.gain.linearRampToValueAtTime(0.28, now + i * 0.12 + 0.04);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.12 + 1.2);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now + i * 0.12);
+            osc.stop(now + i * 0.12 + 1.3);
+          });
+        } else if (type === 'bell') {
+          // Zen Acoustic Bell resonance
+          const baseFreq = 440;
+          [1, 2, 2.76, 4.07].forEach((ratio, i) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = i === 0 ? 'sine' : 'triangle';
+            osc.frequency.setValueAtTime(baseFreq * ratio, now);
+            gain.gain.setValueAtTime(0.3 / (i + 1), now);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + 2.5);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now);
+            osc.stop(now + 2.6);
+          });
+        } else if (type === 'pulse') {
+          // Warm harmonic pulse
+          [440, 554.37, 659.25].forEach((freq, idx) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, now + idx * 0.15);
+            gain.gain.setValueAtTime(0, now + idx * 0.15);
+            gain.gain.linearRampToValueAtTime(0.25, now + idx * 0.15 + 0.05);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.15 + 0.9);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now + idx * 0.15);
+            osc.stop(now + idx * 0.15 + 1.0);
+          });
+        } else {
+          // Digital Beep
+          for (let b = 0; b < 3; b++) {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(880, now + b * 0.18);
+            gain.gain.setValueAtTime(0.15, now + b * 0.18);
+            gain.gain.setValueAtTime(0, now + b * 0.18 + 0.1);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now + b * 0.18);
+            osc.stop(now + b * 0.18 + 0.12);
+          }
+        }
+      } catch (err) {
+        console.warn("Web Audio failed:", err);
+      }
+    }
+
+    /* Sound Loop for Active Alarm Modal */
+    let alarmSoundInterval = null;
+    function startAlarmSound(tone = 'chime') {
+      playTone(tone);
+      if (alarmSoundInterval) clearInterval(alarmSoundInterval);
+      alarmSoundInterval = setInterval(() => {
+        playTone(tone);
+      }, 2000);
+    }
+
+    function stopAlarmSound() {
+      if (alarmSoundInterval) {
+        clearInterval(alarmSoundInterval);
+        alarmSoundInterval = null;
+      }
+    }
+
+    /* Web Notifications Helper */
+    function sendWebNotification(title, body) {
+      if (!("Notification" in window)) return;
+      if (Notification.permission === "granted") {
+        new Notification(title, {
+          body,
+          icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2338bdf8'><path d='M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z'/></svg>"
+        });
+      }
+    }
+
+    const notifPermBtn = document.getElementById('notifPermBtn');
+    notifPermBtn.addEventListener('click', async () => {
+      if (!("Notification" in window)) {
+        alert("Notifications are not supported in this browser.");
+        return;
+      }
+      const perm = await Notification.requestPermission();
+      if (perm === 'granted') {
+        notifPermBtn.classList.add('active');
+        new Notification("Notifications Enabled", { body: "OmniTimer will alert you when timers and reminders trigger!" });
+      }
+    });
+
+    if ("Notification" in window && Notification.permission === 'granted') {
+      notifPermBtn.classList.add('active');
+    }
+
+    /* Sound Toggle */
+    const soundToggleBtn = document.getElementById('soundToggleBtn');
+    const soundIcon = document.getElementById('soundIcon');
+    soundToggleBtn.addEventListener('click', () => {
+      isSoundEnabled = !isSoundEnabled;
+      soundIcon.innerHTML = isSoundEnabled ? icons.soundOn : icons.soundMuted;
+      soundToggleBtn.classList.toggle('active', isSoundEnabled);
+      if (isSoundEnabled) playTone('chime');
+    });
+
+    /* ========================================================
+       3. NAVIGATION & TAB SWITCHING
+       ======================================================== */
+    const navTabButtons = document.querySelectorAll('.nav-tab-btn');
+    const viewSections = document.querySelectorAll('.view-section');
+
+    navTabButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetViewId = btn.dataset.target;
+
+        navTabButtons.forEach(b => {
+          b.classList.remove('active', 'tab-amber', 'tab-purple');
+        });
+        viewSections.forEach(v => v.classList.remove('active'));
+
+        btn.classList.add('active');
+        if (targetViewId === 'viewTimerDown') btn.classList.add('tab-amber');
+        if (targetViewId === 'viewReminders') btn.classList.add('tab-purple');
+
+        const targetSection = document.getElementById(targetViewId);
+        if (targetSection) targetSection.classList.add('active');
+
+        resetIdleTimer();
+      });
+    });
+
+    /* Auto-Hide Controls on Inactivity */
+    function resetIdleTimer() {
+      document.body.classList.remove('user-idle');
+      clearTimeout(idleTimeout);
+
+      const isUpActive = isUpRunning && !isUpPaused;
+      const isDownActive = isDownRunning && !isDownPaused;
+
+      if ((isUpActive || isDownActive) && !document.querySelector('.modal-overlay.open')) {
+        idleTimeout = setTimeout(() => {
+          document.body.classList.add('user-idle');
+        }, 5000);
+      }
+    }
+
+    ['mousemove', 'mousedown', 'touchstart', 'keydown', 'click'].forEach(evt => {
+      window.addEventListener(evt, resetIdleTimer, { passive: true });
+    });
+
+    /* ========================================================
+       4. TAB 1: TIMER UP (STOPWATCH)
+       ======================================================== */
+    let upTimerInterval = null;
+    let upSecondsElapsed = 0;
+    let isUpRunning = false;
+    let isUpPaused = false;
+    let upCurrentSessionId = null;
+    let upSessionStartTimestamp = null;
+
+    const upDisplay = document.getElementById('upDisplay');
+    const upPrimaryBtn = document.getElementById('upPrimaryBtn');
+    const upPrimaryIcon = document.getElementById('upPrimaryIcon');
+    const upPrimaryText = document.getElementById('upPrimaryText');
+    const upSecondaryBtn = document.getElementById('upSecondaryBtn');
+    const upSecondaryIcon = document.getElementById('upSecondaryIcon');
+    const upSecondaryText = document.getElementById('upSecondaryText');
+
+    function formatTime(totalSeconds) {
+      const hrs = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
+      const mins = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
+      const secs = String(totalSeconds % 60).padStart(2, '0');
+      return `${hrs}:${mins}:${secs}`;
+    }
+
+    function updateUpDisplay() {
+      upDisplay.textContent = formatTime(upSecondsElapsed);
+    }
+
+    function saveOrUpdateSession(type, formattedDuration, seconds, startTime, title = '', sessionIdCallback = null) {
+      if (!db) return;
+      const tx = db.transaction([storeSessions], "readwrite");
+      const store = tx.objectStore(storeSessions);
+      const isoEnd = new Date().toISOString();
+      const isoStart = startTime || isoEnd;
+
+      const record = {
+        type: type || 'count_up',
+        title: title || (type === 'count_up' ? 'Stopwatch Session' : type === 'count_down' ? 'Countdown Session' : 'Reminder Triggered'),
+        timestamp: isoEnd,
+        startTime: isoStart,
+        endTime: isoEnd,
+        formattedDuration,
+        seconds: seconds || 0
+      };
+
+      const req = store.add(record);
+      if (sessionIdCallback) {
+        req.onsuccess = (e) => sessionIdCallback(e.target.result);
+      }
+    }
+
+    upPrimaryBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!isUpRunning && !isUpPaused) startUpTimer();
+      else if (isUpRunning && !isUpPaused) pauseUpTimer();
+      else if (isUpPaused) resumeUpTimer();
+    });
+
+    upSecondaryBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      stopUpTimer();
+    });
+
+    /* Fullscreen Immersion & Screen Orientation Controller */
+    async function enterRunningFullscreen() {
+      document.body.classList.add('timer-running');
+      try {
+        if (!document.fullscreenElement) {
+          await document.documentElement.requestFullscreen();
+        }
+      } catch (err) { }
+
+      try {
+        if (screen.orientation && screen.orientation.lock) {
+          await screen.orientation.lock('landscape');
+        }
+      } catch (err) { }
+    }
+
+    async function exitRunningFullscreen() {
+      if (!isUpRunning && !isDownRunning) {
+        document.body.classList.remove('timer-running');
+
+        try {
+          if (document.fullscreenElement) {
+            await document.exitFullscreen();
+          }
+        } catch (err) { }
+
+        try {
+          if (screen.orientation && screen.orientation.unlock) {
+            screen.orientation.unlock();
+          }
+        } catch (err) { }
+      }
+    }
+
+    function startUpTimer() {
+      isUpRunning = true;
+      isUpPaused = false;
+      upSessionStartTimestamp = new Date().toISOString();
+      upPrimaryIcon.innerHTML = icons.pause;
+      upPrimaryText.textContent = 'Pause';
+      upSecondaryIcon.innerHTML = icons.stop;
+      upSecondaryText.textContent = 'Stop';
+      upSecondaryBtn.style.display = 'inline-flex';
+
+      upTimerInterval = setInterval(() => {
+        upSecondsElapsed++;
+        updateUpDisplay();
+      }, 1000);
+
+      enterRunningFullscreen();
+      requestWakeLock();
+      resetIdleTimer();
+    }
+
+    function pauseUpTimer() {
+      if (upTimerInterval) { clearInterval(upTimerInterval); upTimerInterval = null; }
+      isUpPaused = true;
+      document.body.classList.remove('user-idle');
+      clearTimeout(idleTimeout);
+
+      upPrimaryIcon.innerHTML = icons.start;
+      upPrimaryText.textContent = 'Resume';
+      upSecondaryIcon.innerHTML = icons.reset;
+      upSecondaryText.textContent = 'Reset';
+
+      releaseWakeLock();
+    }
+
+    function resumeUpTimer() {
+      isUpPaused = false;
+      upPrimaryIcon.innerHTML = icons.pause;
+      upPrimaryText.textContent = 'Pause';
+      upSecondaryIcon.innerHTML = icons.stop;
+      upSecondaryText.textContent = 'Stop';
+
+      upTimerInterval = setInterval(() => {
+        upSecondsElapsed++;
+        updateUpDisplay();
+      }, 1000);
+
+      requestWakeLock();
+      resetIdleTimer();
+    }
+
+    function stopUpTimer() {
+      if (upTimerInterval) { clearInterval(upTimerInterval); upTimerInterval = null; }
+      if (upSecondsElapsed > 0) {
+        saveOrUpdateSession('count_up', formatTime(upSecondsElapsed), upSecondsElapsed, upSessionStartTimestamp);
+      }
+
+      isUpRunning = false;
+      isUpPaused = false;
+      upSecondsElapsed = 0;
+      upCurrentSessionId = null;
+      upSessionStartTimestamp = null;
+
+      document.body.classList.remove('user-idle');
+      clearTimeout(idleTimeout);
+
+      upPrimaryIcon.innerHTML = icons.start;
+      upPrimaryText.textContent = 'Start';
+      upSecondaryBtn.style.display = 'none';
+
+      updateUpDisplay();
+      exitRunningFullscreen();
+      releaseWakeLock(false);
+    }
+
+    /* ========================================================
+       5. TAB 2: TIMER DOWN (COUNTDOWN WITH IN-RING STEPPERS)
+       ======================================================== */
+    let downTotalSeconds = 300;
+    let downRemainingSeconds = 300;
+    let isDownRunning = false;
+    let isDownPaused = false;
+    let downInterval = null;
+    let downSessionStartTimestamp = null;
+
+    const downRingCircle = document.getElementById('downRingCircle');
+    const downRingStepper = document.getElementById('downRingStepper');
+    const downActiveDisplay = document.getElementById('downActiveDisplay');
+    const downDisplay = document.getElementById('downDisplay');
+    const downStatusLabel = document.getElementById('downStatusLabel');
+    const downPresets = document.getElementById('downPresets');
+    const downAdjustRow = document.getElementById('downAdjustRow');
+
+    const downPrimaryBtn = document.getElementById('downPrimaryBtn');
+    const downPrimaryIcon = document.getElementById('downPrimaryIcon');
+    const downPrimaryText = document.getElementById('downPrimaryText');
+    const downSecondaryBtn = document.getElementById('downSecondaryBtn');
+
+    const pickHours = document.getElementById('pickHours');
+    const pickMins = document.getElementById('pickMins');
+    const pickSecs = document.getElementById('pickSecs');
+
+    const ringCircumference = 2 * Math.PI * 150; // 942.48
+    downRingCircle.style.strokeDasharray = `${ringCircumference} ${ringCircumference}`;
+    downRingCircle.style.strokeDashoffset = '0';
+
+    function setCircleProgress(percent) {
+      const offset = ringCircumference - (percent / 100 * ringCircumference);
+      downRingCircle.style.strokeDashoffset = offset;
+    }
+
+    /* Always include hours: HH:MM:SS */
+    function formatCountdownTime(totalSecs) {
+      const hrs = String(Math.floor(totalSecs / 3600)).padStart(2, '0');
+      const mins = String(Math.floor((totalSecs % 3600) / 60)).padStart(2, '0');
+      const secs = String(totalSecs % 60).padStart(2, '0');
+      return `${hrs}:${mins}:${secs}`;
+    }
+
+    function updateDownDisplay() {
+      downDisplay.textContent = formatCountdownTime(downRemainingSeconds);
+      const pct = downTotalSeconds > 0 ? (downRemainingSeconds / downTotalSeconds) * 100 : 0;
+      setCircleProgress(pct);
+
+      if (downRemainingSeconds <= 10 && downRemainingSeconds > 0) {
+        downRingCircle.style.stroke = 'var(--accent-rose)';
+        downDisplay.style.color = 'var(--accent-rose)';
+      } else {
+        downRingCircle.style.stroke = 'var(--accent-amber)';
+        downDisplay.style.color = '#ffffff';
+      }
+    }
+
+    function syncPickerFromTotal() {
+      const h = Math.floor(downTotalSeconds / 3600);
+      const m = Math.floor((downTotalSeconds % 3600) / 60);
+      const s = downTotalSeconds % 60;
+      pickHours.value = String(h).padStart(2, '0');
+      pickMins.value = String(m).padStart(2, '0');
+      pickSecs.value = String(s).padStart(2, '0');
+    }
+
+    function syncTotalFromPicker() {
+      const h = parseInt(pickHours.value, 10) || 0;
+      const m = parseInt(pickMins.value, 10) || 0;
+      const s = parseInt(pickSecs.value, 10) || 0;
+      const total = Math.max(1, h * 3600 + m * 60 + s);
+      downTotalSeconds = total;
+      downRemainingSeconds = total;
+      updateDownDisplay();
+    }
+
+    // In-ring stepper buttons (▲ and ▼)
+    document.querySelectorAll('.picker-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const stepType = btn.dataset.step;
+        const delta = parseInt(btn.dataset.val, 10);
+        let h = parseInt(pickHours.value, 10) || 0;
+        let m = parseInt(pickMins.value, 10) || 0;
+        let s = parseInt(pickSecs.value, 10) || 0;
+
+        if (stepType === 'h') h = Math.max(0, Math.min(99, h + delta));
+        if (stepType === 'm') m = Math.max(0, Math.min(59, m + delta));
+        if (stepType === 's') s = Math.max(0, Math.min(59, s + delta));
+
+        pickHours.value = String(h).padStart(2, '0');
+        pickMins.value = String(m).padStart(2, '0');
+        pickSecs.value = String(s).padStart(2, '0');
+
+        document.querySelectorAll('.preset-chip').forEach(c => c.classList.remove('active'));
+        syncTotalFromPicker();
+      });
+    });
+
+    // In-ring direct input changes
+    [pickHours, pickMins, pickSecs].forEach(input => {
+      input.addEventListener('change', () => {
+        let val = parseInt(input.value, 10) || 0;
+        val = Math.max(0, Math.min(input === pickHours ? 99 : 59, val));
+        input.value = String(val).padStart(2, '0');
+        document.querySelectorAll('.preset-chip').forEach(c => c.classList.remove('active'));
+        syncTotalFromPicker();
+      });
+
+      input.addEventListener('focus', () => input.select());
+    });
+
+    // Preset Chips below the ring
+    document.querySelectorAll('.preset-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        if (isDownRunning) return;
+        document.querySelectorAll('.preset-chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        const secs = parseInt(chip.dataset.secs, 10);
+        downTotalSeconds = secs;
+        downRemainingSeconds = secs;
+        syncPickerFromTotal();
+        updateDownDisplay();
+      });
+    });
+
+    downPrimaryBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!isDownRunning && !isDownPaused) startDownTimer();
+      else if (isDownRunning && !isDownPaused) pauseDownTimer();
+      else if (isDownPaused) resumeDownTimer();
+    });
+
+    downSecondaryBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      resetDownTimer();
+    });
+
+    document.getElementById('add1MinBtn').addEventListener('click', () => {
+      downRemainingSeconds += 60;
+      downTotalSeconds += 60;
+      updateDownDisplay();
+    });
+
+    document.getElementById('add5MinBtn').addEventListener('click', () => {
+      downRemainingSeconds += 300;
+      downTotalSeconds += 300;
+      updateDownDisplay();
+    });
+
+    function startDownTimer() {
+      if (downRemainingSeconds <= 0) {
+        downRemainingSeconds = downTotalSeconds;
+      }
+      isDownRunning = true;
+      isDownPaused = false;
+      downSessionStartTimestamp = new Date().toISOString();
+
+      downPrimaryIcon.innerHTML = icons.pause;
+      downPrimaryText.textContent = 'Pause';
+      downSecondaryBtn.style.display = 'inline-flex';
+      downStatusLabel.textContent = 'Counting down';
+
+      // Switch from in-ring Stepper to in-ring Active Countdown Display
+      downRingStepper.style.display = 'none';
+      downActiveDisplay.style.display = 'flex';
+      downPresets.style.display = 'none';
+
+      updateDownDisplay();
+
+      downInterval = setInterval(() => {
+        if (downRemainingSeconds > 0) {
+          downRemainingSeconds--;
+          updateDownDisplay();
+          if (downRemainingSeconds === 0) {
+            finishCountdown();
+          }
+        }
+      }, 1000);
+
+      enterRunningFullscreen();
+      requestWakeLock();
+      resetIdleTimer();
+    }
+
+    function pauseDownTimer() {
+      if (downInterval) { clearInterval(downInterval); downInterval = null; }
+      isDownPaused = true;
+      document.body.classList.remove('user-idle');
+      clearTimeout(idleTimeout);
+
+      downPrimaryIcon.innerHTML = icons.start;
+      downPrimaryText.textContent = 'Resume';
+      downStatusLabel.textContent = 'Paused';
+
+      releaseWakeLock();
+    }
+
+    function resumeDownTimer() {
+      isDownPaused = false;
+      downPrimaryIcon.innerHTML = icons.pause;
+      downPrimaryText.textContent = 'Pause';
+      downStatusLabel.textContent = 'Counting down';
+
+      downInterval = setInterval(() => {
+        if (downRemainingSeconds > 0) {
+          downRemainingSeconds--;
+          updateDownDisplay();
+          if (downRemainingSeconds === 0) {
+            finishCountdown();
+          }
+        }
+      }, 1000);
+
+      enterRunningFullscreen();
+      requestWakeLock();
+      resetIdleTimer();
+    }
+
+    function resetDownTimer() {
+      if (downInterval) { clearInterval(downInterval); downInterval = null; }
+      isDownRunning = false;
+      isDownPaused = false;
+      downRemainingSeconds = downTotalSeconds;
+
+      document.body.classList.remove('user-idle');
+      clearTimeout(idleTimeout);
+
+      downPrimaryIcon.innerHTML = icons.start;
+      downPrimaryText.textContent = 'Start';
+      downSecondaryBtn.style.display = 'none';
+      downStatusLabel.textContent = 'Ready to count down';
+
+      // Switch back to in-ring Steppers
+      downRingStepper.style.display = 'flex';
+      downActiveDisplay.style.display = 'none';
+      downPresets.style.display = 'flex';
+
+      syncPickerFromTotal();
+      updateDownDisplay();
+      exitRunningFullscreen();
+      releaseWakeLock(false);
+    }
+
+    function finishCountdown() {
+      if (downInterval) { clearInterval(downInterval); downInterval = null; }
+      isDownRunning = false;
+      isDownPaused = false;
+
+      saveOrUpdateSession('count_down', formatTime(downTotalSeconds), downTotalSeconds, downSessionStartTimestamp, `Countdown ${formatCountdownTime(downTotalSeconds)}`);
+
+      downPrimaryIcon.innerHTML = icons.start;
+      downPrimaryText.textContent = 'Start';
+      downSecondaryBtn.style.display = 'none';
+      downStatusLabel.textContent = 'Completed!';
+
+      // Switch back to in-ring Steppers
+      downRingStepper.style.display = 'flex';
+      downActiveDisplay.style.display = 'none';
+      downPresets.style.display = 'flex';
+
+      syncPickerFromTotal();
+
+      // Ring Alarm & Show Trigger Modal
+      showTriggerModal("⏳ Countdown Finished!", `Your ${formatCountdownTime(downTotalSeconds)} timer has completed.`, 'amber', 'chime');
+      sendWebNotification("Timer Down Completed!", `Your ${formatCountdownTime(downTotalSeconds)} countdown has finished.`);
+
+      exitRunningFullscreen();
+      releaseWakeLock(false);
+    }
+
+    // Initial setup
+    syncPickerFromTotal();
+    updateDownDisplay();
+
+    /* ========================================================
+       6. TAB 3: REMINDERS & ALARMS SCHEDULER
+       ======================================================== */
+    let remindersList = [];
+    let reminderTicker = null;
+
+    const remTitle = document.getElementById('remTitle');
+    const remRepeat = document.getElementById('remRepeat');
+    const remTone = document.getElementById('remTone');
+    const remRelMinutes = document.getElementById('remRelMinutes');
+    const remClockTime = document.getElementById('remClockTime');
+    const modeRelativeBtn = document.getElementById('modeRelativeBtn');
+    const modeClockBtn = document.getElementById('modeClockBtn');
+    const relativeTimePickerWrap = document.getElementById('relativeTimePickerWrap');
+    const clockTimePickerWrap = document.getElementById('clockTimePickerWrap');
+    const saveReminderBtn = document.getElementById('saveReminderBtn');
+    const remindersListEl = document.getElementById('remindersList');
+    const remCountLabel = document.getElementById('remCountLabel');
+    const reminderBadge = document.getElementById('reminderBadge');
+    const testToneBtn = document.getElementById('testToneBtn');
+
+    let reminderScheduleMode = 'relative'; // 'relative' or 'clock'
+
+    modeRelativeBtn.addEventListener('click', () => {
+      reminderScheduleMode = 'relative';
+      modeRelativeBtn.classList.add('active');
+      modeClockBtn.classList.remove('active');
+      relativeTimePickerWrap.style.display = 'block';
+      clockTimePickerWrap.style.display = 'none';
+    });
+
+    modeClockBtn.addEventListener('click', () => {
+      reminderScheduleMode = 'clock';
+      modeClockBtn.classList.add('active');
+      modeRelativeBtn.classList.remove('active');
+      relativeTimePickerWrap.style.display = 'none';
+      clockTimePickerWrap.style.display = 'block';
+
+      // Default clock time to 15m in future
+      const d = new Date();
+      d.setMinutes(d.getMinutes() + 15);
+      remClockTime.value = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+    });
+
+    // Quick tag chips
+    document.querySelectorAll('.tag-chip[data-title]').forEach(tag => {
+      tag.addEventListener('click', () => {
+        remTitle.value = tag.dataset.title;
+      });
+    });
+
+    document.querySelectorAll('.tag-chip[data-rel]').forEach(tag => {
+      tag.addEventListener('click', () => {
+        remRelMinutes.value = tag.dataset.rel;
+      });
+    });
+
+    testToneBtn.addEventListener('click', () => {
+      playTone(remTone.value);
+    });
+
+    function loadRemindersFromDB() {
+      if (!db) return;
+      const tx = db.transaction([storeReminders], "readonly");
+      const store = tx.objectStore(storeReminders);
+      const req = store.getAll();
+      req.onsuccess = () => {
+        remindersList = req.result || [];
+        renderRemindersList();
+      };
+    }
+
+    function saveReminderToDB(rem) {
+      if (!db) return;
+      const tx = db.transaction([storeReminders], "readwrite");
+      const store = tx.objectStore(storeReminders);
+      if (rem.id) {
+        store.put(rem);
+      } else {
+        const addReq = store.add(rem);
+        addReq.onsuccess = (e) => {
+          rem.id = e.target.result;
+          renderRemindersList();
+        };
+      }
+    }
+
+    function deleteReminderFromDB(id) {
+      if (!db) return;
+      const tx = db.transaction([storeReminders], "readwrite");
+      tx.objectStore(storeReminders).delete(id);
+      remindersList = remindersList.filter(r => r.id !== id);
+      renderRemindersList();
+    }
+
+    saveReminderBtn.addEventListener('click', () => {
+      const title = remTitle.value.trim() || 'Scheduled Reminder';
+      const repeat = remRepeat.value;
+      const tone = remTone.value;
+      let targetTimeMs = 0;
+
+      if (reminderScheduleMode === 'relative') {
+        const mins = parseInt(remRelMinutes.value, 10) || 15;
+        targetTimeMs = Date.now() + mins * 60 * 1000;
+      } else {
+        const val = remClockTime.value;
+        if (!val) return alert('Please choose a valid clock time.');
+        const [hh, mm] = val.split(':').map(Number);
+        const target = new Date();
+        target.setHours(hh, mm, 0, 0);
+        if (target.getTime() <= Date.now()) {
+          target.setDate(target.getDate() + 1); // Schedule for tomorrow if time has passed
+        }
+        targetTimeMs = target.getTime();
+      }
+
+      const newRem = {
+        title,
+        targetTime: targetTimeMs,
+        repeat,
+        tone,
+        active: true,
+        createdAt: new Date().toISOString()
+      };
+
+      remindersList.push(newRem);
+      saveReminderToDB(newRem);
+      remTitle.value = '';
+      playTone('chime');
+    });
+
+    function renderRemindersList() {
+      remindersListEl.innerHTML = '';
+      const now = Date.now();
+      const activeCount = remindersList.filter(r => r.active).length;
+
+      remCountLabel.textContent = `${activeCount} active`;
+      if (activeCount > 0) {
+        reminderBadge.style.display = 'inline-flex';
+        reminderBadge.textContent = activeCount;
+      } else {
+        reminderBadge.style.display = 'none';
+      }
+
+      if (remindersList.length === 0) {
+        remindersListEl.innerHTML = `
+          <div class="empty-state">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor" style="opacity:0.3;">
+              <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+            </svg>
+            <span style="font-size:0.9rem; font-weight:600;">No reminders set</span>
+            <span style="font-size:0.75rem;">Create your first reminder using the form on the left.</span>
+          </div>
+        `;
+        return;
+      }
+
+      // Sort by target time
+      const sorted = [...remindersList].sort((a, b) => a.targetTime - b.targetTime);
+
+      sorted.forEach(rem => {
+        const card = document.createElement('div');
+        card.className = `reminder-card ${rem.active ? '' : 'inactive'}`;
+
+        const diffSecs = Math.max(0, Math.round((rem.targetTime - now) / 1000));
+        let countdownStr = '';
+        if (diffSecs >= 3600) {
+          const h = Math.floor(diffSecs / 3600);
+          const m = Math.floor((diffSecs % 3600) / 60);
+          countdownStr = `in ${h}h ${m}m`;
+        } else if (diffSecs >= 60) {
+          const m = Math.floor(diffSecs / 60);
+          const s = diffSecs % 60;
+          countdownStr = `in ${m}m ${s}s`;
+        } else {
+          countdownStr = `in ${diffSecs}s`;
+        }
+
+        const targetDate = new Date(rem.targetTime);
+        const timeStr = targetDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+        const repeatLabel = rem.repeat !== 'none' ? `<span class="meta-badge">🔄 ${rem.repeat}</span>` : '';
+
+        card.innerHTML = `
+          <div class="reminder-info">
+            <div class="reminder-title">${rem.title}</div>
+            <div class="reminder-meta">
+              <span>🕒 ${timeStr}</span>
+              ${repeatLabel}
+              <span class="meta-badge">🎵 ${rem.tone || 'chime'}</span>
+            </div>
+          </div>
+
+          <div class="reminder-time-countdown">${rem.active ? countdownStr : 'Paused'}</div>
+
+          <div class="reminder-actions">
+            <label class="toggle-switch">
+              <input type="checkbox" ${rem.active ? 'checked' : ''} data-id="${rem.id}">
+              <span class="slider"></span>
+            </label>
+            <button class="btn-icon-del" data-id="${rem.id}" title="Delete Reminder">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+              </svg>
+            </button>
+          </div>
+        `;
+
+        // Toggle Active
+        card.querySelector('input[type="checkbox"]').addEventListener('change', (e) => {
+          rem.active = e.target.checked;
+          if (rem.active && rem.targetTime <= Date.now()) {
+            rem.targetTime = Date.now() + 15 * 60 * 1000; // Reset +15m if expired
+          }
+          saveReminderToDB(rem);
+        });
+
+        // Delete
+        card.querySelector('.btn-icon-del').addEventListener('click', () => {
+          deleteReminderFromDB(rem.id);
+        });
+
+        remindersListEl.appendChild(card);
+      });
+    }
+
+    // Reminders Master Check Loop (runs every second)
+    reminderTicker = setInterval(() => {
+      const now = Date.now();
+      let hasUpdates = false;
+
+      remindersList.forEach(rem => {
+        if (rem.active && rem.targetTime <= now) {
+          triggerReminder(rem);
+          hasUpdates = true;
+        }
+      });
+
+      // Update countdown UI labels every second if view is visible
+      if (document.getElementById('viewReminders').classList.contains('active')) {
+        renderRemindersList();
+      }
+    }, 1000);
+
+    function triggerReminder(rem) {
+      // 1. Log reminder trigger event to session history for Analytics tracking
+      saveOrUpdateSession('reminder', 'Triggered', 0, new Date().toISOString(), rem.title);
+
+      // 2. Show Trigger Modal & Web Notification
+      showTriggerModal(`🔔 ${rem.title}`, `Scheduled alert for ${new Date(rem.targetTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`, 'purple', rem.tone || 'chime', rem);
+      sendWebNotification(`OmniTimer Reminder: ${rem.title}`, "Your scheduled reminder alert has triggered!");
+
+      // 3. Handle Repeat or Deactivate
+      if (rem.repeat === '15m') {
+        rem.targetTime = Date.now() + 15 * 60 * 1000;
+      } else if (rem.repeat === '30m') {
+        rem.targetTime = Date.now() + 30 * 60 * 1000;
+      } else if (rem.repeat === '1h') {
+        rem.targetTime = Date.now() + 60 * 60 * 1000;
+      } else if (rem.repeat === 'daily') {
+        rem.targetTime = Date.now() + 24 * 60 * 60 * 1000;
+      } else {
+        rem.active = false;
+      }
+
+      saveReminderToDB(rem);
+      renderRemindersList();
+    }
+
+    /* ========================================================
+       7. ALARM TRIGGER MODAL & SNOOZE
+       ======================================================== */
+    let currentTriggerReminder = null;
+    const alarmTriggerModal = document.getElementById('alarmTriggerModal');
+    const alarmModalCard = document.getElementById('alarmModalCard');
+    const alarmTriggerTitle = document.getElementById('alarmTriggerTitle');
+    const alarmTriggerMsg = document.getElementById('alarmTriggerMsg');
+    const alarmSnoozeBtn = document.getElementById('alarmSnoozeBtn');
+    const alarmDismissBtn = document.getElementById('alarmDismissBtn');
+
+    function showTriggerModal(title, msg, color = 'amber', tone = 'chime', reminderObj = null) {
+      currentTriggerReminder = reminderObj;
+      alarmTriggerTitle.textContent = title;
+      alarmTriggerMsg.textContent = msg;
+
+      alarmModalCard.className = `alarm-modal-card ${color === 'purple' ? 'purple' : ''}`;
+      alarmTriggerModal.classList.add('open');
+
+      startAlarmSound(tone);
+      resetIdleTimer();
+    }
+
+    function closeTriggerModal() {
+      alarmTriggerModal.classList.remove('open');
+      stopAlarmSound();
+      currentTriggerReminder = null;
+    }
+
+    alarmDismissBtn.addEventListener('click', closeTriggerModal);
+
+    alarmSnoozeBtn.addEventListener('click', () => {
+      closeTriggerModal();
+      if (currentTriggerReminder) {
+        currentTriggerReminder.targetTime = Date.now() + 5 * 60 * 1000; // Snooze 5 mins
+        currentTriggerReminder.active = true;
+        saveReminderToDB(currentTriggerReminder);
+        renderRemindersList();
+      } else {
+        // Countdown Snooze: Restart 5 min countdown
+        downTotalSeconds = 300;
+        downRemainingSeconds = 300;
+        syncPickerFromTotal();
+        updateDownDisplay();
+        startDownTimer();
+      }
+    });
+
+    /* ========================================================
+       8. ANALYTICS & LOGS DASHBOARD (UPGRADED TRI-COLOR)
+       ======================================================== */
     let viewDate = new Date();
     let chartWeekOffset = 0;
+    let currentRawFilter = 'all';
 
-    const displayEl = document.getElementById('display');
-    const primaryBtn = document.getElementById('primaryBtn');
-    const primaryIcon = document.getElementById('primaryIcon');
-    const primaryText = document.getElementById('primaryText');
-
-    const secondaryBtn = document.getElementById('secondaryBtn');
-    const secondaryIcon = document.getElementById('secondaryIcon');
-    const secondaryText = document.getElementById('secondaryText');
-
-    const logBtn = document.getElementById('logBtn');
-    const fsBtn = document.getElementById('fsBtn');
-    const fsIcon = document.getElementById('fsIcon');
-    const fsText = document.getElementById('fsText');
-
+    const logModalBtn = document.getElementById('logModalBtn');
     const logModal = document.getElementById('logModal');
     const closeModalBtn = document.getElementById('closeModalBtn');
     const copyBtn = document.getElementById('copyBtn');
@@ -629,68 +3091,40 @@
     const importFileInput = document.getElementById('importFileInput');
     const clearBtn = document.getElementById('clearBtn');
 
-    const icons = {
-      start: '<path d="M8 5v14l11-7z"/>',
-      pause: '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>',
-      stop: '<path d="M6 6h12v12H6z"/>',
-      reset: '<path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>',
-      expand: '<path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>',
-      compress: '<path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/>'
-    };
+    logModalBtn.addEventListener('click', () => {
+      renderDashboard();
+      logModal.classList.add('open');
+    });
 
-    // DB Setup
-    const dbName = "TimerDatabase";
-    const storeName = "timer_sessions";
+    closeModalBtn.addEventListener('click', () => {
+      logModal.classList.remove('open');
+      resetIdleTimer();
+    });
 
-    const request = indexedDB.open(dbName, 1);
+    document.querySelectorAll('.dash-tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.dash-tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.dash-tab-content').forEach(c => c.classList.remove('active'));
 
-    request.onupgradeneeded = function (e) {
-      db = e.target.result;
-      if (!db.objectStoreNames.contains(storeName)) {
-        const objectStore = db.createObjectStore(storeName, { keyPath: "id", autoIncrement: true });
-        objectStore.createIndex("timestamp", "timestamp", { unique: false });
-      }
-    };
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.tab).classList.add('active');
+      });
+    });
 
-    request.onsuccess = function (e) {
-      db = e.target.result;
-    };
-
-    function saveOrUpdateSessionToDB(formattedDuration, seconds) {
-      if (!db || seconds === 0) return;
-
-      const transaction = db.transaction([storeName], "readwrite");
-      const objectStore = transaction.objectStore(storeName);
-      const isoEndTimestamp = new Date().toISOString();
-      const isoStartTimestamp = sessionStartTimestamp || isoEndTimestamp;
-
-      if (currentSessionId === null) {
-        const record = {
-          timestamp: isoEndTimestamp,
-          startTime: isoStartTimestamp,
-          endTime: isoEndTimestamp,
-          formattedDuration,
-          seconds
-        };
-        const addRequest = objectStore.add(record);
-        addRequest.onsuccess = function (e) { currentSessionId = e.target.result; };
-      } else {
-        const record = {
-          id: currentSessionId,
-          timestamp: isoEndTimestamp,
-          startTime: isoStartTimestamp,
-          endTime: isoEndTimestamp,
-          formattedDuration,
-          seconds
-        };
-        objectStore.put(record);
-      }
-    }
+    // Raw log filter pill listeners
+    document.querySelectorAll('.filter-pill-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-pill-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentRawFilter = btn.dataset.filter;
+        getAllRecords(records => renderRawLogs(records));
+      });
+    });
 
     function getAllRecords(callback) {
       if (!db) return callback([]);
-      const tx = db.transaction([storeName], "readonly");
-      const store = tx.objectStore(storeName);
+      const tx = db.transaction([storeSessions], "readonly");
+      const store = tx.objectStore(storeSessions);
       const req = store.getAll();
       req.onsuccess = () => callback(req.result || []);
     }
@@ -704,6 +3138,9 @@
       });
     }
 
+    /* --------------------------------------------------------
+       A. CALENDAR HEATMAP WITH GREEN HEAT & 3-TYPE DOTS
+       -------------------------------------------------------- */
     function renderCalendar(records) {
       const calGrid = document.getElementById('calGrid');
       const calTitle = document.getElementById('calMonthTitle');
@@ -715,12 +3152,28 @@
       const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
       calTitle.textContent = `${monthNames[month]} ${year}`;
 
-      const dailyTotals = {};
+      // Aggregate by day key: { totalSecs, upSecs, downSecs, remCount }
+      const dailyStats = {};
       records.forEach(r => {
         const d = new Date(r.timestamp);
         if (!isNaN(d.getTime())) {
           const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-          dailyTotals[key] = (dailyTotals[key] || 0) + (r.seconds || 0);
+          if (!dailyStats[key]) {
+            dailyStats[key] = { totalSecs: 0, upSecs: 0, downSecs: 0, remCount: 0 };
+          }
+          const secs = r.seconds || 0;
+          if (r.type === 'count_up') {
+            dailyStats[key].upSecs += secs;
+            dailyStats[key].totalSecs += secs;
+          } else if (r.type === 'count_down') {
+            dailyStats[key].downSecs += secs;
+            dailyStats[key].totalSecs += secs;
+          } else if (r.type === 'reminder') {
+            dailyStats[key].remCount += 1;
+            dailyStats[key].totalSecs += 60; // Count reminder as equivalent activity
+          } else {
+            dailyStats[key].totalSecs += secs;
+          }
         }
       });
 
@@ -742,28 +3195,62 @@
 
       for (let day = 1; day <= daysInMonth; day++) {
         const key = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-        const totalSecs = dailyTotals[key] || 0;
+        const dayData = dailyStats[key] || { totalSecs: 0, upSecs: 0, downSecs: 0, remCount: 0 };
 
         const cell = document.createElement('div');
         cell.className = 'cal-cell';
-        cell.textContent = day;
 
-        if (totalSecs > 0) {
-          const mins = totalSecs / 60;
-          if (mins < 5) cell.classList.add('level-1');
-          else if (mins < 30) cell.classList.add('level-2');
-          else if (mins < 120) cell.classList.add('level-3');
+        const dayNum = document.createElement('span');
+        dayNum.textContent = day;
+        cell.appendChild(dayNum);
+
+        // Dot indicators container
+        const dotsWrap = document.createElement('div');
+        dotsWrap.className = 'cal-type-dots';
+
+        const hasUp = dayData.upSecs > 0;
+        const hasDown = dayData.downSecs > 0;
+        const hasRem = dayData.remCount > 0;
+        const hasAnyActivity = hasUp || hasDown || hasRem;
+
+        if (hasUp) {
+          const dot = document.createElement('span');
+          dot.className = 'dot-pill dot-up';
+          dotsWrap.appendChild(dot);
+        }
+        if (hasDown) {
+          const dot = document.createElement('span');
+          dot.className = 'dot-pill dot-down';
+          dotsWrap.appendChild(dot);
+        }
+        if (hasRem) {
+          const dot = document.createElement('span');
+          dot.className = 'dot-pill dot-rem';
+          dotsWrap.appendChild(dot);
+        }
+        cell.appendChild(dotsWrap);
+
+        // Heat Intensity Green Level if ANY activity marked
+        if (hasAnyActivity) {
+          cell.classList.add('has-activity');
+          const totalActivityMins = (dayData.totalSecs / 60) + (dayData.remCount * 2);
+          if (totalActivityMins < 5) cell.classList.add('level-1');
+          else if (totalActivityMins < 30) cell.classList.add('level-2');
+          else if (totalActivityMins < 120) cell.classList.add('level-3');
           else cell.classList.add('level-4');
 
-          cell.title = `${key}: ${formatTime(totalSecs)}`;
+          cell.title = `${key}\n⏱️ Up: ${formatTime(dayData.upSecs)}\n⏳ Down: ${formatTime(dayData.downSecs)}\n🔔 Reminders: ${dayData.remCount} alerts`;
         }
 
         calGrid.appendChild(cell);
       }
     }
 
+    /* --------------------------------------------------------
+       B. CLUSTERED 3-BAR WEEKLY CHART (Up, Down, Reminders)
+       -------------------------------------------------------- */
     function renderWeeklyChart(records) {
-      const chartEl = document.getElementById('weeklyChart');
+      const chartEl = document.getElementById('weeklyChart3Bar');
       const titleEl = document.getElementById('chartWeekTitle');
       chartEl.innerHTML = '';
 
@@ -776,213 +3263,283 @@
       endOfWeek.setDate(endOfWeek.getDate() + 6);
       endOfWeek.setHours(23, 59, 59, 999);
 
-      const dayTotals = [0, 0, 0, 0, 0, 0, 0];
+      // Arrays of length 7 for Sun..Sat
+      const upSecs = [0, 0, 0, 0, 0, 0, 0];
+      const downSecs = [0, 0, 0, 0, 0, 0, 0];
+      const remCounts = [0, 0, 0, 0, 0, 0, 0];
+
       records.forEach(r => {
         const d = new Date(r.timestamp);
         if (!isNaN(d.getTime()) && d >= startOfWeek && d <= endOfWeek) {
-          dayTotals[d.getDay()] += (r.seconds || 0);
+          const dayIdx = d.getDay();
+          const secs = r.seconds || 0;
+          if (r.type === 'count_up') {
+            upSecs[dayIdx] += secs;
+          } else if (r.type === 'count_down') {
+            downSecs[dayIdx] += secs;
+          } else if (r.type === 'reminder') {
+            remCounts[dayIdx] += 1;
+          }
         }
       });
 
-      const maxSecs = Math.max(...dayTotals, 0);
-
-      let unitMode = 'seconds';
-      if (maxSecs >= 3600) unitMode = 'hours';
-      else if (maxSecs >= 60) unitMode = 'minutes';
+      const maxDurationSecs = Math.max(...upSecs, ...downSecs, 1);
+      const maxRemCount = Math.max(...remCounts, 1);
 
       const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
       const dateRangeStr = `${monthNames[startOfWeek.getMonth()]} ${startOfWeek.getDate()} - ${monthNames[endOfWeek.getMonth()]} ${endOfWeek.getDate()}`;
-      titleEl.textContent = `Time Spent in ${unitMode.charAt(0).toUpperCase() + unitMode.slice(1)} (${dateRangeStr})`;
+      titleEl.textContent = `Weekly Activity (${dateRangeStr})`;
 
       const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-      const scaleBaseline = maxSecs > 0 ? maxSecs : 1;
 
       dayNames.forEach((name, idx) => {
-        const secs = dayTotals[idx];
-        let displayVal = '';
+        const uSec = upSecs[idx];
+        const dSec = downSecs[idx];
+        const rCnt = remCounts[idx];
 
-        if (secs > 0) {
-          if (unitMode === 'hours') displayVal = (secs / 3600).toFixed(1) + 'h';
-          else if (unitMode === 'minutes') displayVal = (secs / 60).toFixed(1) + 'm';
-          else displayVal = secs + 's';
-        }
+        // Calculate height percentage relative to baseline
+        const uPct = uSec > 0 ? Math.max((uSec / maxDurationSecs) * 100, 6) : 0;
+        const dPct = dSec > 0 ? Math.max((dSec / maxDurationSecs) * 100, 6) : 0;
+        const rPct = rCnt > 0 ? Math.max((rCnt / maxRemCount) * 100, 8) : 0;
 
-        const pct = secs > 0 ? Math.max((secs / scaleBaseline) * 100, 6) : 0;
+        const uValStr = uSec > 0 ? (uSec >= 3600 ? (uSec / 3600).toFixed(1) + 'h' : Math.round(uSec / 60) + 'm') : '0m';
+        const dValStr = dSec > 0 ? (dSec >= 3600 ? (dSec / 3600).toFixed(1) + 'h' : Math.round(dSec / 60) + 'm') : '0m';
+        const rValStr = rCnt > 0 ? `${rCnt} alerts` : '0';
 
         const col = document.createElement('div');
-        col.className = 'chart-col';
+        col.className = 'day-cluster-col';
         col.innerHTML = `
-          <div class="chart-bar-wrap">
-            <span class="chart-val">${displayVal}</span>
-            <div class="chart-bar" style="height: ${pct}%"></div>
+          <div class="cluster-bars-wrap">
+            <!-- Bar 1: Timer Up (Cyan) -->
+            <div class="cluster-bar-col" title="Timer Up: ${uValStr}">
+              <div class="bar-hover-val">${uValStr}</div>
+              <div class="bar-pill bar-up" style="height: ${uPct}%"></div>
+            </div>
+
+            <!-- Bar 2: Timer Down (Amber) -->
+            <div class="cluster-bar-col" title="Timer Down: ${dValStr}">
+              <div class="bar-hover-val">${dValStr}</div>
+              <div class="bar-pill bar-down" style="height: ${dPct}%"></div>
+            </div>
+
+            <!-- Bar 3: Reminders (Purple) -->
+            <div class="cluster-bar-col" title="Reminders: ${rValStr}">
+              <div class="bar-hover-val">${rValStr}</div>
+              <div class="bar-pill bar-rem" style="height: ${rPct}%"></div>
+            </div>
           </div>
-          <span class="chart-label">${name}</span>
+          <span class="cluster-day-label">${name}</span>
         `;
         chartEl.appendChild(col);
       });
     }
 
+    /* --------------------------------------------------------
+       C. CATEGORIZED TOTAL PROGRESS (Up, Down, Reminders, Total)
+       -------------------------------------------------------- */
     function renderTotalProgress(records) {
-      const summaryEl = document.getElementById('statsSummary');
-      const now = new Date();
-      const currentYear = now.getFullYear();
-      const currentMonth = now.getMonth();
+      const wrap = document.getElementById('statsCategorizedWrap');
 
-      const dailyTotals = {};
-      let totalSecs = 0;
-      let thisMonthSecs = 0;
-      let thisYearSecs = 0;
+      let upTotalSecs = 0;
+      let upCount = 0;
+      let upMaxSecs = 0;
+
+      let downTotalSecs = 0;
+      let downCount = 0;
+      let downMaxSecs = 0;
+
+      let remTotalTriggers = 0;
+      const dailyActiveDays = new Set();
 
       records.forEach(r => {
         const secs = r.seconds || 0;
-        totalSecs += secs;
-
         const d = new Date(r.timestamp);
         if (!isNaN(d.getTime())) {
           const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-          dailyTotals[key] = (dailyTotals[key] || 0) + secs;
+          dailyActiveDays.add(key);
+        }
 
-          if (d.getFullYear() === currentYear) {
-            thisYearSecs += secs;
-            if (d.getMonth() === currentMonth) {
-              thisMonthSecs += secs;
-            }
-          }
+        if (r.type === 'count_up') {
+          upTotalSecs += secs;
+          upCount++;
+          if (secs > upMaxSecs) upMaxSecs = secs;
+        } else if (r.type === 'count_down') {
+          downTotalSecs += secs;
+          downCount++;
+          if (secs > downMaxSecs) downMaxSecs = secs;
+        } else if (r.type === 'reminder') {
+          remTotalTriggers++;
         }
       });
 
-      const sessionCount = records.length;
-      const avgSecs = sessionCount > 0 ? Math.round(totalSecs / sessionCount) : 0;
+      const totalCombinedSecs = upTotalSecs + downTotalSecs;
+      const totalEvents = upCount + downCount + remTotalTriggers;
+      const activeRemindersCount = remindersList.filter(r => r.active).length;
 
-      // Single Day Maximum
-      const maxDaySecs = Math.max(...Object.values(dailyTotals), 0);
-
-      // Streaks & Active/Missed Days
-      const dates = Object.keys(dailyTotals).sort();
+      // Streak Calculation
+      const sortedDays = Array.from(dailyActiveDays).sort();
       let currentStreak = 0;
       let highestStreak = 0;
-      let missedDays = 0;
 
-      if (dates.length > 0) {
-        // High streak calculation
+      if (sortedDays.length > 0) {
         let tempStreak = 0;
-        let prevDate = null;
-
-        dates.forEach(dStr => {
+        let prev = null;
+        sortedDays.forEach(dStr => {
           const d = new Date(dStr);
-          if (prevDate) {
-            const diffDays = Math.round((d - prevDate) / (1000 * 60 * 60 * 24));
-            if (diffDays === 1) {
-              tempStreak++;
-            } else {
-              tempStreak = 1;
-            }
+          if (prev) {
+            const diffDays = Math.round((d - prev) / (1000 * 60 * 60 * 24));
+            if (diffDays === 1) tempStreak++;
+            else tempStreak = 1;
           } else {
             tempStreak = 1;
           }
           if (tempStreak > highestStreak) highestStreak = tempStreak;
-          prevDate = d;
+          prev = d;
         });
 
-        // Current streak calculation
-        let checkDate = new Date();
-        checkDate.setHours(0, 0, 0, 0);
-
-        let checkKey = `${checkDate.getFullYear()}-${String(checkDate.getMonth() + 1).padStart(2, '0')}-${String(checkDate.getDate()).padStart(2, '0')}`;
-        if (!dailyTotals[checkKey]) {
-          checkDate.setDate(checkDate.getDate() - 1);
-          checkKey = `${checkDate.getFullYear()}-${String(checkDate.getMonth() + 1).padStart(2, '0')}-${String(checkDate.getDate()).padStart(2, '0')}`;
+        let check = new Date();
+        check.setHours(0, 0, 0, 0);
+        let checkKey = `${check.getFullYear()}-${String(check.getMonth() + 1).padStart(2, '0')}-${String(check.getDate()).padStart(2, '0')}`;
+        if (!dailyActiveDays.has(checkKey)) {
+          check.setDate(check.getDate() - 1);
+          checkKey = `${check.getFullYear()}-${String(check.getMonth() + 1).padStart(2, '0')}-${String(check.getDate()).padStart(2, '0')}`;
         }
-
-        while (dailyTotals[checkKey]) {
+        while (dailyActiveDays.has(checkKey)) {
           currentStreak++;
-          checkDate.setDate(checkDate.getDate() - 1);
-          checkKey = `${checkDate.getFullYear()}-${String(checkDate.getMonth() + 1).padStart(2, '0')}-${String(checkDate.getDate()).padStart(2, '0')}`;
+          check.setDate(check.getDate() - 1);
+          checkKey = `${check.getFullYear()}-${String(check.getMonth() + 1).padStart(2, '0')}-${String(check.getDate()).padStart(2, '0')}`;
         }
-
-        // Missed Days Calculation
-        const firstDate = new Date(dates[0]);
-        const todayDate = new Date();
-        firstDate.setHours(0, 0, 0, 0);
-        todayDate.setHours(0, 0, 0, 0);
-
-        const totalTimespanDays = Math.floor((todayDate - firstDate) / (1000 * 60 * 60 * 24)) + 1;
-        const activeDaysCount = dates.length;
-        missedDays = Math.max(0, totalTimespanDays - activeDaysCount);
       }
 
-      summaryEl.innerHTML = `
-        <!-- Row 1: Current, Highest Streak, Missed Days -->
-        <div class="stat-card">
-          <div class="stat-lbl">Current Streak</div>
-          <div class="stat-val">${currentStreak} 🔥</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-lbl">Highest Streak</div>
-          <div class="stat-val">${highestStreak} ⚡</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-lbl">Missed Days</div>
-          <div class="stat-val">${missedDays}</div>
+      const upAvg = upCount > 0 ? Math.round(upTotalSecs / upCount) : 0;
+      const downAvg = downCount > 0 ? Math.round(downTotalSecs / downCount) : 0;
+
+      wrap.innerHTML = `
+        <!-- Box 1: Overall Summary -->
+        <div class="progress-group-box">
+          <div class="group-title">🔥 Overall Engagement & Streaks</div>
+          <div class="stats-row-4">
+            <div class="mini-stat-card">
+              <div class="mini-stat-lbl">Current Streak</div>
+              <div class="mini-stat-val" style="color: #38bdf8;">${currentStreak} 🔥</div>
+            </div>
+            <div class="mini-stat-card">
+              <div class="mini-stat-lbl">Best Streak</div>
+              <div class="mini-stat-val" style="color: #fbbf24;">${highestStreak} ⚡</div>
+            </div>
+            <div class="mini-stat-card">
+              <div class="mini-stat-lbl">Total Focus Time</div>
+              <div class="mini-stat-val">${(totalCombinedSecs / 3600).toFixed(1)}h</div>
+            </div>
+            <div class="mini-stat-card">
+              <div class="mini-stat-lbl">Total Events</div>
+              <div class="mini-stat-val">${totalEvents}</div>
+            </div>
+          </div>
         </div>
 
-        <!-- Row 2: Single Day, This Month, This Year -->
-        <div class="stat-card">
-          <div class="stat-lbl">Max Single Day</div>
-          <div class="stat-val">${formatTime(maxDaySecs)}</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-lbl">This Month</div>
-          <div class="stat-val">${(thisMonthSecs / 3600).toFixed(1)}h</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-lbl">This Year</div>
-          <div class="stat-val">${(thisYearSecs / 3600).toFixed(1)}h</div>
+        <!-- Box 2: Timer Up (Stopwatch) -->
+        <div class="progress-group-box">
+          <div class="group-title color-cyan">⏱️ Timer Up (Stopwatch Tracking)</div>
+          <div class="stats-row-3">
+            <div class="mini-stat-card">
+              <div class="mini-stat-lbl">Total Up Time</div>
+              <div class="mini-stat-val" style="color: var(--accent-cyan);">${(upTotalSecs / 3600).toFixed(1)}h</div>
+            </div>
+            <div class="mini-stat-card">
+              <div class="mini-stat-lbl">Sessions Logged</div>
+              <div class="mini-stat-val">${upCount}</div>
+            </div>
+            <div class="mini-stat-card">
+              <div class="mini-stat-lbl">Avg / Max Session</div>
+              <div class="mini-stat-val">${formatTime(upAvg)} / ${formatTime(upMaxSecs)}</div>
+            </div>
+          </div>
         </div>
 
-        <!-- Row 3: Total Hours, Avg Session, Total Sessions -->
-        <div class="stat-card">
-          <div class="stat-lbl">Total Hours</div>
-          <div class="stat-val">${(totalSecs / 3600).toFixed(1)}h</div>
+        <!-- Box 3: Timer Down (Countdown) -->
+        <div class="progress-group-box">
+          <div class="group-title color-amber">⏳ Timer Down (Focus Countdowns)</div>
+          <div class="stats-row-3">
+            <div class="mini-stat-card">
+              <div class="mini-stat-lbl">Total Down Time</div>
+              <div class="mini-stat-val" style="color: var(--accent-amber);">${(downTotalSecs / 3600).toFixed(1)}h</div>
+            </div>
+            <div class="mini-stat-card">
+              <div class="mini-stat-lbl">Timers Finished</div>
+              <div class="mini-stat-val">${downCount}</div>
+            </div>
+            <div class="mini-stat-card">
+              <div class="mini-stat-lbl">Avg / Max Focus</div>
+              <div class="mini-stat-val">${formatTime(downAvg)} / ${formatTime(downMaxSecs)}</div>
+            </div>
+          </div>
         </div>
-        <div class="stat-card">
-          <div class="stat-lbl">Avg Session</div>
-          <div class="stat-val">${formatTime(avgSecs)}</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-lbl">Total Sessions</div>
-          <div class="stat-val">${sessionCount}</div>
+
+        <!-- Box 4: Reminders & Alerts -->
+        <div class="progress-group-box">
+          <div class="group-title color-purple">🔔 Reminders & Scheduled Alerts</div>
+          <div class="stats-row-3">
+            <div class="mini-stat-card">
+              <div class="mini-stat-lbl">Alerts Triggered</div>
+              <div class="mini-stat-val" style="color: var(--accent-purple);">${remTotalTriggers}</div>
+            </div>
+            <div class="mini-stat-card">
+              <div class="mini-stat-lbl">Active Reminders</div>
+              <div class="mini-stat-val">${activeRemindersCount}</div>
+            </div>
+            <div class="mini-stat-card">
+              <div class="mini-stat-lbl">Total Configured</div>
+              <div class="mini-stat-val">${remindersList.length}</div>
+            </div>
+          </div>
         </div>
       `;
     }
 
+    /* --------------------------------------------------------
+       D. RAW LOGS TABLE WITH MULTI-TYPE FILTER
+       -------------------------------------------------------- */
     function renderRawLogs(records) {
       const tbody = document.getElementById('rawTableBody');
       tbody.innerHTML = '';
 
-      if (records.length === 0) {
-        tbody.innerHTML = `<tr id="no-records"><td colspan="4" style="text-align:center; color:#64748b; padding: 20px;">No records found.</td></tr>`;
+      let filtered = [...records];
+      if (currentRawFilter !== 'all') {
+        filtered = filtered.filter(r => r.type === currentRawFilter);
+      }
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#64748b; padding: 20px;">No matching records found.</td></tr>`;
         return;
       }
 
-      // Display most recent records on top
-      const sortedRecords = [...records].reverse();
+      const sortedRecords = [...filtered].reverse();
 
       sortedRecords.forEach(item => {
         const endDate = new Date(item.endTime || item.timestamp);
         const startDate = item.startTime ? new Date(item.startTime) : new Date(endDate.getTime() - ((item.seconds || 0) * 1000));
 
+        let typeBadge = '';
+        if (item.type === 'count_up') typeBadge = `<span class="type-pill up">Up</span>`;
+        else if (item.type === 'count_down') typeBadge = `<span class="type-pill down">Down</span>`;
+        else if (item.type === 'reminder') typeBadge = `<span class="type-pill reminder">Reminder</span>`;
+        else typeBadge = `<span class="type-pill">${item.type || 'Up'}</span>`;
+
+        const titleStr = item.title || (item.type === 'reminder' ? 'Scheduled Alert' : 'Timer Session');
         const dateStr = !isNaN(endDate.getTime()) ? endDate.toLocaleDateString() : 'N/A';
         const startTimeStr = !isNaN(startDate.getTime()) ? startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : 'N/A';
         const endTimeStr = !isNaN(endDate.getTime()) ? endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : 'N/A';
-        const durationStr = item.formattedDuration || formatTime(item.seconds || 0);
+        const durationStr = item.formattedDuration || (item.type === 'reminder' ? 'Triggered' : formatTime(item.seconds || 0));
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
+          <td>${typeBadge}</td>
+          <td style="font-weight:600; color:#e2e8f0;">${titleStr}</td>
           <td>${dateStr}</td>
           <td>${startTimeStr}</td>
           <td>${endTimeStr}</td>
-          <td style="color:#38bdf8; font-weight:600;">${durationStr}</td>
+          <td style="color:${item.type === 'count_up' ? '#38bdf8' : item.type === 'count_down' ? '#f59e0b' : '#c084fc'}; font-weight:700;">${durationStr}</td>
         `;
         tbody.appendChild(tr);
       });
@@ -1010,167 +3567,23 @@
       getAllRecords(renderWeeklyChart);
     });
 
-    // Tab Navigation
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-
-        btn.classList.add('active');
-        document.getElementById(btn.dataset.tab).classList.add('active');
-      });
-    });
-
-    // Timer Implementation
-    function formatTime(totalSeconds) {
-      const hrs = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
-      const mins = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
-      const secs = String(totalSeconds % 60).padStart(2, '0');
-      return `${hrs}:${mins}:${secs}`;
-    }
-
-    function updateDisplay() {
-      displayEl.textContent = formatTime(secondsElapsed);
-    }
-
-    function resetIdleTimer() {
-      document.body.classList.remove('user-idle');
-      clearTimeout(idleTimeout);
-
-      if (isRunning && !isPaused && logModal.style.display !== 'flex') {
-        idleTimeout = setTimeout(() => {
-          if (isRunning && !isPaused) {
-            document.body.classList.add('user-idle');
-          }
-        }, 5000);
-      }
-    }
-
-    ['mousemove', 'mousedown', 'touchstart', 'keydown', 'click'].forEach(evt => {
-      window.addEventListener(evt, resetIdleTimer, { passive: true });
-    });
-
-    primaryBtn.addEventListener('click', function (e) {
-      e.stopPropagation();
-      if (!isRunning && !isPaused) startTimer();
-      else if (isRunning && !isPaused) pauseTimer();
-      else if (isPaused) resumeTimer();
-    });
-
-    secondaryBtn.addEventListener('click', function (e) {
-      e.stopPropagation();
-      stopTimer();
-    });
-
-    function startTimer() {
-      isRunning = true;
-      isPaused = false;
-      sessionStartTimestamp = new Date().toISOString();
-      primaryIcon.innerHTML = icons.pause;
-      primaryText.textContent = 'Pause';
-      secondaryIcon.innerHTML = icons.stop;
-      secondaryText.textContent = 'Stop';
-      secondaryBtn.style.display = 'inline-flex';
-      logBtn.disabled = true;
-      logBtn.style.display = 'none';
-
-      timerInterval = setInterval(() => {
-        secondsElapsed++;
-        updateDisplay();
-      }, 1000);
-
-      requestWakeLock();
-      resetIdleTimer();
-    }
-
-    function pauseTimer() {
-      if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
-      isPaused = true;
-      document.body.classList.remove('user-idle');
-      clearTimeout(idleTimeout);
-
-      primaryIcon.innerHTML = icons.start;
-      primaryText.textContent = 'Resume';
-      secondaryIcon.innerHTML = icons.reset;
-      secondaryText.textContent = 'Reset';
-
-      logBtn.disabled = true;
-      logBtn.style.display = 'none';
-
-      saveOrUpdateSessionToDB(formatTime(secondsElapsed), secondsElapsed);
-      releaseWakeLock();
-    }
-
-    function resumeTimer() {
-      isPaused = false;
-      primaryIcon.innerHTML = icons.pause;
-      primaryText.textContent = 'Pause';
-      secondaryIcon.innerHTML = icons.stop;
-      secondaryText.textContent = 'Stop';
-
-      logBtn.disabled = true;
-      logBtn.style.display = 'none';
-
-      timerInterval = setInterval(() => {
-        secondsElapsed++;
-        updateDisplay();
-      }, 1000);
-
-      requestWakeLock();
-      resetIdleTimer();
-    }
-
-    function stopTimer() {
-      if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
-      saveOrUpdateSessionToDB(formatTime(secondsElapsed), secondsElapsed);
-
-      isRunning = false;
-      isPaused = false;
-      secondsElapsed = 0;
-      currentSessionId = null;
-      sessionStartTimestamp = null;
-
-      document.body.classList.remove('user-idle');
-      clearTimeout(idleTimeout);
-
-      primaryIcon.innerHTML = icons.start;
-      primaryText.textContent = 'Start';
-      secondaryBtn.style.display = 'none';
-
-      logBtn.disabled = false;
-      logBtn.style.display = 'inline-flex';
-
-      updateDisplay();
-      releaseWakeLock(true);
-    }
-
-    // Modal Actions
-    logBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      if (logBtn.disabled) return;
-      renderDashboard();
-      logModal.style.display = 'flex';
-    });
-
-    closeModalBtn.addEventListener('click', () => {
-      logModal.style.display = 'none';
-      resetIdleTimer();
-    });
-
+    // Copy TSV
     copyBtn.addEventListener('click', () => {
       getAllRecords(records => {
         if (records.length === 0) return alert('No records to copy.');
-        let tsv = "Date\tStart Time\tEnd Time\tDuration\n";
+        let tsv = "Type\tTitle\tDate\tStart Time\tEnd Time\tDuration\n";
         [...records].reverse().forEach(item => {
           const endDate = new Date(item.endTime || item.timestamp);
           const startDate = item.startTime ? new Date(item.startTime) : new Date(endDate.getTime() - ((item.seconds || 0) * 1000));
 
+          const type = item.type || 'count_up';
+          const title = item.title || '';
           const dateStr = !isNaN(endDate.getTime()) ? endDate.toLocaleDateString() : 'N/A';
           const startTimeStr = !isNaN(startDate.getTime()) ? startDate.toLocaleTimeString() : 'N/A';
           const endTimeStr = !isNaN(endDate.getTime()) ? endDate.toLocaleTimeString() : 'N/A';
           const durationStr = item.formattedDuration || formatTime(item.seconds || 0);
 
-          tsv += `${dateStr}\t${startTimeStr}\t${endTimeStr}\t${durationStr}\n`;
+          tsv += `${type}\t${title}\t${dateStr}\t${startTimeStr}\t${endTimeStr}\t${durationStr}\n`;
         });
         navigator.clipboard.writeText(tsv).then(() => {
           alert('Table logs copied as TSV to clipboard!');
@@ -1178,12 +3591,13 @@
       });
     });
 
+    // Export & Import
     downloadBtn.addEventListener('click', () => {
       getAllRecords(records => {
         const blob = new Blob([JSON.stringify(records, null, 2)], { type: 'application/json' });
         const link = document.createElement('a');
         link.href = URL.createObjectURL(blob);
-        link.download = 'indexeddb_timer_backup.json';
+        link.download = 'omnitimer_backup.json';
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -1202,8 +3616,8 @@
         try {
           const records = JSON.parse(event.target.result);
           if (Array.isArray(records)) {
-            const tx = db.transaction([storeName], "readwrite");
-            const store = tx.objectStore(storeName);
+            const tx = db.transaction([storeSessions], "readwrite");
+            const store = tx.objectStore(storeSessions);
             records.forEach(r => { delete r.id; store.add(r); });
             tx.oncomplete = () => {
               alert('Successfully imported records!');
@@ -1217,29 +3631,28 @@
     });
 
     clearBtn.addEventListener('click', () => {
-      if (confirm('Delete all entries in IndexedDB?')) {
+      if (confirm('Delete all entries in IndexedDB session history?')) {
         if (!db) return;
-        const tx = db.transaction([storeName], "readwrite");
-        tx.objectStore(storeName).clear().onsuccess = () => renderDashboard();
+        const tx = db.transaction([storeSessions], "readwrite");
+        tx.objectStore(storeSessions).clear().onsuccess = () => renderDashboard();
       }
     });
 
+    /* ========================================================
+       9. FULLSCREEN, WAKELOCK & KEYBOARD SHORTCUTS
+       ======================================================== */
+    const fsBtn = document.getElementById('fsBtn');
+    const fsIcon = document.getElementById('fsIcon');
+
     async function requestWakeLock() {
-      await document.documentElement.requestFullscreen().catch(() => { });
-      if (screen.orientation && screen.orientation.lock) {
-        await screen.orientation.lock('landscape').catch(err => console.log(err));
-      }
       if ('wakeLock' in navigator) {
         try { wakeLock = await navigator.wakeLock.request('screen'); } catch (err) { }
       }
     }
 
     async function releaseWakeLock(exitFullscreen = false) {
-      if (exitFullscreen) {
+      if (exitFullscreen && document.fullscreenElement) {
         await document.exitFullscreen().catch(() => { });
-        if (screen.orientation && screen.orientation.unlock) {
-          screen.orientation.unlock();
-        }
       }
       if (wakeLock) {
         try { await wakeLock.release(); } catch (err) { }
@@ -1247,16 +3660,59 @@
       }
     }
 
-    fsBtn.addEventListener('click', async function (e) {
+    fsBtn.addEventListener('click', async (e) => {
       e.stopPropagation();
       if (!document.fullscreenElement) {
         await document.documentElement.requestFullscreen().catch(() => { });
         fsIcon.innerHTML = icons.compress;
-        fsText.textContent = 'Exit Full Screen';
       } else {
         await document.exitFullscreen().catch(() => { });
         fsIcon.innerHTML = icons.expand;
-        fsText.textContent = 'Full Screen';
+      }
+    });
+
+    document.addEventListener('fullscreenchange', () => {
+      if (document.fullscreenElement) {
+        fsIcon.innerHTML = icons.compress;
+      } else {
+        fsIcon.innerHTML = icons.expand;
+      }
+    });
+
+    // Keyboard Shortcuts
+    window.addEventListener('keydown', (e) => {
+      // Don't trigger shortcuts when typing in an input
+      if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
+
+      if (e.code === 'Space') {
+        e.preventDefault();
+        const activeView = document.querySelector('.view-section.active');
+        if (activeView && activeView.id === 'viewTimerUp') {
+          upPrimaryBtn.click();
+        } else if (activeView && activeView.id === 'viewTimerDown') {
+          downPrimaryBtn.click();
+        }
+      } else if (e.key === 'r' || e.key === 'R') {
+        const activeView = document.querySelector('.view-section.active');
+        if (activeView && activeView.id === 'viewTimerUp' && isUpPaused) {
+          upSecondaryBtn.click();
+        } else if (activeView && activeView.id === 'viewTimerDown') {
+          downSecondaryBtn.click();
+        }
+      } else if (e.key === '1') {
+        document.getElementById('tabNavUp').click();
+      } else if (e.key === '2') {
+        document.getElementById('tabNavDown').click();
+      } else if (e.key === '3') {
+        document.getElementById('tabNavReminders').click();
+      } else if (e.key === '4' || e.key === 'l' || e.key === 'L') {
+        logModalBtn.click();
+      } else if (e.key === 'Escape') {
+        if (alarmTriggerModal.classList.contains('open')) {
+          closeTriggerModal();
+        } else if (logModal.classList.contains('open')) {
+          logModal.classList.remove('open');
+        }
       }
     });
   </script>
